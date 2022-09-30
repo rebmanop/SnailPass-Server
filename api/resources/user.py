@@ -1,4 +1,6 @@
+from urllib import request
 import database
+from  flask import request
 from api import db  
 from flask_restful import Resource, reqparse
 
@@ -7,7 +9,7 @@ class User(Resource):
     
     def post(self):
         """Sign up procedure"""
-
+        print(request.data)
         parser = reqparse.RequestParser()
         parser.add_argument("id", type=str, help="User id is required", required=True)
         parser.add_argument("login", type=str, help="Login is required", required=True)
@@ -35,6 +37,23 @@ class User(Resource):
         records = database.User.query.filter_by(login=args["login"]).all()
 
         return records, 200
+
+
+    def delete(self): 
+        """Delete user"""
+        parser = reqparse.RequestParser()
+        parser.add_argument("id", type=str, help="User id is required", required=True)
+        args = parser.parse_args()
+
+        user = database.User.query.filter_by(id=args["id"]).first()
+
+        db.session.delete(user)
+        db.session.commit()
+
+        return 200
+
+
+
 
 
 
