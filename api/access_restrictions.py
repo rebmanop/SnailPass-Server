@@ -1,0 +1,58 @@
+
+import jwt
+import models
+from api import app
+from functools import wraps
+from flask import request, make_response
+
+def token_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = None
+        
+        if 'x-access-token' in request.headers:
+            token = request.headers['x-access-token']
+
+        if not token:
+            return make_response({'message': 'Token is missing'}, 400)
+
+        try: 
+            data = jwt.decode(token, app.config['SECRET_KEY'])
+            current_user = models.User.query.get(data['id'])
+
+        except: 
+            return make_response({'message': 'Token is invalid'}, 401)
+
+        return f(*args, current_user, **kwargs)
+
+    return decorated
+
+
+def admin_only_function(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = None
+
+        if 'x-access-token' in request.headers:
+            token = request.headers['x-access-token']
+
+        if not token:
+            return make_response({'message': 'Token is missing'}, 400)
+        
+        try: 
+            data = jwt.decode(token, app.config['SECRET_KEY'])
+            current_user = models.User.query.get(data['id'])
+
+        except:
+            return make_response({'message': 'Token is invalid'}, 401)
+
+        if not current_user.is_admin:
+            return make_response({'message': 'Admin only function'}, 403)
+
+        return f(*args, **kwargs)
+
+    return decorated
+        
+
+        
+
