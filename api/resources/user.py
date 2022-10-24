@@ -1,6 +1,7 @@
 import uuid
 import hashlib
 import models
+import random
 from api import db  
 from api.access_restrictions import admin_only_function
 from flask_restful import Resource, reqparse, request, fields, marshal_with
@@ -8,38 +9,32 @@ from flask_restful import Resource, reqparse, request, fields, marshal_with
 
 user_resource_fields = {
                         'id': fields.String, 
-                        'login': fields.String,
+                        'email': fields.String,
                         'master_password_hash': fields.String,
                         'is_admin': fields.Boolean
                        }
 
 
 class User(Resource):
-    
     def post(self):
         """Signup procedure"""
 
         parser = reqparse.RequestParser()
 
         parser.add_argument("id", type=str, help="User id is required", required=True)
-        parser.add_argument("login", type=str, help="Login is required", required=True)
+        parser.add_argument("email", type=str, help="Email is required", required=True)
         parser.add_argument("master_password_hash", type=str, help="Master password hash is required", required=True)
         parser.add_argument("hint", type=str)
+        parser.add_argument("nonce", type=str, help="Nonce is required", required=True)
         args = parser.parse_args()
 
-        new_user = models.User(id=args["id"], login=args["login"], 
-                                 master_password_hash=args["master_password_hash"], hint=args["hint"])
-
-        # parser.add_argument("login", type=str, help="Login is required", required=True)
-        # parser.add_argument("hint", type=str)
-        # args = parser.parse_args()
-        # new_user = models.User(id=str(uuid.uuid4()), login=args["login"], 
-        #                          master_password_hash=(hashlib.sha512(str(uuid.uuid4()).encode())).hexdigest(), hint=args["hint"])
+        new_user = models.User(id=args["id"], email=args["email"], 
+                                 master_password_hash=args["master_password_hash"], hint=args["hint"], nonce=args["nonce"])
         
         db.session.add(new_user)
         db.session.commit()
 
-        return {"message": "User created successfully"}, 201 
+        return {"message": f"User '{new_user.email}' created successfully"}, 201 
 
     
     @admin_only_function
@@ -55,7 +50,7 @@ class User(Resource):
         db.session.delete(user)
         db.session.commit()
 
-        return {"message": "User deleted successfully"}, 200
+        return {"message": f"User '{user.email}' deleted successfully"}, 200
 
 
     @admin_only_function

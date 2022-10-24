@@ -1,4 +1,3 @@
-
 import jwt
 import models
 from api import app
