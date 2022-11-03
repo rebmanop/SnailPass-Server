@@ -1,7 +1,4 @@
-import uuid
-import hashlib
 import models
-import random
 from api import db  
 from api.access_restrictions import admin_only_function
 from flask_restful import Resource, reqparse, request, fields, marshal_with
@@ -42,10 +39,20 @@ class User(Resource):
         """Delete user (admin only function)"""
         
         user_id = request.args.get("id")
+        
+        if user_id == None:
+            return {"message": "User not found in the request arguments"}, 400
+
+        
+        user_records = models.Record.query.filter_by(user_id=user_id).all()
         user = models.User.query.get(user_id)
         
         if not user:
             return {"message": "User with that id doesn't exist"}, 404
+
+        if len(user_records) != 0:
+            for record in user_records:
+                db.session.delete(record)
 
         db.session.delete(user)
         db.session.commit()

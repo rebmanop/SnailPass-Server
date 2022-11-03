@@ -1,8 +1,21 @@
 import models
 import datetime
 from api import db
-from flask_restful import Resource, reqparse
-from api.access_restrictions import token_required
+from flask_restful import Resource, marshal_with, reqparse
+from api.access_restrictions import admin_only_function, token_required
+from flask_restful import Resource, reqparse, request, fields, marshal_with
+
+record_resource_fields = {
+                        'id': fields.String, 
+                        'name': fields.String,
+                        'login': fields.String,
+                        'encrypted_password': fields.String,
+                        'user_id': fields.String,
+                        'is_favorite': fields.Boolean,
+                        'is_deleted': fields.Boolean,
+                        'creation_time': fields.DateTime
+                        }
+
 
 class Record(Resource):
     @token_required
@@ -35,12 +48,29 @@ class Record(Resource):
         parser.add_argument("id", type=str, help="Record id is required", required=True)
         args = parser.parse_args()
 
-        record = models.Record.query.filter_by(id=args["id"]).all()
+        record = models.Record.query.get(args["id"])
+
+        if record == None:
+            return {"message": "Record with that id doesn't exist"}, 404
+
+        if current_user.id != record.user_id:
+            return {"message": "You dont have access rights to delete this record"}, 403
+        
         db.session.delete(record)
         db.session.commit()
 
-        return {"message": f"Record '{args['name']}' deleted successfully (user = '{current_user.email}')"}, 200
+        return {"message": f"Record '{record.name}' deleted successfully (user = '{current_user.email}')"}, 200
 
 
+    @admin_only_function
+    @marshal_with(record_resource_fields)
+    def get(self):
+        
+        """Get all records"""
 
-    
+        records = models.Record.query.all()
+
+        if len(records) == 0:
+            return {"message": "No records in the database"}, 404
+
+        return records, 200
