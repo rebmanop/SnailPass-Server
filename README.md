@@ -5,6 +5,21 @@ And this repository is a REST API for the project. We will be using AES-256-CBC 
 The goal is to copy [Bitwarden's](https://github.com/bitwarden) system architecture as close as possible.
 
 # Documentation
+All requests with required token authentication can return error messages like:
+  * **Code:** 400 BAD REQUEST <br />
+    **Content:** `{ "message": "Token is missing" }`
+    
+    OR
+   
+  * **Code:** 401 UNAUTHORIZED <br />
+     **Content:** `{ "message": "Token is invalid" }`
+     
+ All admin only requests can return error messages like:
+ 
+   * **Code:** 403 FORBIDDEN <br />
+     **Content:** `{ "message": "Admin only function" }`
+
+
 **Add user**
 --
   Creates new user (sign up procedure)
