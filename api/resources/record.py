@@ -44,7 +44,49 @@ class Record(Resource):
         db.session.commit()
 
         return {"message": f"Record '{args['name']}' created successfully (user = '{current_user.email}')"}, 201
+
     
+    @token_required
+    def patch(self, current_user):
+        
+        parser = reqparse.RequestParser()
+        parser.add_argument("id", type=str, help="Record id is missing", required=True)
+        parser.add_argument("name", type=str)
+        parser.add_argument("login", type=str)
+        parser.add_argument("encrypted_password", type=str)
+        args = parser.parse_args()
+
+        record = models.Record.query.get(args["id"])
+
+        if not record:
+            return {"message": f"Record with id '{args['id']}' doesn't exist "}, 404
+        
+        if current_user.id != record.user_id:
+            return {"message": "You dont have access rights to edit this record"}, 403
+
+        record_changed = False
+        
+        if args["name"]:
+            record.name = args["name"]
+            record_changed = True
+
+        
+        if args["login"]:
+            record.login = args["login"]
+            record_changed = True
+
+        
+        if args["encrypted_password"]:
+            record.encrypted_password = args["encrypted_password"]
+            record_changed = True
+
+
+        if record_changed:
+            db.session.commit()
+            return {"message": f"Changes for the record '{args['id']}' were successfully made"}, 200
+        else:
+            return {"message": f"Changes for the record '{args['id']}' weren't made because request body is empty"}, 400 
+
     
     @token_required
     def delete(self, current_user):
@@ -57,12 +99,18 @@ class Record(Resource):
             {"message": "Record id not found in the url params"}, 400
 
         record = models.Record.query.get(record_id)
+        additional_fields = models.AdditionalField.query.filter_by(record_id=record_id).all()
 
         if record == None:
             return {"message": "Record with that id doesn't exist"}, 404
 
         if current_user.id != record.user_id:
             return {"message": "You dont have access rights to delete this record"}, 403
+
+        
+        if len(additional_fields) != 0:
+            for field in additional_fields:
+                db.session.delete(field)
         
         db.session.delete(record)
         db.session.commit()
