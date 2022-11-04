@@ -18,12 +18,17 @@ class User(Resource):
 
         parser = reqparse.RequestParser()
 
-        parser.add_argument("id", type=str, help="User id is required", required=True)
-        parser.add_argument("email", type=str, help="Email is required", required=True)
-        parser.add_argument("master_password_hash", type=str, help="Master password hash is required", required=True)
+        parser.add_argument("id", type=str, help="User id is missing", required=True)
+        parser.add_argument("email", type=str, help="Email is missing", required=True)
+        parser.add_argument("master_password_hash", type=str, help="Master password hash is missing", required=True)
         parser.add_argument("hint", type=str)
-        parser.add_argument("nonce", type=str, help="Nonce is required", required=True)
+        parser.add_argument("nonce", type=str, help="Nonce is missing", required=True)
         args = parser.parse_args()
+
+        if models.User.query.get(args["id"]):
+            return {"message": f"User with received id '{args['id']}' already exists"}, 409
+        elif models.User.query.filter_by(email=args["email"]).all():
+            return {"message": f"User with received email '{args['email']}' already exists"}, 409
 
         new_user = models.User(id=args["id"], email=args["email"], 
                                  master_password_hash=args["master_password_hash"], hint=args["hint"], nonce=args["nonce"])
@@ -40,8 +45,8 @@ class User(Resource):
         
         user_id = request.args.get("id")
         
-        if user_id == None:
-            return {"message": "User not found in the request arguments"}, 400
+        if not user_id:
+            return {"message": "User id not found in the url params"}, 400
 
         
         user_records = models.Record.query.filter_by(user_id=user_id).all()

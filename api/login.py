@@ -17,12 +17,12 @@ def login():
     auth = request.authorization
 
     if not auth or not auth.username or not auth.password:
-        return make_response('Authorization info missing/incomplete', 400)
+        return make_response({'message': f"Authorization info missing or it's incomplete"}, 400)
 
     user = models.User.query.filter_by(email=auth.username).first()
 
     if not user:
-        return make_response({'message': "User with that email doesn't exist"}, 401) 
+        return make_response({'message': f"User with recieved email '{auth.username}' doesn't exist"}, 401) 
 
     received_password_hash = auth.password
     

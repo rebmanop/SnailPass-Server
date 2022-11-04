@@ -7,10 +7,8 @@ TOKEN_TTL = 30 #in minutes
 
 app = Flask(__name__)
 api = Api(app)
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['SNAILPASS_DB_URI']
-#app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['SNAILPASS_DB_URI']
-
 app.config['SECRET_KEY'] = os.environ['SNAILPASS_SECRET_KEY']
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['SNAILPASS_DB_URI']
 
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False 

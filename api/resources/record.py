@@ -24,11 +24,18 @@ class Record(Resource):
         """Create new record"""
 
         parser = reqparse.RequestParser()
-        parser.add_argument("id", type=str, help="Record id is required", required=True)
-        parser.add_argument("name", type=str, help="Name of the record is required", required=True)
-        parser.add_argument("login", type=str, help="Record login is required", required=True)
-        parser.add_argument("encrypted_password", type=str, help="Encrypted password is required", required=True)
+        parser.add_argument("id", type=str, help="Record id is missing", required=True)
+        parser.add_argument("name", type=str, help="Record name is missing", required=True)
+        parser.add_argument("login", type=str, help="Record login is missing", required=True)
+        parser.add_argument("encrypted_password", type=str, help="Encrypted password is missing", required=True)
         args = parser.parse_args()
+
+
+        if models.Record.query.get(args["id"]):
+            return {"message": f"Record with id '{args['id']}' already exist "}, 409
+        elif models.Record.query.filter_by(name=args["name"]).all():
+            return {"message": f"Record with name '{args['name']}' already exist "}, 409
+
 
         record = models.Record(id=args["id"], name=args["name"], login=args["login"], 
                                 encrypted_password=args["encrypted_password"], user_id=current_user.id, creation_time=datetime.datetime.now())
@@ -44,11 +51,12 @@ class Record(Resource):
 
         "Delete record"
 
-        parser = reqparse.RequestParser()
-        parser.add_argument("id", type=str, help="Record id is required", required=True)
-        args = parser.parse_args()
+        record_id = request.args.get("id")
 
-        record = models.Record.query.get(args["id"])
+        if not record_id:
+            {"message": "Record id not found in the url params"}, 400
+
+        record = models.Record.query.get(record_id)
 
         if record == None:
             return {"message": "Record with that id doesn't exist"}, 404
