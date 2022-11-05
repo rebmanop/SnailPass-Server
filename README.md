@@ -190,6 +190,55 @@ All requests with required token authentication can return error messages like:
   * **Code:** 409 CONFLICT <br />
     **Content:** `{  "message": "Record with name 'Google' already exist" }` <br />
     
+**Edit record**
+--
+  Changes fields of an existing record
+
+* **URL**
+
+  /records
+
+* **Method:**
+
+  `PATCH`
+  
+* **Headers**
+
+  **Required:**
+ 
+   `"x-access-token": "[string]"` - token recieved after login procedure
+
+* **Data Params**
+
+  **Required:**
+ 
+   `"id": "[string]"`
+   
+   **Optional:**
+   
+   `"name": "[string]"` `"login": "[string]"` `"encrypted_password": "[string]"`
+
+* **Success Response:**
+
+  * **Code:** 200 OK <br />
+    **Content:** `{"message": "Changes for the record '2d536854-3333-471e-2222-230bc92bfc19' were successfully made"}`<br />
+  
+ 
+* **Error Response:**
+
+  * **Code:** 400 BAD REQUEST <br />
+    **Content:** `{"message": "Changes for the record '2d536854-3333-471e-2222-230bc92bfc19' weren't made because request body is empty"}` <br />
+
+  OR
+
+  * **Code:** 403 FORBIDDEN <br />
+    **Content:** `{"message": "You dont have access rights to edit this record"}` <br />
+    
+  OR
+
+  * **Code:** 404 NOT FOUND <br />
+    **Content:** `{"message": "Record with id '2d536854-3333-471e-2222-230bc92bfc19' doesn't exist "}` <br />
+    
 
 **Delete record**
 --
