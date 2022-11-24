@@ -13,7 +13,9 @@ record_resource_fields = {
                         'user_id': fields.String,
                         'is_favorite': fields.Boolean,
                         'is_deleted': fields.Boolean,
-                        'creation_time': fields.DateTime
+                        'creation_time': fields.DateTime,
+                        'update_time': fields.DateTime,
+                        'nonce': fields.String
                         }
 
 
@@ -38,7 +40,8 @@ class Record(Resource):
 
 
         record = models.Record(id=args["id"], name=args["name"], login=args["login"], 
-                                encrypted_password=args["encrypted_password"], user_id=current_user.id, creation_time=datetime.datetime.now())
+                                encrypted_password=args["encrypted_password"], user_id=current_user.id, creation_time=datetime.datetime.now(), 
+                                update_time=datetime.datetime.now(), nonce=args["nonce"])
 
         db.session.add(record)
         db.session.commit()
@@ -82,6 +85,7 @@ class Record(Resource):
 
 
         if record_changed:
+            record.update_time = datetime.datetime.now()
             db.session.commit()
             return {"message": f"Changes for the record '{args['id']}' were successfully made"}, 200
         else:
@@ -118,15 +122,16 @@ class Record(Resource):
         return {"message": f"Record '{record.name}' deleted successfully (user = '{current_user.email}')"}, 200
 
 
-    @admin_only_function
-    @marshal_with(record_resource_fields)
-    def get(self):
-        
-        """Get all records"""
 
-        records = models.Record.query.all()
+    @token_required
+    @marshal_with(record_resource_fields)
+    def get(self, current_user):
+
+        """Get user records"""
+
+        records = models.Record.filter_by(id=current_user.id).all()
 
         if len(records) == 0:
-            return {"message": "No records in the database"}, 404
+            return {"message": f"User '{current_user.email}' has no records"}
 
         return records, 200

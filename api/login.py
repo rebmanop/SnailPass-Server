@@ -28,7 +28,7 @@ def login():
     
     if user.master_password_hash == received_password_hash:
         token = jwt.encode({'id': user.id, 'exp': datetime.datetime.utcnow() + datetime.timedelta(TOKEN_TTL)}, app.config['SECRET_KEY'])
-        return jsonify({'token': token.decode("UTF-8")})
+        return jsonify({'token': token})
 
 
     return  make_response({'message': 'Incorrect password'}, 401)

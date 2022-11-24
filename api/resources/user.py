@@ -22,7 +22,6 @@ class User(Resource):
         parser.add_argument("email", type=str, help="Email is missing", required=True)
         parser.add_argument("master_password_hash", type=str, help="Master password hash is missing", required=True)
         parser.add_argument("hint", type=str)
-        parser.add_argument("nonce", type=str, help="Nonce is missing", required=True)
         args = parser.parse_args()
 
         if models.User.query.get(args["id"]):
@@ -31,7 +30,7 @@ class User(Resource):
             return {"message": f"User with received email '{args['email']}' already exists"}, 409
 
         new_user = models.User(id=args["id"], email=args["email"], 
-                                 master_password_hash=args["master_password_hash"], hint=args["hint"], nonce=args["nonce"])
+                                 master_password_hash=args["master_password_hash"], hint=args["hint"])
         
         db.session.add(new_user)
         db.session.commit()
