@@ -2,7 +2,7 @@ import models
 import datetime
 from api import db
 from flask_restful import Resource, marshal_with, reqparse
-from api.access_restrictions import admin_only_function, token_required
+from api.access_restrictions import token_required
 from flask_restful import Resource, reqparse, request, fields, marshal_with
 
 record_resource_fields = {
@@ -130,7 +130,7 @@ class Record(Resource):
 
         """Get user records"""
 
-        records = models.Record.filter_by(id=current_user.id).all()
+        records = models.Record.query.filter_by(user_id=current_user.id).all()
 
         if len(records) == 0:
             return {"message": f"User '{current_user.email}' has no records"}
