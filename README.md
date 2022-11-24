@@ -6,5 +6,9 @@ And this repository is a REST API for the project. We will be using AES-256-CBC 
 # Documentation
 [Click me](https://github.com/rebmanop/SnailPass-REST-API/wiki/API-Documentation)
 
+# Dependencies
+Run `pip install -r requirements.txt` in the project directory to install all dependencies
+
+
     
     
