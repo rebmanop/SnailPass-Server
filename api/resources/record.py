@@ -100,8 +100,8 @@ class Record(Resource):
 
         record_id = request.args.get("id")
 
-        if not record_id:
-            {"message": "Record id not found in the url params"}, 400
+        if record_id == None:
+            return {"message": "Record id not found in the url params"}, 400
 
         record = models.Record.query.get(record_id)
         additional_fields = models.AdditionalField.query.filter_by(record_id=record_id).all()
