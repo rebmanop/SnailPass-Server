@@ -16,10 +16,13 @@ def token_required(f):
             return make_response({'message': 'Token is missing'}, 400)
 
         try: 
-            data = jwt.decode(token, app.config['SECRET_KEY'])
+            data = jwt.decode(token, key=app.config['SECRET_KEY'], algorithms=["HS256"])
             current_user = models.User.query.get(data['id'])
 
-        except: 
+        except(jwt.ExpiredSignatureError): 
+            return make_response({'message': 'Token already expired'}, 401)
+        
+        except:
             return make_response({'message': 'Token is invalid'}, 401)
 
         return f(*args, current_user, **kwargs)
@@ -39,8 +42,11 @@ def admin_only_function(f):
             return make_response({'message': 'Token is missing'}, 400)
         
         try: 
-            data = jwt.decode(token, app.config['SECRET_KEY'])
+            data = jwt.decode(token, key=app.config['SECRET_KEY'], algorithms=["HS256"])
             current_user = models.User.query.get(data['id'])
+
+        except(jwt.ExpiredSignatureError): 
+            return make_response({'message': 'Token already expired'}, 401)
 
         except:
             return make_response({'message': 'Token is invalid'}, 401)

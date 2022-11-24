@@ -3,7 +3,7 @@ from flask import Flask
 from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
 
-TOKEN_TTL = 30 #in minutes
+TOKEN_TTL = 10 #in minutes
 
 app = Flask(__name__)
 api = Api(app)

@@ -30,12 +30,13 @@ class Record(Resource):
         parser.add_argument("name", type=str, help="Record name is missing", required=True)
         parser.add_argument("login", type=str, help="Record login is missing", required=True)
         parser.add_argument("encrypted_password", type=str, help="Encrypted password is missing", required=True)
+        parser.add_argument("nonce", type=str, help="Nonce is missing", required=True)
         args = parser.parse_args()
 
 
         if models.Record.query.get(args["id"]):
             return {"message": f"Record with id '{args['id']}' already exist "}, 409
-        elif models.Record.query.filter_by(name=args["name"]).all():
+        elif models.Record.query.filter_by(user_id=current_user.id, name=args["name"]).all():
             return {"message": f"Record with name '{args['name']}' already exist "}, 409
 
 
