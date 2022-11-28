@@ -10,6 +10,10 @@ And this repository is a REST API for the project. We will be using AES-256-CBC 
 # Dependencies
 Run `pip install -r requirements.txt` in the project directory to install all dependencies
 
+# Links to client repositories
+[Windows client](https://github.com/badlocale/SnailPass-Desktop-Client)
+
+
 
 
 
