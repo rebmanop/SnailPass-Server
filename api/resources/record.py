@@ -1,7 +1,7 @@
 import models
 import datetime
 from api import db
-from flask_restful import Resource, marshal_with, reqparse
+from flask_restful import Resource, marshal, reqparse
 from api.access_restrictions import token_required
 from flask_restful import Resource, reqparse, request, fields, marshal_with
 
@@ -125,7 +125,6 @@ class Record(Resource):
 
 
     @token_required
-    @marshal_with(record_resource_fields)
     def get(self, current_user):
 
         """Get user records"""
@@ -133,6 +132,7 @@ class Record(Resource):
         records = models.Record.query.filter_by(user_id=current_user.id).all()
 
         if len(records) == 0:
-            return {"message": f"User '{current_user.email}' has no records"}
+            return {"message": f"User '{current_user.email}' has no records"}, 404
 
-        return records, 200
+        
+        return [marshal(record, record_resource_fields) for record in records], 200

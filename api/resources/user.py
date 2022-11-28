@@ -1,7 +1,8 @@
 import models
-from api import db  
+import hashing
+from api import db 
 from api.access_restrictions import admin_only_function
-from flask_restful import Resource, reqparse, request, fields, marshal_with
+from flask_restful import Resource, reqparse, request, fields, marshal
 
 
 user_resource_fields = {
@@ -24,13 +25,16 @@ class User(Resource):
         parser.add_argument("hint", type=str)
         args = parser.parse_args()
 
+        additionaly_hashed_master_password = hashing.hash_mp_additionally(password_hash=args["master_password_hash"], 
+                                                salt=args["email"])
+
         if models.User.query.get(args["id"]):
             return {"message": f"User with received id '{args['id']}' already exists"}, 409
         elif models.User.query.filter_by(email=args["email"]).all():
             return {"message": f"User with received email '{args['email']}' already exists"}, 409
 
         new_user = models.User(id=args["id"], email=args["email"], 
-                                 master_password_hash=args["master_password_hash"], hint=args["hint"])
+                                master_password_hash=additionaly_hashed_master_password, hint=args["hint"])
         
         db.session.add(new_user)
         db.session.commit()
@@ -65,7 +69,6 @@ class User(Resource):
 
 
     @admin_only_function
-    @marshal_with(user_resource_fields)
     def get(self):
         
         "Returns  all users"
@@ -74,7 +77,7 @@ class User(Resource):
         if len(users) == 0:
             return {"message: No users in the database"}, 404
 
-        return users, 200
+        return [marshal(user, user_resource_fields) for user in users], 200
 
 
 
