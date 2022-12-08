@@ -71,19 +71,12 @@ class User(Resource):
 
     @token_required
     def get(self, current_user):
-
-        user_email = request.args.get("email")
         
-        "Returns requested user"
-        user = models.User.query.filter_by(email=user_email).first()
+        "Returns current user"
+        user = models.User.query.get(current_user.id)
 
         if not user:
-            return {"message": f"User with email'{user_email}' doesn't exist"}, 404
-
-
-        if current_user.email != user_email:
-            return {"message": f"Email'{user_email}' doesn't belong to you"}
-
+            return {"message": f"Current user wasn't found in the database"}, 404
 
         return marshal(user, user_resource_fields), 200
 
