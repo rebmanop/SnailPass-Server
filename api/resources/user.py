@@ -1,7 +1,7 @@
 import models
 import hashing
 from api import db 
-from api.access_restrictions import admin_only_function
+from api.access_restrictions import admin_only_function, token_required
 from flask_restful import Resource, reqparse, request, fields, marshal
 
 
@@ -9,7 +9,8 @@ user_resource_fields = {
                         'id': fields.String, 
                         'email': fields.String,
                         'master_password_hash': fields.String,
-                        'is_admin': fields.Boolean
+                        'is_admin': fields.Boolean,
+                        'hint': fields.String,
                        }
 
 
@@ -68,16 +69,23 @@ class User(Resource):
         return {"message": f"User '{user.email}' deleted successfully"}, 200
 
 
-    @admin_only_function
-    def get(self):
+    @token_required
+    def get(self, current_user):
+
+        user_email = request.args.get("email")
         
-        "Returns  all users"
-        users = models.User.query.all()
+        "Returns requested user"
+        user = models.User.query.filter_by(email=user_email).first()
 
-        if len(users) == 0:
-            return {"message: No users in the database"}, 404
+        if not user:
+            return {"message": f"User with email'{user_email}' doesn't exist"}, 404
 
-        return [marshal(user, user_resource_fields) for user in users], 200
+
+        if current_user.email != user_email:
+            return {"message": f"Email'{user_email}' doesn't belong to you"}
+
+
+        return marshal(user, user_resource_fields), 200
 
 
 

@@ -3,7 +3,7 @@ import datetime
 from api import db
 from flask_restful import Resource, marshal, reqparse
 from api.access_restrictions import token_required
-from flask_restful import Resource, reqparse, request, fields, marshal_with
+from flask_restful import Resource, reqparse, request, fields
 
 record_resource_fields = {
                         'id': fields.String, 
@@ -44,6 +44,7 @@ class Record(Resource):
                                 encrypted_password=args["encrypted_password"], user_id=current_user.id, creation_time=datetime.datetime.now(), 
                                 update_time=datetime.datetime.now(), nonce=args["nonce"])
 
+
         db.session.add(record)
         db.session.commit()
 
@@ -69,7 +70,7 @@ class Record(Resource):
             return {"message": "You dont have access rights to edit this record"}, 403
 
         record_changed = False
-        
+
         if args["name"]:
             record.name = args["name"]
             record_changed = True
