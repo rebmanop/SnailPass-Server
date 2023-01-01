@@ -35,20 +35,20 @@ class Record(Resource):
 
 
         if models.Record.query.get(args["id"]):
-            return {"message": f"Record with id '{args['id']}' already exist "}, 409
+            return {"message": f"Record with id '{args['id']}' already exist"}, 409
         elif models.Record.query.filter_by(user_id=current_user.id, name=args["name"]).all():
-            return {"message": f"Record with name '{args['name']}' already exist "}, 409
+            return {"message": f"Record with name '{args['name']}' already exist in current user's vault"}, 409
 
 
         record = models.Record(id=args["id"], name=args["name"], login=args["login"], 
                                 encrypted_password=args["encrypted_password"], user_id=current_user.id, creation_time=datetime.datetime.now(), 
                                 update_time=datetime.datetime.now(), nonce=args["nonce"])
 
-
+                                
         db.session.add(record)
         db.session.commit()
-
         return {"message": f"Record '{args['name']}' created successfully (user = '{current_user.email}')"}, 201
+
 
     
     @token_required
@@ -105,7 +105,6 @@ class Record(Resource):
             return {"message": "Record id not found in the url params"}, 400
 
         record = models.Record.query.get(record_id)
-        additional_fields = models.AdditionalField.query.filter_by(record_id=record_id).all()
 
         if record == None:
             return {"message": "Record with that id doesn't exist"}, 404
@@ -113,10 +112,6 @@ class Record(Resource):
         if current_user.id != record.user_id:
             return {"message": "You dont have access rights to delete this record"}, 403
 
-        
-        if len(additional_fields) != 0:
-            for field in additional_fields:
-                db.session.delete(field)
         
         db.session.delete(record)
         db.session.commit()
