@@ -1,7 +1,18 @@
 import models
 from api import db
-from flask_restful import Resource, reqparse
+from flask_restful import Resource, reqparse, fields, marshal
 from api.access_restrictions import token_required
+
+
+
+additional_field_resource_fields = {
+                        'id': fields.String, 
+                        'field_name': fields.String,
+                        'value': fields.String,
+                        'record_id': fields.String,
+                        'nonce': fields.String
+                        }
+
 
 class AdditionalField(Resource):
     @token_required
@@ -104,3 +115,30 @@ class AdditionalField(Resource):
             return {"message": f"Changes for the additional field '{args['id']}' were successfully made"}, 200
         else:
             return {"message": f"Changes for the record '{args['id']}' weren't made because request body is empty"}, 400 
+
+
+
+    @token_required
+    def get(self, current_user):
+
+        """Get additional fields by record id"""
+
+        parser = reqparse.RequestParser()
+        parser.add_argument("record_id", type=str, help="Record id is required", required=True)
+
+        args = parser.parse_args()
+
+        record_with_recived_record_id = models.Record.query.get(args["record_id"])
+
+        if not record_with_recived_record_id:
+            return {"message": f"Record with id '{record_with_recived_record_id.id}' doesn't exist "}, 404
+        elif current_user.id != record_with_recived_record_id.user_id:
+            return {"message": f"Record with id '{record_with_recived_record_id.id}' doesn't belong to the current user"}, 403
+
+        record_additional_fields = models.AdditionalField.query.filter_by(record_id=record_with_recived_record_id.id).all()
+
+        if len(record_additional_fields) == 0:
+            return {"message": f"Record with id '{record_with_recived_record_id.id}' has no additional fields"}, 404
+
+        
+        return [marshal(additional_field, additional_field_resource_fields) for additional_field in record_additional_fields], 200
