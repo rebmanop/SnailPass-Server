@@ -47,6 +47,7 @@ class AdditionalField(db.Model):
     id = db.Column(db.String, primary_key=True)
     field_name = db.Column(db.String, nullable=False)
     value = db.Column(db.String, nullable=False)
+    nonce = db.Column(db.String, nullable=False)
     
     record_id = db.Column(db.String, db.ForeignKey('records.id', ondelete='CASCADE'), nullable=False)
 
