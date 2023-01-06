@@ -18,10 +18,12 @@ db = SQLAlchemy(app)
 from api.resources.user import User
 from api.resources.record import Record
 from api.resources.additional_field import AdditionalField
+from api.resources.note import Note
 from api.login import login_blueprint
 
 api.add_resource(User, "/users")
 api.add_resource(Record, "/records")
 api.add_resource(AdditionalField, "/additional_fields")
+api.add_resource(Note, "/notes")
 
 app.register_blueprint(login_blueprint)
