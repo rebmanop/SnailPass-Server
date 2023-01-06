@@ -8,7 +8,6 @@ from flask_restful import Resource, reqparse, request, fields, marshal
 user_resource_fields = {
                         'id': fields.String, 
                         'email': fields.String,
-                        'master_password_hash': fields.String,
                         'is_admin': fields.Boolean,
                         'hint': fields.String,
                        }
