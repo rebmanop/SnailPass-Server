@@ -57,7 +57,7 @@ class AdditionalField(db.Model):
 
 class Note(db.Model):
     __tablename__ = "notes"
-
+                                            
     id = db.Column(db.String, primary_key=True)
     name = db.Column(db.String, nullable=False)
     content = db.Column(db.String, nullable=False)
