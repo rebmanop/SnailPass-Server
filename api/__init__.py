@@ -1,12 +1,17 @@
 import os
-from flask import Flask
+from flask import Flask, jsonify
 from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
+
 
 TOKEN_TTL = 10 #in minutes
 NUMBER_OF_HASH_ITERATIONS = 40000
 
-app = Flask(__name__)
+def create_app():
+    app = Flask(__name__)
+    return app
+
+app = create_app()
 api = Api(app)
 app.config['SECRET_KEY'] = os.environ['SNAILPASS_SECRET_KEY']
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['SNAILPASS_DB_URI']
@@ -27,3 +32,5 @@ api.add_resource(AdditionalField, "/additional_fields")
 api.add_resource(Note, "/notes")
 
 app.register_blueprint(login_blueprint)
+
+
