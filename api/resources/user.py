@@ -1,6 +1,6 @@
 import models
 import hashing
-from api import db 
+from models import db
 from api.access_restrictions import admin_only_function, token_required
 from flask_restful import Resource, reqparse, request, fields, marshal
 

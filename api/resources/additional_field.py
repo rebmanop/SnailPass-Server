@@ -1,8 +1,7 @@
 import models
-from api import db
+from models import db
 from flask_restful import Resource, reqparse, fields, marshal
 from api.access_restrictions import token_required
-
 
 
 additional_field_resource_fields = {

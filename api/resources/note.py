@@ -1,6 +1,6 @@
 import models
 import datetime
-from api import db
+from models import db
 from flask_restful import Resource, marshal, reqparse
 from api.access_restrictions import token_required
 from flask_restful import Resource, reqparse, request, fields

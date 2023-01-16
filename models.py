@@ -1,4 +1,5 @@
-from api import db
+from flask_sqlalchemy import SQLAlchemy
+db = SQLAlchemy()
 
 #db.metadata.clear()
 
