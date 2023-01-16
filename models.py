@@ -1,5 +1,4 @@
 from api import db
-        
 
 #db.metadata.clear()
 
