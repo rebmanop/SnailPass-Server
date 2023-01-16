@@ -1,4 +1,4 @@
-# SnailPass-REST-api
+# SnailPass-REST-API
 $${\color{red}STILL \space\space IN \space\space DEVELOPMENT}$$
 
 SnailPass is a future password manager that I'm writing with my colleagues. It will be supporting three different platforms: Windows, Android and IOS.
