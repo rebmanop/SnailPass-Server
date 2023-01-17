@@ -5,18 +5,19 @@ from models import db
 from api import create_app
 from config import TestingConfig
 
+
 @pytest.fixture
 def client():
-    config = TestingConfig()
-    app = create_app(config)
+    testing_config = TestingConfig()
+    app = create_app(testing_config)
     
     with app.app_context():
         db.create_all()
         yield app.test_client()   
         db.drop_all()
     
-    os.close(config.db_fd)
-    os.unlink(config.db_filename)
+    os.close(testing_config.db_fd)
+    os.unlink(testing_config.db_filename)
 
 
 @pytest.fixture
@@ -30,6 +31,9 @@ def new_user():
     }
 
     return new_user
+
+
+
 
 
 

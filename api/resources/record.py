@@ -33,13 +33,15 @@ class Record(Resource):
         parser.add_argument("nonce", type=str, help="Nonce is missing", required=True)
         args = parser.parse_args()
 
-
         if models.Record.query.get(args["id"]):
             return {"message": f"Record with id '{args['id']}' already exist"}, 409
-        elif models.Record.query.filter_by(user_id=current_user.id, name=args["name"]).all():
-            return {"message": f"Record with name '{args['name']}' already exist in current user's vault"}, 409
-
-
+        
+        records_with_requested_name = models.Record.query.filter_by(user_id=current_user.id, name=args["name"]).all()
+        
+        for record_with_requested_name in records_with_requested_name:
+            if record_with_requested_name.login == args["login"]:
+                return {"message": f"Record with name '{args['name']}' and with login '{args['login']}' already exist in current user's vault"}, 409
+                
         record = models.Record(id=args["id"], name=args["name"], login=args["login"], 
                                 encrypted_password=args["encrypted_password"], user_id=current_user.id, creation_time=datetime.datetime.now(), 
                                 update_time=datetime.datetime.now(), nonce=args["nonce"])
@@ -56,9 +58,9 @@ class Record(Resource):
         
         parser = reqparse.RequestParser()
         parser.add_argument("id", type=str, help="Record id is missing", required=True)
-        parser.add_argument("name", type=str)
-        parser.add_argument("login", type=str)
-        parser.add_argument("encrypted_password", type=str)
+        parser.add_argument("name", type=str, help="Record name is missing", required=True)
+        parser.add_argument("login", type=str, help="Record login is missing", required=True)
+        parser.add_argument("encrypted_password", type=str, help="Encrypted password is missing", required=True)
         args = parser.parse_args()
 
         record = models.Record.query.get(args["id"])
@@ -67,31 +69,22 @@ class Record(Resource):
             return {"message": f"Record with id '{args['id']}' doesn't exist "}, 404
         
         if current_user.id != record.user_id:
-            return {"message": "You dont have access rights to edit this record"}, 403
+            return {"message": "This record doesn't belong to the current user"}, 403
+        
 
-        record_changed = False
+        if db.session.query(models.Record).filter(models.Record.id != record.id,
+                            models.Record.name == args["name"], models.Record.login == args["login"]):
+            return {"message": f"Record with name '{args['name']}' and with login '{args['login']}' already exist in current user's vault"}, 409
+        
 
-        if args["name"]:
-            record.name = args["name"]
-            record_changed = True
+        record.name = args["name"]
+        record.login = args["login"]
+        record.encrypted_password = args["encrypted_password"]
 
         
-        if args["login"]:
-            record.login = args["login"]
-            record_changed = True
-
-        
-        if args["encrypted_password"]:
-            record.encrypted_password = args["encrypted_password"]
-            record_changed = True
-
-
-        if record_changed:
-            record.update_time = datetime.datetime.now()
-            db.session.commit()
-            return {"message": f"Changes for the record '{args['id']}' were successfully made"}, 200
-        else:
-            return {"message": f"Changes for the record '{args['id']}' weren't made because request body is empty"}, 400 
+        record.update_time = datetime.datetime.now()
+        db.session.commit()
+        return {"message": f"Changes for the record '{args['id']}' were successfully made"}, 200
 
     
     @token_required
@@ -117,7 +110,6 @@ class Record(Resource):
         db.session.commit()
 
         return {"message": f"Record '{record.name}' deleted successfully (user = '{current_user.email}')"}, 200
-
 
 
     @token_required
