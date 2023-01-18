@@ -53,9 +53,10 @@ class Note(Resource):
         """Edit existing note"""
         
         parser = reqparse.RequestParser()
-        parser.add_argument("id", type=str, help="Note id is missing", required=True)
-        parser.add_argument("name", type=str)
-        parser.add_argument("content", type=str)
+        parser.add_argument("id", type=str, help="Note's id is missing", required=True)
+        parser.add_argument("name", type=str, help="Note's name is missing", required=True)
+        parser.add_argument("content", type=str, help="Note's content is missing", required=True)
+        parser.add_argument("nonce", type=str, help="Nonce is missing", required=True)
         args = parser.parse_args()
 
         note = models.Note.query.get(args["id"])
@@ -66,24 +67,19 @@ class Note(Resource):
         if current_user.id != note.user_id:
             return {"message": "You dont have access rights to edit this note"}, 403
 
-        note_changed = False
 
-        if args["name"]:
-            note.name = args["name"]
-            note_changed = True
+        if db.session.query(Note).filter(Note.id != args["id"], Note.name == args["name"]):
+            return {"message": f"Note with name '{args['name']}' already exists in current user's vault"}, 409
 
-        
-        if args["content"]:
-            note.content = args["content"]
-            note_changed = True
+        note.name = args["name"]
+        note.content = args["content"]
+        note.nonce = args["nonce"]
+        note.update_time = datetime.datetime.now()
 
-
-        if note_changed:
-            note.update_time = datetime.datetime.now()
-            db.session.commit()
-            return {"message": f"Changes for the note '{args['id']}' were successfully made"}, 200
-        else:
-            return {"message": f"Changes for the note '{args['id']}' weren't made because request body is empty"}, 400 
+        db.session.commit()
+     
+        return {"message": f"Changes for the note '{args['id']}' were successfully made"}, 200
+       
 
     
     @token_required
