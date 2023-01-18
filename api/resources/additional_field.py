@@ -74,12 +74,14 @@ class AdditionalField(Resource):
 
     @token_required
     def patch(self, current_user):
-        parser = reqparse.RequestParser()
-        parser.add_argument("id", type=str, help="Additional field id is required", required=True)
-        parser.add_argument("field_name", type=str)
-        parser.add_argument("value", type=str)
-        parser.add_argument("record_id", type=str, help="Additional field's record id is required", required=True)
 
+        parser = reqparse.RequestParser()
+        parser.add_argument("id", type=str, help="Additional field's id is required", required=True)
+        parser.add_argument("field_name", type=str,  type=str, help="Additional field's name is required", required=True)
+        parser.add_argument("value", type=str,  type=str, help="Additional field's value is required", required=True)
+        parser.add_argument("record_id", type=str, help="Additional field's record id is required", required=True)
+        parser.add_argument("nonce", type=str, help="Additional field's nonce is required", required=True)
+        
         args = parser.parse_args()
 
         additional_field = models.AdditionalField.query.get(args["id"])
@@ -96,22 +98,25 @@ class AdditionalField(Resource):
             return {"message": f"Additional field with id '{additional_field.id}' doesn't belong to the record with id '{record_with_recived_record_id.id}'"}, 409
 
 
-        additional_field_changed = False
+        if db.session.query(models.AdditionalField).filter(AdditionalField.record_id == additional_field.record_id,
+                                                           AdditionalField.name == args["field_name"], 
+                                                           AdditionalField.id != additional_field.id): 
+            
+            return {"message": f"Additional field with name '{args['field_name']}' already exists in record with id '{additional_field.record_id}' (user = '{current_user.email}')"}, 409
+        
+        if additional_field.record_id != args["record_id"]:
+            return {"message": f"Record id of an existing additional field can't be changed"}, 400
 
-        if args["field_name"]:
-            additional_field.field_name = args["field_name"]
-            additional_field_changed = True
+        additional_field.field_name = args["field_name"]
+        additional_field.value = args["value"]
+        additional_field.nonce = args["nonce"]
 
-        if args["value"]:
-            additional_field.value = args["value"]
-            additional_field_changed = True
+        
+        db.session.commit()
+        return {"message": f"Changes for the additional field '{args['id']}' were successfully made"}, 200
 
 
-        if additional_field_changed:
-            db.session.commit()
-            return {"message": f"Changes for the additional field '{args['id']}' were successfully made"}, 200
-        else:
-            return {"message": f"Changes for the record '{args['id']}' weren't made because request body is empty"}, 400 
+       
 
 
 
