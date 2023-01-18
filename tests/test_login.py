@@ -1,10 +1,10 @@
 from models import *
 from base64 import b64encode
-from tests.utils import add_new_user_to_db
+from tests.utils import add_new_user_to_mock_db
 
 
 def test_login_success(client, new_user):
-    add_new_user_to_db(new_user)
+    add_new_user_to_mock_db(new_user)
     
     assert User.query.get(new_user["id"]) != None
 
@@ -17,7 +17,7 @@ def test_login_success(client, new_user):
 
 
 def test_login_fail_authorization_info_missing(client, new_user):
-    add_new_user_to_db(new_user)
+    add_new_user_to_mock_db(new_user)
     
     assert User.query.get(new_user["id"]) != None
 
@@ -28,7 +28,7 @@ def test_login_fail_authorization_info_missing(client, new_user):
 
 
 def test_login_fail_email_dont_exists(client, new_user):
-    add_new_user_to_db(new_user)
+    add_new_user_to_mock_db(new_user)
     assert User.query.get(new_user["id"]) != None
 
     new_user["email"] += "x"
@@ -44,7 +44,7 @@ def test_login_fail_email_dont_exists(client, new_user):
 
 
 def test_login_fail_incorrect_password(client, new_user):
-    add_new_user_to_db(new_user)
+    add_new_user_to_mock_db(new_user)
     assert User.query.get(new_user["id"]) != None
 
     new_user["master_password_hash"] += "x"

@@ -3,7 +3,7 @@ import api
 import models
 import datetime
 from models import db
-from tests.utils import add_new_user_to_db
+from tests.utils import add_new_user_to_mock_db, get_mock_token
 
 #-------------------------------------SIGN UP PROCEDURE TESTS (POST REQUEST)---------------
 
@@ -36,14 +36,12 @@ def test_signup_new_user_fail_exists_email(client, new_user):
     assert expected_response_message.encode() in response.data
 
 
-#------------------------------------- GET CURRENT USER TESTS (GET REQUEST)---------------
+#------------------------------------- GET CURRENT USER TEST (GET REQUEST)---------------
 def test_get_current_user_success(client, new_user):
-    add_new_user_to_db(new_user)
+    add_new_user_to_mock_db(new_user)
     assert models.User.query.get(new_user["id"]) != None
     
-    #Mocking new_user's token
-    data = {'id': new_user["id"], 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=api.TOKEN_TTL)}
-    token = jwt.encode(payload=data, key=api.app.config['SECRET_KEY'], algorithm="HS256")
+    token = get_mock_token(new_user)
 
     response = client.get("/users", headers={"x-access-token": f"{token}"})
     
@@ -58,22 +56,54 @@ def test_get_current_user_success(client, new_user):
 #------------------------------------- DELETE USER TESTS (DELETE REQUEST)---------------
 
 def test_delete_user_success(client, new_user):
-    add_new_user_to_db(new_user, is_admin=True)
+    add_new_user_to_mock_db(new_user, is_admin=True)
     new_user_got_from_db = models.User.query.get(new_user["id"])
     assert  new_user_got_from_db != None
     assert new_user_got_from_db.is_admin == True
 
-    #Mocking new_user's token
-    data = {'id': new_user["id"], 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=api.TOKEN_TTL)}
-    token = jwt.encode(payload=data, key=api.app.config['SECRET_KEY'], algorithm="HS256")
+    token = get_mock_token(new_user)
 
-    #User deletes itself
+    #Sending delete request where user deletes itself
     response = client.delete("/users", query_string={'id': new_user["id"]}, headers={"x-access-token": f"{token}"})
     
     expected_response_message = f"User '{new_user['email']}' deleted successfully"
     
     assert response.status_code == 200
     assert expected_response_message.encode() in response.data
+
+
+def test_delete_user_fail_no_id_in_uri(client, new_user):
+    add_new_user_to_mock_db(new_user, is_admin=True)
+    new_user_got_from_db = models.User.query.get(new_user["id"])
+    assert  new_user_got_from_db != None
+    assert new_user_got_from_db.is_admin == True
+
+    token = get_mock_token(new_user)
+
+    #Sending delete request without user id as uri argument 
+    response = client.delete("/users", headers={"x-access-token": f"{token}"})
+    
+    assert response.status_code == 400
+    assert b"User id not found in the url params" in response.data
+
+
+def test_delete_user_fail_not_exist_id(client, new_user):
+    add_new_user_to_mock_db(new_user, is_admin=True)
+    new_user_got_from_db = models.User.query.get(new_user["id"])
+    assert  new_user_got_from_db != None
+    assert new_user_got_from_db.is_admin == True
+
+    token = get_mock_token(new_user)
+
+    #Sending delete request with not existing user id
+    new_user["id"] += "x"
+    response = client.delete("/users", query_string={'id': new_user["id"]}, headers={"x-access-token": f"{token}"})
+    
+    
+    assert response.status_code == 404
+    assert b"User with that id doesn't exist" in response.data
+
+    
 
 
 

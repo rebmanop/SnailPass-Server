@@ -61,13 +61,10 @@ class User(Resource):
 
     @token_required
     def get(self, current_user):
-        
-        "Returns current user"
+        """
+        Returns current user
+        """
         user = models.User.query.get(current_user.id)
-
-        if not user:
-            return {"message": f"Current user wasn't found in the database"}, 404
-
         return marshal(user, USER_RESOURCE_FIELDS), 200
 
 
