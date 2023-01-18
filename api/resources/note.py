@@ -4,18 +4,10 @@ from models import db
 from flask_restful import Resource, marshal, reqparse
 from api.access_restrictions import token_required
 from flask_restful import Resource, reqparse, request, fields
+from api.resource_fields import NOTE_RESOURCE_FIELDS
 
-note_resource_fields = {
-                        'id': fields.String, 
-                        'name': fields.String,
-                        'content': fields.String,
-                        'user_id': fields.String,
-                        'is_favorite': fields.Boolean,
-                        'is_deleted': fields.Boolean,
-                        'creation_time': fields.DateTime,
-                        'update_time': fields.DateTime,
-                        'nonce': fields.String
-                        }
+
+
 
 
 class Note(Resource):
@@ -123,5 +115,5 @@ class Note(Resource):
             return {"message": f"User '{current_user.email}' has no notes"}, 404
 
         
-        return [marshal(note, note_resource_fields) for note in notes], 200
+        return [marshal(note, NOTE_RESOURCE_FIELDS) for note in notes], 200
 

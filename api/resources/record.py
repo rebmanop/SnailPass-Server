@@ -4,19 +4,9 @@ from models import db
 from flask_restful import Resource, marshal, reqparse
 from api.access_restrictions import token_required
 from flask_restful import Resource, reqparse, request, fields
+from api.resource_fields import RECORD_RESOURCE_FIELDS
 
-record_resource_fields = {
-                        'id': fields.String, 
-                        'name': fields.String,
-                        'login': fields.String,
-                        'encrypted_password': fields.String,
-                        'user_id': fields.String,
-                        'is_favorite': fields.Boolean,
-                        'is_deleted': fields.Boolean,
-                        'creation_time': fields.DateTime,
-                        'update_time': fields.DateTime,
-                        'nonce': fields.String
-                        }
+
 
 
 class Record(Resource):
@@ -128,4 +118,4 @@ class Record(Resource):
             return {"message": f"User '{current_user.email}' has no records"}, 404
 
         
-        return [marshal(record, record_resource_fields) for record in records], 200
+        return [marshal(record, RECORD_RESOURCE_FIELDS) for record in records], 200

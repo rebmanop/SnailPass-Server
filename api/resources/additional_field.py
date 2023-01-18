@@ -2,15 +2,10 @@ import models
 from models import db
 from flask_restful import Resource, reqparse, fields, marshal, request
 from api.access_restrictions import token_required
+from api.resource_fields import ADDITIONAL_FIELD_RESOURCE_FIELDS
 
 
-additional_field_resource_fields = {
-                        'id': fields.String, 
-                        'field_name': fields.String,
-                        'value': fields.String,
-                        'record_id': fields.String,
-                        'nonce': fields.String
-                        }
+
 
 
 class AdditionalField(Resource):
@@ -77,8 +72,8 @@ class AdditionalField(Resource):
 
         parser = reqparse.RequestParser()
         parser.add_argument("id", type=str, help="Additional field's id is required", required=True)
-        parser.add_argument("field_name", type=str,  type=str, help="Additional field's name is required", required=True)
-        parser.add_argument("value", type=str,  type=str, help="Additional field's value is required", required=True)
+        parser.add_argument("field_name", type=str, help="Additional field's name is required", required=True)
+        parser.add_argument("value", type=str, help="Additional field's value is required", required=True)
         parser.add_argument("record_id", type=str, help="Additional field's record id is required", required=True)
         parser.add_argument("nonce", type=str, help="Additional field's nonce is required", required=True)
         
@@ -143,4 +138,4 @@ class AdditionalField(Resource):
             return {"message": f"Record with id '{record_with_recived_record_id.id}' has no additional fields"}, 404
 
         
-        return [marshal(additional_field, additional_field_resource_fields) for additional_field in record_additional_fields], 200
+        return [marshal(additional_field, ADDITIONAL_FIELD_RESOURCE_FIELDS) for additional_field in record_additional_fields], 200

@@ -3,14 +3,9 @@ import hashing
 from models import db
 from api.access_restrictions import admin_only_function, token_required
 from flask_restful import Resource, reqparse, request, fields, marshal
+from api.resource_fields import USER_RESOURCE_FIELDS
 
 
-user_resource_fields = {
-                        'id': fields.String, 
-                        'email': fields.String,
-                        'is_admin': fields.Boolean,
-                        'hint': fields.String,
-                       }
 
 
 class User(Resource):
@@ -73,7 +68,7 @@ class User(Resource):
         if not user:
             return {"message": f"Current user wasn't found in the database"}, 404
 
-        return marshal(user, user_resource_fields), 200
+        return marshal(user, USER_RESOURCE_FIELDS), 200
 
 
 
