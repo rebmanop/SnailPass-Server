@@ -60,8 +60,10 @@ class Record(Resource):
         parser.add_argument("id", type=str, help="Record id is missing", required=True)
         parser.add_argument("name", type=str, help="Record name is missing", required=True)
         parser.add_argument("login", type=str, help="Record login is missing", required=True)
-        parser.add_argument("encrypted_password", type=str, help="Encrypted password is missing", required=True)
-        parser.add_argument("nonce",  type=str, help="Nonce is missing", required=True)
+        parser.add_argument("encrypted_password", type=str, help="Record encrypted password is missing", required=True)
+        parser.add_argument("is_favorite", type=str, help="Record 'is_favorite' status is missing", required=True)
+        parser.add_argument("is_deleted", type=str, help="Record 'is_deleted' status is missing", required=True)
+        parser.add_argument("nonce",  type=str, help="Record nonce is missing", required=True)
         args = parser.parse_args()
 
         record = models.Record.query.get(args["id"])
@@ -82,6 +84,8 @@ class Record(Resource):
         record.login = args["login"]
         record.encrypted_password = args["encrypted_password"]
         record.nonce = args["nonce"]
+        record.is_favorite = args["is_favorite"]
+        record.is_deleted = args["is_deleted"]
         record.update_time = datetime.datetime.now()
         
         db.session.commit()

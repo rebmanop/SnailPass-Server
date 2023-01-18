@@ -53,10 +53,12 @@ class Note(Resource):
         """Edit existing note"""
         
         parser = reqparse.RequestParser()
-        parser.add_argument("id", type=str, help="Note's id is missing", required=True)
-        parser.add_argument("name", type=str, help="Note's name is missing", required=True)
-        parser.add_argument("content", type=str, help="Note's content is missing", required=True)
-        parser.add_argument("nonce", type=str, help="Nonce is missing", required=True)
+        parser.add_argument("id", type=str, help="Note id is missing", required=True)
+        parser.add_argument("name", type=str, help="Note name is missing", required=True)
+        parser.add_argument("content", type=str, help="Note content is missing", required=True)
+        parser.add_argument("is_favorite", type=str, help="Note 'is_favorite' status is missing", required=True)
+        parser.add_argument("is_deleted", type=str, help="Note 'is_deleted' status is missing", required=True)
+        parser.add_argument("nonce", type=str, help="Note nonce is missing", required=True)
         args = parser.parse_args()
 
         note = models.Note.query.get(args["id"])
@@ -74,6 +76,8 @@ class Note(Resource):
         note.name = args["name"]
         note.content = args["content"]
         note.nonce = args["nonce"]
+        note.is_favorite = args["is_favorite"]
+        note.is_deleted = args["is_deleted"]
         note.update_time = datetime.datetime.now()
 
         db.session.commit()
