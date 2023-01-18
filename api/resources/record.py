@@ -61,6 +61,7 @@ class Record(Resource):
         parser.add_argument("name", type=str, help="Record name is missing", required=True)
         parser.add_argument("login", type=str, help="Record login is missing", required=True)
         parser.add_argument("encrypted_password", type=str, help="Encrypted password is missing", required=True)
+        parser.add_argument("nonce",  type=str, help="Nonce is missing", required=True)
         args = parser.parse_args()
 
         record = models.Record.query.get(args["id"])
@@ -80,9 +81,9 @@ class Record(Resource):
         record.name = args["name"]
         record.login = args["login"]
         record.encrypted_password = args["encrypted_password"]
-
-        
+        record.nonce = args["nonce"]
         record.update_time = datetime.datetime.now()
+        
         db.session.commit()
         return {"message": f"Changes for the record '{args['id']}' were successfully made"}, 200
 
