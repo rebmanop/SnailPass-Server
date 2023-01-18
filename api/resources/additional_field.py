@@ -1,6 +1,6 @@
 import models
 from models import db
-from flask_restful import Resource, reqparse, fields, marshal
+from flask_restful import Resource, reqparse, fields, marshal, request
 from api.access_restrictions import token_required
 
 
@@ -55,18 +55,16 @@ class AdditionalField(Resource):
 
         "Delete additional field"
 
-        parser = reqparse.RequestParser()
-        parser.add_argument("id", type=str, help="Additional field id is required", required=True)
+        af_id = request.args.get("id")
 
-        args = parser.parse_args()
+        if not af_id:
+            return {"message": f"Additional field id is missing in uri args"}, 400
 
-        additional_field = models.AdditionalField.query.get(args["id"])
+        additional_field = models.AdditionalField.query.get(af_id)
        
-
         if not additional_field:
-            return {"message": f"Additional field with id '{args['id']}' doesn't exist"}, 404
+            return {"message": f"Additional field with id '{af_id}' doesn't exist"}, 404
 
-        
 
         db.session.delete(additional_field)
         db.session.commit()
@@ -122,12 +120,12 @@ class AdditionalField(Resource):
 
         """Get additional fields by record id"""
 
-        parser = reqparse.RequestParser()
-        parser.add_argument("record_id", type=str, help="Record id is required", required=True)
+        record_id = request.args.get("id")
 
-        args = parser.parse_args()
+        if not record_id:
+            return {"message": f"Record id is missing in uri args"}, 400
 
-        record_with_recived_record_id = models.Record.query.get(args["record_id"])
+        record_with_recived_record_id = models.Record.query.get(record_id)
 
         if not record_with_recived_record_id:
             return {"message": f"Record with id '{record_with_recived_record_id.id}' doesn't exist "}, 404

@@ -92,12 +92,12 @@ class Record(Resource):
 
         "Delete record"
 
-        parser = reqparse.RequestParser()
-        parser.add_argument("id", type=str, help="Record id is missing", required=True)
+        record_id = request.args.get("id")
 
-        args = parser.parse_args()
+        if not record_id:
+            return {"message": f"Record id is missing in uri args"}, 400
 
-        record = models.Record.query.get(args["id"])
+        record = models.Record.query.get(record_id)
 
         if not record:
             return {"message": "Record with that id doesn't exist"}, 404

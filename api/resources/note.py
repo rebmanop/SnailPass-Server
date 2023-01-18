@@ -91,12 +91,12 @@ class Note(Resource):
 
         "Delete note"
 
-        parser = reqparse.RequestParser()
-        parser.add_argument("id", type=str, help="Note id is missing", required=True)
+        note_id = request.args.get("id")
 
-        args = parser.parse_args()
+        if not note_id:
+            return {"message": f"Note id is missing in uri args"}, 400
 
-        note = models.Note.query.get(args["id"])
+        note = models.Note.query.get(note_id)
 
         if not note:
             return {"message": "Note with that id doesn't exist"}, 404
