@@ -33,6 +33,47 @@ def new_user():
     return new_user
 
 
+@pytest.fixture
+def new_record():
+    
+    new_record = {
+    "id": utils.get_random_id(),
+    "name": utils.get_random_word(),
+    "login": utils.get_random_email(),
+    "encrypted_password": utils.get_random_word_hash(),
+    "nonce": utils.get_random_id()
+    }
+
+    return new_record
+
+
+@pytest.fixture
+def new_note():
+    
+    new_note = {
+    "id": utils.get_random_id(),
+    "name": utils.get_random_word(),
+    "content": utils.get_random_word() + " " + utils.get_random_word(),
+    "nonce": utils.get_random_id()
+    }
+
+    return new_note
+
+
+@pytest.fixture
+def new_additional_field():
+    
+    additional_field = {
+    "id": utils.get_random_id(),
+    "field_name": utils.get_random_word(),
+    "value": utils.get_random_word(),
+    "nonce": utils.get_random_id()
+    }
+
+    return additional_field
+
+
+
 
 
 

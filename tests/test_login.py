@@ -16,7 +16,11 @@ def test_login_success(client, new_user):
     assert b"token" in response.data
 
 
-def test_login_fail_authorization_info_missing(client, new_user):
+def test_login_fail_1(client, new_user):
+    """
+    Login request fail, authorization info missing or it's incomplete
+    """
+
     add_new_user_to_mock_db(new_user)
     
     assert User.query.get(new_user["id"]) != None
@@ -27,7 +31,11 @@ def test_login_fail_authorization_info_missing(client, new_user):
     assert b"Authorization info missing or it's incomplete" in response.data
 
 
-def test_login_fail_email_dont_exists(client, new_user):
+def test_login_fail_2(client, new_user):
+    """
+    Login request fail, email doesn't exist
+    """
+
     add_new_user_to_mock_db(new_user)
     assert User.query.get(new_user["id"]) != None
 
@@ -43,7 +51,10 @@ def test_login_fail_email_dont_exists(client, new_user):
     assert expected_response_message.encode() in response.data
 
 
-def test_login_fail_incorrect_password(client, new_user):
+def test_login_fail_3(client, new_user):
+    """
+    Login request fail, incorrect password
+    """
     add_new_user_to_mock_db(new_user)
     assert User.query.get(new_user["id"]) != None
 

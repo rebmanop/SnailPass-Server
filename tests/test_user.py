@@ -8,7 +8,9 @@ from tests.utils import add_new_user_to_mock_db, get_mock_token
 #-------------------------------------SIGN UP PROCEDURE TESTS (POST REQUEST)---------------
 
 def test_signup_new_user_success(client, new_user):
-    #Successful sign up operation 
+    """
+    Successful sign procedure
+    """
     response = client.post('/users',  json=new_user, follow_redirects=True)
     assert response.status_code == 201
     expected_response_message = f"User '{new_user['email']}' created successfully"
@@ -16,8 +18,10 @@ def test_signup_new_user_success(client, new_user):
     assert models.User.query.get(new_user["id"]) != None
 
 
-def test_signup_new_user_fail_exists_id(client, new_user):
-    #User with that id already exists
+def test_signup_new_user_fail_1(client, new_user):
+    """
+    Sign up fail, user with received id already exists
+    """
     response = client.post('/users',  json=new_user, follow_redirects=True)
     response = client.post('/users',  json=new_user, follow_redirects=True)
     assert response.status_code == 409
@@ -25,8 +29,10 @@ def test_signup_new_user_fail_exists_id(client, new_user):
     assert expected_response_message.encode() in response.data
 
 
-def test_signup_new_user_fail_exists_email(client, new_user):
-    #User with that email already exists
+def test_signup_new_user_fail_2(client, new_user):
+    """
+    Sign up fail, user with received email already exists
+    """
     local_new_user = new_user.copy()
     response = client.post('/users',  json=local_new_user, follow_redirects=True)
     local_new_user["id"] = "1234"
@@ -56,6 +62,9 @@ def test_get_current_user_success(client, new_user):
 #------------------------------------- DELETE USER TESTS (DELETE REQUEST)---------------
 
 def test_delete_user_success(client, new_user):
+    """
+    Successful delete user request
+    """
     add_new_user_to_mock_db(new_user, is_admin=True)
     new_user_got_from_db = models.User.query.get(new_user["id"])
     assert  new_user_got_from_db != None
@@ -72,7 +81,10 @@ def test_delete_user_success(client, new_user):
     assert expected_response_message.encode() in response.data
 
 
-def test_delete_user_fail_no_id_in_uri(client, new_user):
+def test_delete_user_fail_1(client, new_user):
+    """
+    Delete user request fail, user id not found in uri params
+    """
     add_new_user_to_mock_db(new_user, is_admin=True)
     new_user_got_from_db = models.User.query.get(new_user["id"])
     assert  new_user_got_from_db != None
@@ -87,7 +99,10 @@ def test_delete_user_fail_no_id_in_uri(client, new_user):
     assert b"User id not found in the url params" in response.data
 
 
-def test_delete_user_fail_not_exist_id(client, new_user):
+def test_delete_user_fail_2(client, new_user):
+    """
+    Delete user request fail, user with recived id doesn't exist
+    """
     add_new_user_to_mock_db(new_user, is_admin=True)
     new_user_got_from_db = models.User.query.get(new_user["id"])
     assert  new_user_got_from_db != None

@@ -1,11 +1,12 @@
 import jwt
 import api
+import models
 import datetime
 import secrets
 import requests
 from hashlib import sha1
 from uuid import uuid4
-from models import db, User
+from models import db
 from hashing import hash_mp_additionally
 
 
@@ -17,9 +18,46 @@ def add_new_user_to_mock_db(new_user, is_admin=False):
                                                     salt=new_user["email"])
 
     
-    new_user_db_model_object = User(id=new_user["id"], email=new_user["email"], 
+    new_user_db_model_object = models.User(id=new_user["id"], email=new_user["email"], 
                                 master_password_hash=additionaly_hashed_mp, hint=new_user["hint"], is_admin=is_admin)
     db.session.add(new_user_db_model_object)
+    db.session.commit()
+
+
+def add_new_record_to_mock_db(new_user, new_record):
+    """
+    Adds new_record to mock db for tests
+    """
+    
+    new_record_db_model_object = models.Record(id=new_record["id"], name=new_record["name"], login=new_record["login"], 
+                                encrypted_password=new_record["encrypted_password"], user_id=new_user["id"], creation_time=datetime.datetime.now(), 
+                                update_time=datetime.datetime.now(), nonce=new_record["nonce"])
+    
+    db.session.add(new_record_db_model_object)
+    db.session.commit()
+
+
+def add_new_note_to_mock_db(new_user, new_note):
+    """
+    Adds new_note to mock db for tests
+    """
+    
+    new_note_db_model_object = models.Note(id=new_note["id"], name=new_note["name"], content=new_note["content"], user_id=new_user["id"], creation_time=datetime.datetime.now(), 
+                                update_time=datetime.datetime.now(), nonce=new_note["nonce"])
+    
+    db.session.add(new_note_db_model_object)
+    db.session.commit()
+
+
+def add_new_additional_field_to_mock_db(new_record, new_additional_field):
+    """
+    Adds new_note to mock db for tests
+    """
+    
+    new_additional_field_db_model_object = models.AdditionalField(id=new_additional_field["id"], field_name=new_additional_field["field_name"], value=new_additional_field["value"], 
+                                record_id=new_record["id"], nonce=new_additional_field["nonce"])
+    
+    db.session.add(new_additional_field_db_model_object)
     db.session.commit()
 
 
@@ -32,7 +70,7 @@ def get_mock_token(new_user):
     return token
 
 
-#-------------GENERATES NEW MOCK USER FOR TESTS-----------------------------
+#-------------GENERATES NEW MOCK DATA FOR TESTS-----------------------------
 
 WORD_SITE = "https://www.mit.edu/~ecprice/wordlist.10000"
 response = requests.get(WORD_SITE)
