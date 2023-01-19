@@ -1,12 +1,10 @@
 import models
 import datetime
 from models import db
-from flask_restful import Resource, marshal, reqparse
 from api.access_restrictions import token_required
-from flask_restful import Resource, reqparse, request, fields
+from flask_restful import Resource, marshal, reqparse
+from flask_restful import Resource, reqparse, request
 from api.resource_fields import RECORD_RESOURCE_FIELDS
-
-
 
 
 class Record(Resource):
@@ -51,22 +49,23 @@ class Record(Resource):
         parser.add_argument("name", type=str, help="Record name is missing", required=True)
         parser.add_argument("login", type=str, help="Record login is missing", required=True)
         parser.add_argument("encrypted_password", type=str, help="Record encrypted password is missing", required=True)
-        parser.add_argument("is_favorite", type=str, help="Record 'is_favorite' status is missing", required=True)
-        parser.add_argument("is_deleted", type=str, help="Record 'is_deleted' status is missing", required=True)
+        parser.add_argument("is_favorite", type=bool, help="Record 'is_favorite' status is missing", required=True)
+        parser.add_argument("is_deleted", type=bool, help="Record 'is_deleted' status is missing", required=True)
         parser.add_argument("nonce",  type=str, help="Record nonce is missing", required=True)
         args = parser.parse_args()
 
         record = models.Record.query.get(args["id"])
 
         if not record:
-            return {"message": f"Record with id '{args['id']}' doesn't exist "}, 404
+            return {"message": f"Record with id '{args['id']}' doesn't exist"}, 404
         
         if current_user.id != record.user_id:
-            return {"message": "This record doesn't belong to the current user"}, 403
+            return {"message": f"Record with id '{record.id}' doesn't belong to the current user"}, 403
         
+        record_with_same_login_and_name = db.session.query(models.Record).filter(models.Record.id != record.id,
+                            models.Record.name == args["name"], models.Record.login == args["login"]).first()
 
-        if db.session.query(models.Record).filter(models.Record.id != record.id,
-                            models.Record.name == args["name"], models.Record.login == args["login"]):
+        if record_with_same_login_and_name:
             return {"message": f"Record with name '{args['name']}' and with login '{args['login']}' already exist in current user's vault"}, 409
         
 
@@ -82,6 +81,7 @@ class Record(Resource):
         return {"message": f"Changes for the record '{args['id']}' were successfully made"}, 200
 
     
+
     @token_required
     def delete(self, current_user):
 
@@ -98,13 +98,14 @@ class Record(Resource):
             return {"message": "Record with that id doesn't exist"}, 404
 
         if current_user.id != record.user_id:
-            return {"message": "You dont have access rights to delete this record"}, 403
+            return {"message": f"Record with id '{record.id}' doesn't belong to the current user"}, 403
 
         
         db.session.delete(record)
         db.session.commit()
 
         return {"message": f"Record '{record.name}' deleted successfully (user = '{current_user.email}')"}, 200
+
 
 
     @token_required

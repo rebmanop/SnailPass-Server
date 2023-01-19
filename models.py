@@ -1,4 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
+
 db = SQLAlchemy()
 
 #db.metadata.clear()
@@ -35,10 +36,20 @@ class Record(db.Model):
     
     additional_fields = db.relationship("AdditionalField", cascade="all,delete", backref="record") 
 
-
     def __repr__(self):
-        return f"id: {self.id}, encrypted_password: {self.encrypted_password}, user_id: {self.user_id}"
-
+        return (
+                f'\n***Record***\n'
+                f'id: {self.id}\n'
+                f'name: {self.name}\n'
+                f'login: {self.login}\n'
+                f'encrypted_password: {self.encrypted_password}\n'
+                f'is_favorite: {self.is_favorite}\n'
+                f'is_deleted: {self.is_deleted}\n'
+                f'creation_time: {self.creation_time}\n'
+                f'update_time: {self.update_time}\n'
+                f'nonce: {self.nonce}'
+                f'\n***Record***'
+                )
 
 class AdditionalField(db.Model):
     __tablename__ = "additional_fields"

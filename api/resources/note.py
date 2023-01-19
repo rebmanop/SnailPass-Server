@@ -1,13 +1,10 @@
 import models
 import datetime
 from models import db
-from flask_restful import Resource, marshal, reqparse
 from api.access_restrictions import token_required
-from flask_restful import Resource, reqparse, request, fields
 from api.resource_fields import NOTE_RESOURCE_FIELDS
-
-
-
+from flask_restful import Resource, reqparse, request
+from flask_restful import Resource, marshal, reqparse
 
 
 class Note(Resource):
@@ -48,8 +45,8 @@ class Note(Resource):
         parser.add_argument("id", type=str, help="Note id is missing", required=True)
         parser.add_argument("name", type=str, help="Note name is missing", required=True)
         parser.add_argument("content", type=str, help="Note content is missing", required=True)
-        parser.add_argument("is_favorite", type=str, help="Note 'is_favorite' status is missing", required=True)
-        parser.add_argument("is_deleted", type=str, help="Note 'is_deleted' status is missing", required=True)
+        parser.add_argument("is_favorite", type=bool, help="Note 'is_favorite' status is missing", required=True)
+        parser.add_argument("is_deleted", type=bool, help="Note 'is_deleted' status is missing", required=True)
         parser.add_argument("nonce", type=str, help="Note nonce is missing", required=True)
         args = parser.parse_args()
 
@@ -59,10 +56,10 @@ class Note(Resource):
             return {"message": f"Note with id '{args['id']}' doesn't exist "}, 404
         
         if current_user.id != note.user_id:
-            return {"message": "You dont have access rights to edit this note"}, 403
+            return {"message": f"Note with id '{note.id}' doesn't belong to the current user"}, 403
 
 
-        if db.session.query(Note).filter(Note.id != args["id"], Note.name == args["name"]):
+        if db.session.query(models.Note).filter(models.Note.id != args["id"],models.Note.name == args["name"]).first():
             return {"message": f"Note with name '{args['name']}' already exists in current user's vault"}, 409
 
         note.name = args["name"]
@@ -76,7 +73,6 @@ class Note(Resource):
      
         return {"message": f"Changes for the note '{args['id']}' were successfully made"}, 200
        
-
     
     @token_required
     def delete(self, current_user):
@@ -94,14 +90,13 @@ class Note(Resource):
             return {"message": "Note with that id doesn't exist"}, 404
 
         if current_user.id != note.user_id:
-            return {"message": "You dont have access rights to delete this record"}, 403
+            return {"message": f"Note with id '{note.id}' doesn't belong to the current user"}, 403
 
         
         db.session.delete(note)
         db.session.commit()
 
         return {"message": f"Note '{note.name}' deleted successfully (user = '{current_user.email}')"}, 200
-
 
 
     @token_required

@@ -5,9 +5,6 @@ from api.access_restrictions import token_required
 from api.resource_fields import ADDITIONAL_FIELD_RESOURCE_FIELDS
 
 
-
-
-
 class AdditionalField(Resource):
     @token_required
     def post(self, current_user):
@@ -109,10 +106,6 @@ class AdditionalField(Resource):
         
         db.session.commit()
         return {"message": f"Changes for the additional field '{args['id']}' were successfully made"}, 200
-
-
-       
-
 
 
     @token_required
