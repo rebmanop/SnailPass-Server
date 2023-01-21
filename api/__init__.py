@@ -3,7 +3,7 @@ from flask_restful import Api
 from config import Config, DevelopmentConfig, ProductionConfig
 
 
-TOKEN_TTL = 10 #in minutes
+TOKEN_TTL = 10.0 #in minutes
 NUMBER_OF_HASH_ITERATIONS = 40000
 
 def create_app(config: Config):

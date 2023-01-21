@@ -1,6 +1,6 @@
 import models
 from models import db
-from flask_restful import Resource, reqparse, fields, marshal, request
+from flask_restful import Resource, reqparse, marshal, request
 from api.access_restrictions import token_required
 from api.resource_fields import ADDITIONAL_FIELD_RESOURCE_FIELDS
 
@@ -83,21 +83,18 @@ class AdditionalField(Resource):
         if not additional_field:
             return {"message": f"Additional field with id '{args['id']}' doesn't exist "}, 404
         elif not record_with_recived_record_id:
-            return {"message": f"Record with id '{record_with_recived_record_id.id}' doesn't exist "}, 404
+            return {"message": f"Record with id '{args['record_id']}' doesn't exist"}, 404
         elif current_user.id != record_with_recived_record_id.user_id:
-            return {"message": f"Record with id '{record_with_recived_record_id.id}' doesn't belong to the current user"}, 403
-        elif record_with_recived_record_id.id != additional_field.record_id:
-            return {"message": f"Additional field with id '{additional_field.id}' doesn't belong to the record with id '{record_with_recived_record_id.id}'"}, 409
+            return {"message": f"Record with id '{args['record_id']}' doesn't belong to the current user"}, 403
+        elif args['record_id'] != additional_field.record_id:
+            return {"message": f"Additional field with id '{additional_field.id}' doesn't belong to the record with id '{args['record_id']}'"}, 409
 
 
-        if db.session.query(models.AdditionalField).filter(AdditionalField.record_id == additional_field.record_id,
-                                                           AdditionalField.name == args["field_name"], 
-                                                           AdditionalField.id != additional_field.id): 
-            
+        if db.session.query(models.AdditionalField).filter(models.AdditionalField.record_id == additional_field.record_id,
+                                                           models.AdditionalField.field_name == args["field_name"], 
+                                                           models.AdditionalField.id != additional_field.id).first(): 
             return {"message": f"Additional field with name '{args['field_name']}' already exists in record with id '{additional_field.record_id}' (user = '{current_user.email}')"}, 409
         
-        if additional_field.record_id != args["record_id"]:
-            return {"message": f"Record id of an existing additional field can't be changed"}, 400
 
         additional_field.field_name = args["field_name"]
         additional_field.value = args["value"]
@@ -121,14 +118,14 @@ class AdditionalField(Resource):
         record_with_recived_record_id = models.Record.query.get(record_id)
 
         if not record_with_recived_record_id:
-            return {"message": f"Record with id '{record_with_recived_record_id.id}' doesn't exist "}, 404
+            return {"message": f"Record with id '{record_id}' doesn't exist "}, 404
         elif current_user.id != record_with_recived_record_id.user_id:
-            return {"message": f"Record with id '{record_with_recived_record_id.id}' doesn't belong to the current user"}, 403
+            return {"message": f"Record with id '{record_id}' doesn't belong to the current user"}, 403
 
         record_additional_fields = models.AdditionalField.query.filter_by(record_id=record_with_recived_record_id.id).all()
 
         if len(record_additional_fields) == 0:
-            return {"message": f"Record with id '{record_with_recived_record_id.id}' has no additional fields"}, 404
+            return {"message": f"Record with id '{record_id}' has no additional fields"}, 404
 
         
         return [marshal(additional_field, ADDITIONAL_FIELD_RESOURCE_FIELDS) for additional_field in record_additional_fields], 200

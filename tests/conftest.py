@@ -6,7 +6,7 @@ from api import create_app
 from config import TestingConfig
 
 
-@pytest.fixture
+@pytest.fixture()
 def client():
     testing_config = TestingConfig()
     app = create_app(testing_config)

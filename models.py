@@ -16,7 +16,15 @@ class User(db.Model):
     records = db.relationship("Record", cascade="all,delete", backref="user") 
 
     def __repr__(self):
-      return f"id: {self.id}, email: {self.email}"
+      return (
+                f'\n***User***\n'
+                f'id: {self.id}\n'
+                f'email: {self.email}\n'
+                f'master_password_hash: {self.master_password_hash}\n'
+                f'hint: {self.hint}\n'
+                f'is_admin: {self.is_admin}'
+                f'\n***User***'
+                )
 
 
 class Record(db.Model): 
@@ -63,7 +71,15 @@ class AdditionalField(db.Model):
     record_id = db.Column(db.String, db.ForeignKey('records.id', ondelete='CASCADE'), nullable=False)
 
     def __repr__(self):
-        return f"id: {self.id}, field_name: {self.field_name}, value: {self.value}, record_id: {self.record_id}"
+              return (
+                f'\n***Additional Field***\n'
+                f'id: {self.id}\n'
+                f'field_name: {self.field_name}\n'
+                f'value: {self.value}\n'
+                f'nonce: {self.nonce}\n'
+                f'record_id: {self.record_id}'
+                f'\n***Additional Field***'
+                )
 
 
 class Note(db.Model):
@@ -80,7 +96,19 @@ class Note(db.Model):
     nonce = db.Column(db.String, nullable=False)
 
     def __repr__(self):
-        return f"id: {self.id}, name: {self.name}, content: {self.content}, user_id: {self.user.id}"
+               return (
+                f'\n***Note***\n'
+                f'id: {self.id}\n'
+                f'name: {self.name}\n'
+                f'content: {self.content}\n'
+                f'user_id: {self.user_id}\n'
+                f'is_favorite: {self.is_favorite}\n'
+                f'is_deleted: {self.is_deleted}\n'
+                f'creation_time: {self.creation_time}\n'
+                f'update_time: {self.update_time}\n'
+                f'nonce: {self.nonce}'
+                f'\n***Note***'
+                )
 
 
 #db.drop_all()

@@ -61,11 +61,11 @@ def add_new_additional_field_to_mock_db(new_record, new_additional_field):
     db.session.commit()
 
 
-def get_mock_token(new_user):
+def get_mock_token(new_user, token_ttl_minutes = api.TOKEN_TTL):
     """
     Mocks new_user's auth token for tests
     """
-    data = {'id': new_user["id"], 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=api.TOKEN_TTL)}
+    data = {'id': new_user["id"], 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=token_ttl_minutes)}
     token = jwt.encode(payload=data, key=api.app.config['SECRET_KEY'], algorithm="HS256")
     return token
 
