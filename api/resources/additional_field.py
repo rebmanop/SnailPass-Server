@@ -115,17 +115,17 @@ class AdditionalField(Resource):
         if not record_id:
             return {"message": f"Record id is missing in uri args"}, 400
 
-        record_with_recived_record_id = models.Record.query.get(record_id)
+        record = models.Record.query.get(record_id)
 
-        if not record_with_recived_record_id:
+        if not record:
             return {"message": f"Record with id '{record_id}' doesn't exist "}, 404
-        elif current_user.id != record_with_recived_record_id.user_id:
+        elif current_user.id != record.user_id:
             return {"message": f"Record with id '{record_id}' doesn't belong to the current user"}, 403
 
-        record_additional_fields = models.AdditionalField.query.filter_by(record_id=record_with_recived_record_id.id).all()
-
-        if len(record_additional_fields) == 0:
+        if len(record.additional_fields) == 0:
             return {"message": f"Record with id '{record_id}' has no additional fields"}, 404
+        else:
+            return [marshal(additional_field, ADDITIONAL_FIELD_RESOURCE_FIELDS) for additional_field in record.additional_fields], 200
+
 
         
-        return [marshal(additional_field, ADDITIONAL_FIELD_RESOURCE_FIELDS) for additional_field in record_additional_fields], 200

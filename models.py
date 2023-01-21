@@ -13,7 +13,8 @@ class User(db.Model):
     hint = db.Column(db.String(100), nullable=True)
     is_admin = db.Column(db.Boolean, default=False)
     
-    records = db.relationship("Record", cascade="all,delete", backref="user") 
+    records = db.relationship("Record", cascade="all,delete", backref="user")
+    notes = db.relationship("Note", cascade="all, delete", backref="user") 
 
     def __repr__(self):
       return (

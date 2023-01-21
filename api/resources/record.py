@@ -113,10 +113,10 @@ class Record(Resource):
 
         """Get user records"""
 
-        records = models.Record.query.filter_by(user_id=current_user.id).all()
-
-        if len(records) == 0:
-            return {"message": f"User '{current_user.email}' has no records"}, 404
+        if len(current_user.records) == 0:
+             return {"message": f"User '{current_user.email}' has no records"}, 404
+        else:
+            return [marshal(record, RECORD_RESOURCE_FIELDS) for record in current_user.records], 200
+            
 
         
-        return [marshal(record, RECORD_RESOURCE_FIELDS) for record in records], 200

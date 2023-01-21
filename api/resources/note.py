@@ -104,11 +104,11 @@ class Note(Resource):
 
         """Get user notes"""
 
-        notes = models.Note.query.filter_by(user_id=current_user.id).all()
-
-        if len(notes) == 0:
+        if len(current_user.notes) == 0:
             return {"message": f"User '{current_user.email}' has no notes"}, 404
+        else:
+            return [marshal(note, NOTE_RESOURCE_FIELDS) for note in current_user.notes], 200
+
 
         
-        return [marshal(note, NOTE_RESOURCE_FIELDS) for note in notes], 200
 
