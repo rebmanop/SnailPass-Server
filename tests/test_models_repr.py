@@ -5,7 +5,7 @@ import datetime
 
 def test_user_repr():
     user = models.User(id=utils.get_random_id(), email=utils.get_random_email(), 
-                                master_password_hash=utils.get_random_word_hash(), hint=utils.get_random_word())
+                                master_password_hash=utils.get_random_word_hash(), hint=utils.get_random_word(), is_admin=False)
     print(user)
 
 def test_record_repr():

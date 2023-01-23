@@ -3,6 +3,7 @@ from models import db
 from flask_restful import Resource, reqparse, marshal, request
 from api.access_restrictions import token_required
 from api.resource_fields import ADDITIONAL_FIELD_RESOURCE_FIELDS
+from api.utils import non_empty_string
 
 
 class AdditionalField(Resource):
@@ -12,14 +13,14 @@ class AdditionalField(Resource):
         """Create new additional field"""
 
         parser = reqparse.RequestParser()
-        parser.add_argument("id", type=str, help="Additional field id is required", required=True)
-        parser.add_argument("field_name", type=str, help="Additional field name is required", required=True)
-        parser.add_argument("value", type=str, help="Additional field value is required", required=True)
-        parser.add_argument("record_id", type=str, help="Additional field's record id is required", required=True)
-        parser.add_argument("nonce", type=str, help="Additional field's nonce is required", required=True)
-
+        parser.add_argument("id", type=non_empty_string, help="Additional field id is missing at all, value is null or value is empty", required=True, nullable=False)
+        parser.add_argument("field_name", type=non_empty_string, help="Additional field name is missing at all, value is null or value is empty", required=True, nullable=False)
+        parser.add_argument("value", type=non_empty_string, help="Additional field value is missing at all, value is null or value is empty", required=True, nullable=False)
+        parser.add_argument("record_id", type=non_empty_string, help="Additional field's record id is missing at all, value is null or value is empty", required=True, nullable=False)
+        parser.add_argument("nonce", type=non_empty_string, help="Additional field's nonce is missing at all, value is null or value is empty", required=True, nullable=False)
 
         args = parser.parse_args()
+        print(type(args["field_name"]))
         record_with_recived_record_id = models.Record.query.get(args["record_id"])
 
         if not record_with_recived_record_id:
@@ -68,11 +69,11 @@ class AdditionalField(Resource):
     def patch(self, current_user):
 
         parser = reqparse.RequestParser()
-        parser.add_argument("id", type=str, help="Additional field's id is required", required=True)
-        parser.add_argument("field_name", type=str, help="Additional field's name is required", required=True)
-        parser.add_argument("value", type=str, help="Additional field's value is required", required=True)
-        parser.add_argument("record_id", type=str, help="Additional field's record id is required", required=True)
-        parser.add_argument("nonce", type=str, help="Additional field's nonce is required", required=True)
+        parser.add_argument("id", type=non_empty_string, help="Additional field's id is missing at all, value is null or value is empty", required=True, nullable=False)
+        parser.add_argument("field_name", type=non_empty_string, help="Additional field's name is missing at all, value is null or value is empty", required=True, nullable=False)
+        parser.add_argument("value", type=non_empty_string, help="Additional field's value is missing at all, value is null or value is empty", required=True, nullable=False)
+        parser.add_argument("record_id", type=non_empty_string, help="Additional field's record id is missing at all, value is null or value is empty", required=True, nullable=False)
+        parser.add_argument("nonce", type=non_empty_string, help="Additional field's nonce is missing at all, value is null or value is empty", required=True, nullable=False)
         
         args = parser.parse_args()
 

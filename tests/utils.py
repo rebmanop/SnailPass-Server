@@ -72,13 +72,15 @@ def get_mock_token(new_user, token_ttl_minutes = api.TOKEN_TTL):
 
 #-------------GENERATES NEW MOCK DATA FOR TESTS-----------------------------
 
-WORD_SITE = "https://www.mit.edu/~ecprice/wordlist.10000"
-response = requests.get(WORD_SITE)
-words = response.content.splitlines()
+words = []
+
+with open("tests/mockdata/wordlist.txt") as file:
+    while (line := file.readline().rstrip()):
+        words.append(line)
 
 
 def get_random_word():
-    return secrets.choice(words).decode()
+    return secrets.choice(words)
 
 
 def get_random_email():
@@ -86,7 +88,7 @@ def get_random_email():
 
 
 def get_random_word_hash():
-    return sha1(secrets.choice(words)).hexdigest()
+    return sha1((secrets.choice(words)).encode()).hexdigest()
 
 
 def get_random_id():

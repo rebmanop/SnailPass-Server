@@ -5,6 +5,7 @@ from api.access_restrictions import token_required
 from flask_restful import Resource, marshal, reqparse
 from flask_restful import Resource, reqparse, request
 from api.resource_fields import RECORD_RESOURCE_FIELDS
+from api.utils import non_empty_string
 
 
 class Record(Resource):
@@ -14,11 +15,11 @@ class Record(Resource):
         """Create new record"""
 
         parser = reqparse.RequestParser()
-        parser.add_argument("id", type=str, help="Record id is missing", required=True)
-        parser.add_argument("name", type=str, help="Record name is missing", required=True)
-        parser.add_argument("login", type=str, help="Record login is missing", required=True)
-        parser.add_argument("encrypted_password", type=str, help="Encrypted password is missing", required=True)
-        parser.add_argument("nonce", type=str, help="Nonce is missing", required=True)
+        parser.add_argument("id", type=non_empty_string, help="Record id is missing at all, value is null or value is empty", required=True, nullable=False)
+        parser.add_argument("name", type=non_empty_string, help="Record name is missing at all, value is null or value is empty", required=True, nullable=False)
+        parser.add_argument("login", type=non_empty_string, help="Record login is missing at all, value is null or value is empty", required=True, nullable=False)
+        parser.add_argument("encrypted_password", type=non_empty_string, help="Record's encrypted password is missing at all, value is null or value is empty", required=True, nullable=False)
+        parser.add_argument("nonce", type=non_empty_string, help="Record's nonce is missing at all, value is null or value is empty", required=True, nullable=False)
         args = parser.parse_args()
 
         if models.Record.query.get(args["id"]):
@@ -45,13 +46,13 @@ class Record(Resource):
     def patch(self, current_user):
         
         parser = reqparse.RequestParser()
-        parser.add_argument("id", type=str, help="Record id is missing", required=True)
-        parser.add_argument("name", type=str, help="Record name is missing", required=True)
-        parser.add_argument("login", type=str, help="Record login is missing", required=True)
-        parser.add_argument("encrypted_password", type=str, help="Record encrypted password is missing", required=True)
-        parser.add_argument("is_favorite", type=bool, help="Record 'is_favorite' status is missing", required=True)
-        parser.add_argument("is_deleted", type=bool, help="Record 'is_deleted' status is missing", required=True)
-        parser.add_argument("nonce",  type=str, help="Record nonce is missing", required=True)
+        parser.add_argument("id", type=non_empty_string, help="Record id is missing at all, value is null or value is empty", required=True, nullable=False)
+        parser.add_argument("name", type=non_empty_string, help="Record name is missing at all, value is null or value is empty", required=True, nullable=False)
+        parser.add_argument("login", type=non_empty_string, help="Record login is missing at all, value is null or value is empty", required=True, nullable=False)
+        parser.add_argument("encrypted_password", type=non_empty_string, help="Record encrypted password is missing at all, value is null or value is empty", required=True, nullable=False)
+        parser.add_argument("is_favorite", type=bool, help="Record's 'is_favorite' status is missing at all, value is null or value is empty", required=True, nullable=False)
+        parser.add_argument("is_deleted", type=bool, help="Record's 'is_deleted' status is missing at all, value is null or value is empty", required=True, nullable=False)
+        parser.add_argument("nonce",  type=non_empty_string, help="Record's nonce is missing at all, value is null or value is empty", required=True, nullable=False)
         args = parser.parse_args()
 
         record = models.Record.query.get(args["id"])

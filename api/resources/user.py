@@ -4,6 +4,7 @@ from models import db
 from api.access_restrictions import admin_only_function, token_required
 from flask_restful import Resource, reqparse, request, fields, marshal
 from api.resource_fields import USER_RESOURCE_FIELDS
+from api.utils import non_empty_string
 
 
 
@@ -14,10 +15,10 @@ class User(Resource):
 
         parser = reqparse.RequestParser()
 
-        parser.add_argument("id", type=str, help="User id is missing", required=True)
-        parser.add_argument("email", type=str, help="Email is missing", required=True)
-        parser.add_argument("master_password_hash", type=str, help="Master password hash is missing", required=True)
-        parser.add_argument("hint", type=str)
+        parser.add_argument("id", type=str, help="User id is missing at all, value is null or value is empty", required=True, nullable=False)
+        parser.add_argument("email", type=str, help="User email is missing at all, value is null or value is empty", required=True, nullable=False)
+        parser.add_argument("master_password_hash", type=str, help="User's master password hash is missing at all, value is null or value is empty", required=True, nullable=False)
+        parser.add_argument("hint", type=str, nullable=False)
         args = parser.parse_args()
 
         additionaly_hashed_master_password = hashing.hash_mp_additionally(password_hash=args["master_password_hash"], 
