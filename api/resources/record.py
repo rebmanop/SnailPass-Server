@@ -41,7 +41,6 @@ class Record(Resource):
         return {"message": f"Record '{args['name']}' created successfully (user = '{current_user.email}')"}, 201
 
 
-    
     @token_required
     def patch(self, current_user):
         
@@ -82,7 +81,6 @@ class Record(Resource):
         return {"message": f"Changes for the record '{args['id']}' were successfully made"}, 200
 
     
-
     @token_required
     def delete(self, current_user):
 
@@ -106,7 +104,6 @@ class Record(Resource):
         db.session.commit()
 
         return {"message": f"Record '{record.name}' deleted successfully (user = '{current_user.email}')"}, 200
-
 
 
     @token_required

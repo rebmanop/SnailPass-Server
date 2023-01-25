@@ -4,6 +4,7 @@ import models
 from functools import wraps
 from flask import request, make_response
 
+
 def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):

@@ -8,7 +8,6 @@ from flask_restful import Resource, marshal, reqparse
 from api.utils import non_empty_string
 
 
-
 class Note(Resource):
     @token_required
     def post(self, current_user):

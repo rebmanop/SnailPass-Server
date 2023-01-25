@@ -7,8 +7,6 @@ from api.resource_fields import USER_RESOURCE_FIELDS
 from api.utils import non_empty_string
 
 
-
-
 class User(Resource):
     def post(self):
         """Signup procedure"""
