@@ -1,4 +1,5 @@
-from models import *
+import models
+from models import db
 from base64 import b64encode
 from tests.utils import add_new_user_to_mock_db
 
@@ -6,7 +7,7 @@ from tests.utils import add_new_user_to_mock_db
 def test_login_success(client, new_user):
     add_new_user_to_mock_db(new_user)
     
-    assert User.query.get(new_user["id"]) != None
+    assert db.session.query(models.User).get(new_user["id"]) != None
 
     auth_str = f"{new_user['email']}:{new_user['master_password_hash']}"
     credentials = b64encode(auth_str.encode()).decode('utf-8')
@@ -23,7 +24,7 @@ def test_login_fail_1(client, new_user):
 
     add_new_user_to_mock_db(new_user)
     
-    assert User.query.get(new_user["id"]) != None
+    assert db.session.query(models.User).get(new_user["id"]) != None
 
     response = client.get("/login")
 
@@ -37,7 +38,7 @@ def test_login_fail_2(client, new_user):
     """
 
     add_new_user_to_mock_db(new_user)
-    assert User.query.get(new_user["id"]) != None
+    assert db.session.query(models.User).get(new_user["id"]) != None
 
     new_user["email"] += "x"
     auth_str = f"{new_user['email']}:{new_user['master_password_hash']}"
@@ -56,7 +57,7 @@ def test_login_fail_3(client, new_user):
     Login request fail, incorrect password
     """
     add_new_user_to_mock_db(new_user)
-    assert User.query.get(new_user["id"]) != None
+    assert db.session.query(models.User).get(new_user["id"]) != None
 
     new_user["master_password_hash"] += "x"
     auth_str = f"{new_user['email']}:{new_user['master_password_hash']}"

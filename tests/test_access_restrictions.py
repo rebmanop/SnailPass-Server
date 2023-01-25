@@ -5,7 +5,7 @@ from tests.utils import add_new_user_to_mock_db, get_mock_token
 
 def test_access_restrictions_invalid_token(client, new_user):
     add_new_user_to_mock_db(new_user)
-    assert models.User.query.get(new_user["id"]) != None
+    assert db.session.query(models.User).get(new_user["id"]) != None
     
     token = get_mock_token(new_user)
     token += "x"
@@ -19,7 +19,7 @@ def test_access_restrictions_invalid_token(client, new_user):
 
 def test_access_restrictions_token_expired(client, new_user):
     add_new_user_to_mock_db(new_user)
-    assert models.User.query.get(new_user["id"]) != None
+    assert db.session.query(models.User).get(new_user["id"]) != None
     
     token = get_mock_token(new_user, token_ttl_minutes=0.001)
 
@@ -33,7 +33,7 @@ def test_access_restrictions_token_expired(client, new_user):
 
 def test_access_restrictions_token_missing(client, new_user):
     add_new_user_to_mock_db(new_user)
-    assert models.User.query.get(new_user["id"]) != None
+    assert db.session.query(models.User).get(new_user["id"]) != None
     
 
     response = client.get("/users")
@@ -44,7 +44,7 @@ def test_access_restrictions_token_missing(client, new_user):
 
 def test_access_restrictions_admin_only_function(client, new_user):
     add_new_user_to_mock_db(new_user)
-    assert models.User.query.get(new_user["id"]) != None
+    assert db.session.query(models.User).get(new_user["id"]) != None
     
     token = get_mock_token(new_user)
     

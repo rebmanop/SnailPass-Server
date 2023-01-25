@@ -20,16 +20,16 @@ class AdditionalField(Resource):
         parser.add_argument("nonce", type=non_empty_string, help="Additional field's nonce is missing at all, value is null or value is empty", required=True, nullable=False)
 
         args = parser.parse_args()
-        print(type(args["field_name"]))
-        record_with_recived_record_id = models.Record.query.get(args["record_id"])
+        record_with_recived_record_id = db.session.query(models.Record).get(args["record_id"])
+
 
         if not record_with_recived_record_id:
             return {"message": f"Record with recived record id doesn't exist"}, 404
         elif current_user.id != record_with_recived_record_id.user_id:
             return {"message": f"Record with id {record_with_recived_record_id.id} doesn't belong to the current user"}, 403
-        elif models.AdditionalField.query.get(args["id"]):
+        elif db.session.query(models.AdditionalField).get(args["id"]):
             return {"message": f"Additional field with id '{args['id']}' already exist"}, 409
-        elif models.AdditionalField.query.filter_by(record_id=record_with_recived_record_id.id, field_name=args["field_name"]).all():
+        elif db.session.query(models.AdditionalField).filter_by(record_id=record_with_recived_record_id.id, field_name=args["field_name"]).all():
             return {"message": f"Additional field with name '{args['field_name']}' already exist in this record"}, 409
     
 
@@ -53,7 +53,7 @@ class AdditionalField(Resource):
         if not af_id:
             return {"message": f"Additional field id is missing in uri args"}, 400
 
-        additional_field = models.AdditionalField.query.get(af_id)
+        additional_field = db.session.query(models.AdditionalField).get(af_id)
        
         if not additional_field:
             return {"message": f"Additional field with id '{af_id}' doesn't exist"}, 404
@@ -77,8 +77,8 @@ class AdditionalField(Resource):
         
         args = parser.parse_args()
 
-        additional_field = models.AdditionalField.query.get(args["id"])
-        record_with_recived_record_id = models.Record.query.get(args["record_id"])
+        additional_field = db.session.query(models.AdditionalField).get(args["id"])
+        record_with_recived_record_id = db.session.query(models.Record).get(args["record_id"])
 
 
         if not additional_field:
@@ -116,7 +116,7 @@ class AdditionalField(Resource):
         if not record_id:
             return {"message": f"Record id is missing in uri args"}, 400
 
-        record = models.Record.query.get(record_id)
+        record = db.session.query(models.Record).get(record_id)
 
         if not record:
             return {"message": f"Record with id '{record_id}' doesn't exist "}, 404

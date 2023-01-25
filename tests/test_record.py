@@ -11,7 +11,7 @@ def test_add_new_record_success_1(client, new_user, new_record):
     """
 
     add_new_user_to_mock_db(new_user)
-    assert models.User.query.get(new_user["id"]) != None
+    assert db.session.query(models.User).get(new_user["id"]) != None
     
     token = get_mock_token(new_user)
     response = client.post("/records", headers={"x-access-token": f"{token}"}, json=new_record)
@@ -27,7 +27,7 @@ def test_add_new_record_success_2(client, new_user, new_record):
     """
 
     add_new_user_to_mock_db(new_user)
-    assert models.User.query.get(new_user["id"]) != None
+    assert db.session.query(models.User).get(new_user["id"]) != None
     
     token = get_mock_token(new_user)
     response = client.post("/records", headers={"x-access-token": f"{token}"}, json=new_record)
@@ -51,7 +51,7 @@ def test_add_new_record_fail_1(client, new_user, new_record):
     """
 
     add_new_user_to_mock_db(new_user)
-    assert models.User.query.get(new_user["id"]) != None
+    assert db.session.query(models.User).get(new_user["id"]) != None
     
     token = get_mock_token(new_user)
     response = client.post("/records", headers={"x-access-token": f"{token}"}, json=new_record)
@@ -71,7 +71,7 @@ def test_add_new_record_fail_2(client, new_user, new_record):
     """
 
     add_new_user_to_mock_db(new_user)
-    assert models.User.query.get(new_user["id"]) != None
+    assert db.session.query(models.User).get(new_user["id"]) != None
     
     token = get_mock_token(new_user)
     response = client.post("/records", headers={"x-access-token": f"{token}"}, json=new_record)
@@ -94,11 +94,11 @@ def test_delete_record_success(client, new_user, new_record):
     Successful delete record request
     """
     add_new_user_to_mock_db(new_user)
-    assert  models.User.query.get(new_user["id"]) != None
+    assert  db.session.query(models.User).get(new_user["id"]) != None
 
 
     add_new_record_to_mock_db(new_user, new_record)
-    assert models.Record.query.get(new_record["id"]) != None
+    assert db.session.query(models.Record).get(new_record["id"]) != None
 
     token = get_mock_token(new_user)
 
@@ -116,7 +116,7 @@ def test_delete_record_fail_1(client, new_user):
     Record delete fail, record id is missing in uri args
     """
     add_new_user_to_mock_db(new_user)
-    assert  models.User.query.get(new_user["id"]) != None
+    assert  db.session.query(models.User).get(new_user["id"]) != None
     token = get_mock_token(new_user)
 
     #Sending delete request without record id as uri argument 
@@ -131,7 +131,7 @@ def test_delete_record_fail_2(client, new_user, new_record):
     Record delete fail, not existing record id
     """
     add_new_user_to_mock_db(new_user)
-    assert  models.User.query.get(new_user["id"]) != None
+    assert  db.session.query(models.User).get(new_user["id"]) != None
 
     token = get_mock_token(new_user)
 
@@ -148,10 +148,10 @@ def test_delete_record_fail_3(client, new_user, new_record):
     Record delete fail, record doesn't belong to the current user
     """
     add_new_user_to_mock_db(new_user)
-    assert  models.User.query.get(new_user["id"]) != None
+    assert  db.session.query(models.User).get(new_user["id"]) != None
 
     add_new_record_to_mock_db(new_user, new_record)
-    new_record_got_from_db = models.Record.query.get(new_record["id"])
+    new_record_got_from_db = db.session.query(models.Record).get(new_record["id"])
     assert new_record_got_from_db != None
 
     token = get_mock_token(new_user)
@@ -174,17 +174,17 @@ def test_get_records_success(client, new_user, new_record):
     Successful get user records request
     """
     add_new_user_to_mock_db(new_user)
-    new_user_got_from_db = models.User.query.get(new_user["id"]) 
+    new_user_got_from_db = db.session.query(models.User).get(new_user["id"]) 
     assert  new_user_got_from_db != None
 
     add_new_record_to_mock_db(new_user, new_record)
-    assert models.Record.query.get(new_record["id"]) != None
+    assert db.session.query(models.Record).get(new_record["id"]) != None
 
     new_record_2 = new_record.copy()
     new_record_2["id"] += "x"
     new_record_2["name"] += "x"
     add_new_record_to_mock_db(new_user, new_record_2)
-    assert models.Record.query.get(new_record_2["id"]) != None
+    assert db.session.query(models.Record).get(new_record_2["id"]) != None
 
     token = get_mock_token(new_user)
 
@@ -202,7 +202,7 @@ def test_get_records_fail(client, new_user):
     Get user records request fail, user has no records
     """
     add_new_user_to_mock_db(new_user)
-    new_user_got_from_db = models.User.query.get(new_user["id"]) 
+    new_user_got_from_db = db.session.query(models.User).get(new_user["id"]) 
     assert  new_user_got_from_db != None
 
     token = get_mock_token(new_user)
@@ -220,12 +220,12 @@ def test_edit_record_success(client, new_user, new_record):
     Successful edit record request (PATCH)
     """
     add_new_user_to_mock_db(new_user)
-    new_user_got_from_db = models.User.query.get(new_user["id"]) 
+    new_user_got_from_db = db.session.query(models.User).get(new_user["id"]) 
     assert  new_user_got_from_db != None
 
     add_new_record_to_mock_db(new_user, new_record)
-    new_record_got_from_db = models.Record.query.get(new_record["id"])
-    assert models.Record.query.get(new_record["id"]) != None
+    new_record_got_from_db = db.session.query(models.Record).get(new_record["id"])
+    assert db.session.query(models.Record).get(new_record["id"]) != None
 
     token = get_mock_token(new_user)
 
@@ -240,7 +240,7 @@ def test_edit_record_success(client, new_user, new_record):
     expected_respones_message = f"Changes for the record '{new_record['id']}' were successfully made"
     assert response.status_code == 200
     assert expected_respones_message.encode() in response.data
-    assert models.Record.query.get(new_record["id"]).encrypted_password == edited_record["encrypted_password"]
+    assert db.session.query(models.Record).get(new_record["id"]).encrypted_password == edited_record["encrypted_password"]
 
 
 def test_edit_record_fail_1(client, new_user, new_record):
@@ -248,7 +248,7 @@ def test_edit_record_fail_1(client, new_user, new_record):
     Edit record fail, record with requested id doesn't exist
     """
     add_new_user_to_mock_db(new_user)
-    new_user_got_from_db = models.User.query.get(new_user["id"]) 
+    new_user_got_from_db = db.session.query(models.User).get(new_user["id"]) 
     assert  new_user_got_from_db != None
 
     token = get_mock_token(new_user)
@@ -267,10 +267,10 @@ def test_edit_record_fail_2(client, new_user, new_record):
     Record edit fail, record doesn't belong to the current user
     """
     add_new_user_to_mock_db(new_user)
-    assert  models.User.query.get(new_user["id"]) != None
+    assert  db.session.query(models.User).get(new_user["id"]) != None
 
     add_new_record_to_mock_db(new_user, new_record)
-    new_record_got_from_db = models.Record.query.get(new_record["id"])
+    new_record_got_from_db = db.session.query(models.Record).get(new_record["id"])
     assert new_record_got_from_db != None
 
     token = get_mock_token(new_user)
@@ -294,17 +294,17 @@ def test_edit_record_fail_3(client, new_user, new_record):
     Record edit fail, record with requested name and login already exists
     """
     add_new_user_to_mock_db(new_user)
-    assert  models.User.query.get(new_user["id"]) != None
+    assert  db.session.query(models.User).get(new_user["id"]) != None
 
     add_new_record_to_mock_db(new_user, new_record)
-    new_record_got_from_db = models.Record.query.get(new_record["id"])
+    new_record_got_from_db = db.session.query(models.Record).get(new_record["id"])
     assert new_record_got_from_db != None
 
     new_record_2 = new_record.copy()
     new_record_2["id"] += "x"
     new_record_2["name"] += "x"
     add_new_record_to_mock_db(new_user, new_record_2)
-    new_record_got_from_db_2 = models.Record.query.get(new_record_2["id"])
+    new_record_got_from_db_2 = db.session.query(models.Record).get(new_record_2["id"])
     assert new_record_got_from_db_2 != None
 
 

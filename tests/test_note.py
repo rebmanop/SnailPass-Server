@@ -11,7 +11,7 @@ def test_add_new_note_success(client, new_user, new_note):
     """
 
     add_new_user_to_mock_db(new_user)
-    assert models.User.query.get(new_user["id"]) != None
+    assert db.session.query(models.User).get(new_user["id"]) != None
     
     token = get_mock_token(new_user)
     response = client.post("/notes", headers={"x-access-token": f"{token}"}, json=new_note)
@@ -27,7 +27,7 @@ def test_add_new_note_fail_1(client, new_user, new_note):
     """
 
     add_new_user_to_mock_db(new_user)
-    assert models.User.query.get(new_user["id"]) != None
+    assert db.session.query(models.User).get(new_user["id"]) != None
     
     token = get_mock_token(new_user)
     response = client.post("/notes", headers={"x-access-token": f"{token}"}, json=new_note)
@@ -47,7 +47,7 @@ def test_add_new_note_fail_2(client, new_user, new_note):
     """
 
     add_new_user_to_mock_db(new_user)
-    assert models.User.query.get(new_user["id"]) != None
+    assert db.session.query(models.User).get(new_user["id"]) != None
     
     token = get_mock_token(new_user)
     response = client.post("/notes", headers={"x-access-token": f"{token}"}, json=new_note)
@@ -70,11 +70,11 @@ def test_delete_note_success(client, new_user, new_note):
     Successful delete note request
     """
     add_new_user_to_mock_db(new_user)
-    assert  models.User.query.get(new_user["id"]) != None
+    assert  db.session.query(models.User).get(new_user["id"]) != None
 
 
     add_new_note_to_mock_db(new_user, new_note)
-    assert models.Note.query.get(new_note["id"]) != None
+    assert db.session.query(models.Note).get(new_note["id"]) != None
 
     token = get_mock_token(new_user)
 
@@ -92,7 +92,7 @@ def test_delete_note_fail_1(client, new_user):
     Note delete fail, note id is missing in uri args
     """
     add_new_user_to_mock_db(new_user)
-    assert  models.User.query.get(new_user["id"]) != None
+    assert  db.session.query(models.User).get(new_user["id"]) != None
     token = get_mock_token(new_user)
 
     #Sending delete request without note id as uri argument 
@@ -107,7 +107,7 @@ def test_delete_note_fail_2(client, new_user, new_note):
     Note delete fail, not existing note id
     """
     add_new_user_to_mock_db(new_user)
-    assert  models.User.query.get(new_user["id"]) != None
+    assert  db.session.query(models.User).get(new_user["id"]) != None
 
     token = get_mock_token(new_user)
 
@@ -124,10 +124,10 @@ def test_delete_note_fail_3(client, new_user, new_note):
     Note delete fail, note doesn't belong to the current user
     """
     add_new_user_to_mock_db(new_user)
-    assert  models.User.query.get(new_user["id"]) != None
+    assert  db.session.query(models.User).get(new_user["id"]) != None
 
     add_new_note_to_mock_db(new_user, new_note)
-    new_note_got_from_db = models.Note.query.get(new_note["id"])
+    new_note_got_from_db = db.session.query(models.Note).get(new_note["id"])
     assert new_note_got_from_db != None
 
     token = get_mock_token(new_user)
@@ -150,17 +150,17 @@ def test_get_records_success(client, new_user, new_note):
     Successful get user notes request
     """
     add_new_user_to_mock_db(new_user)
-    new_user_got_from_db = models.User.query.get(new_user["id"]) 
+    new_user_got_from_db = db.session.query(models.User).get(new_user["id"]) 
     assert  new_user_got_from_db != None
 
     add_new_note_to_mock_db(new_user, new_note)
-    assert models.Note.query.get(new_note["id"]) != None
+    assert db.session.query(models.Note).get(new_note["id"]) != None
 
     new_note_2 = new_note.copy()
     new_note_2["id"] += "x"
     new_note_2["name"] += "x"
     add_new_note_to_mock_db(new_user, new_note_2)
-    assert models.Note.query.get(new_note_2["id"]) != None
+    assert db.session.query(models.Note).get(new_note_2["id"]) != None
 
     token = get_mock_token(new_user)
 
@@ -178,7 +178,7 @@ def test_get_note_fail(client, new_user):
     Get user notes request fail, user has no notes
     """
     add_new_user_to_mock_db(new_user)
-    new_user_got_from_db = models.User.query.get(new_user["id"]) 
+    new_user_got_from_db = db.session.query(models.User).get(new_user["id"]) 
     assert  new_user_got_from_db != None
 
     token = get_mock_token(new_user)
@@ -196,11 +196,11 @@ def test_edit_note_success(client, new_user, new_note):
     Successful edit note request (PATCH)
     """
     add_new_user_to_mock_db(new_user)
-    new_user_got_from_db = models.User.query.get(new_user["id"]) 
+    new_user_got_from_db = db.session.query(models.User).get(new_user["id"]) 
     assert  new_user_got_from_db != None
 
     add_new_note_to_mock_db(new_user, new_note)
-    new_note_got_from_db = models.Note.query.get(new_note["id"])
+    new_note_got_from_db = db.session.query(models.Note).get(new_note["id"])
     assert new_note_got_from_db != None
 
     token = get_mock_token(new_user)
@@ -216,7 +216,7 @@ def test_edit_note_success(client, new_user, new_note):
     expected_respones_message = f"Changes for the note '{new_note['id']}' were successfully made"
     assert response.status_code == 200
     assert expected_respones_message.encode() in response.data
-    assert models.Note.query.get(new_note["id"]).content == edited_note["content"]
+    assert db.session.query(models.Note).get(new_note["id"]).content == edited_note["content"]
 
 
 def test_edit_note_fail_1(client, new_user, new_note):
@@ -224,7 +224,7 @@ def test_edit_note_fail_1(client, new_user, new_note):
     Edit note fail, note with requested id doesn't exist
     """
     add_new_user_to_mock_db(new_user)
-    new_user_got_from_db = models.User.query.get(new_user["id"]) 
+    new_user_got_from_db = db.session.query(models.User).get(new_user["id"]) 
     assert  new_user_got_from_db != None
 
     token = get_mock_token(new_user)
@@ -243,10 +243,10 @@ def test_edit_note_fail_2(client, new_user, new_note):
     Note edit fail, note doesn't belong to the current user
     """
     add_new_user_to_mock_db(new_user)
-    assert  models.User.query.get(new_user["id"]) != None
+    assert  db.session.query(models.User).get(new_user["id"]) != None
 
     add_new_note_to_mock_db(new_user, new_note)
-    new_note_got_from_db = models.Note.query.get(new_note["id"])
+    new_note_got_from_db = db.session.query(models.Note).get(new_note["id"])
     assert new_note_got_from_db != None
 
     token = get_mock_token(new_user)
@@ -270,17 +270,17 @@ def test_edit_note_fail_3(client, new_user, new_note):
     Note edit fail, note with requested name and login already exists
     """
     add_new_user_to_mock_db(new_user)
-    assert  models.User.query.get(new_user["id"]) != None
+    assert  db.session.query(models.User).get(new_user["id"]) != None
 
     add_new_note_to_mock_db(new_user, new_note)
-    new_record_got_from_db = models.Note.query.get(new_note["id"])
+    new_record_got_from_db = db.session.query(models.Note).get(new_note["id"])
     assert new_record_got_from_db != None
 
     new_note_2 = new_note.copy()
     new_note_2["id"] += "x"
     new_note_2["name"] += "x"
     add_new_note_to_mock_db(new_user, new_note_2)
-    new_record_got_from_db_2 = models.Note.query.get(new_note_2["id"])
+    new_record_got_from_db_2 = db.session.query(models.Note).get(new_note_2["id"])
     assert new_record_got_from_db_2 != None
 
     token = get_mock_token(new_user)

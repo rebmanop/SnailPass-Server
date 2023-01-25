@@ -4,6 +4,7 @@ import models
 import datetime
 import hashing
 from flask import Blueprint
+from models import db
 from flask import request, make_response, jsonify
 
 
@@ -20,7 +21,7 @@ def login():
     if not auth or not auth.username or not auth.password:
         return make_response({'message': f"Authorization info missing or it's incomplete"}, 400)
 
-    user = models.User.query.filter_by(email=auth.username).first()
+    user = db.session.query(models.User).filter_by(email=auth.username).first()
 
     if not user:
         return make_response({'message': f"User with recieved email '{auth.username}' doesn't exist"}, 401) 

@@ -22,9 +22,9 @@ class Note(Resource):
         args = parser.parse_args()
 
 
-        if models.Note.query.get(args["id"]):
+        if db.session.query(models.Note).get(args["id"]):
             return {"message": f"Note with id '{args['id']}' already exist"}, 409
-        elif models.Note.query.filter_by(user_id=current_user.id, name=args["name"]).all():
+        elif db.session.query(models.Note).filter_by(user_id=current_user.id, name=args["name"]).all():
             return {"message": f"Note with name '{args['name']}' already exist in current user's vault"}, 409
 
 
@@ -51,7 +51,7 @@ class Note(Resource):
         parser.add_argument("nonce", type=non_empty_string, help="Note nonce is missing at all, value is null or value is empty", required=True, nullable=False)
         args = parser.parse_args()
 
-        note = models.Note.query.get(args["id"])
+        note = db.session.query(models.Note).get(args["id"])
 
         if not note:
             return {"message": f"Note with id '{args['id']}' doesn't exist "}, 404
@@ -85,7 +85,7 @@ class Note(Resource):
         if not note_id:
             return {"message": f"Note id is missing in uri args"}, 400
 
-        note = models.Note.query.get(note_id)
+        note = db.session.query(models.Note).get(note_id)
 
         if not note:
             return {"message": "Note with that id doesn't exist"}, 404

@@ -15,7 +15,7 @@ def test_signup_new_user_success(client, new_user):
     assert response.status_code == 201
     expected_response_message = f"User '{new_user['email']}' created successfully"
     assert expected_response_message.encode() in response.data
-    assert models.User.query.get(new_user["id"]) != None
+    assert db.session.query(models.User).get(new_user["id"]) != None
 
 
 def test_signup_new_user_fail_1(client, new_user):
@@ -45,7 +45,7 @@ def test_signup_new_user_fail_2(client, new_user):
 #------------------------------------- GET CURRENT USER TEST (GET REQUEST)---------------
 def test_get_current_user_success(client, new_user):
     add_new_user_to_mock_db(new_user)
-    assert models.User.query.get(new_user["id"]) != None
+    assert db.session.query(models.User).get(new_user["id"]) != None
     
     token = get_mock_token(new_user)
 
@@ -66,7 +66,7 @@ def test_delete_user_success(client, new_user):
     Successful delete user request
     """
     add_new_user_to_mock_db(new_user, is_admin=True)
-    new_user_got_from_db = models.User.query.get(new_user["id"])
+    new_user_got_from_db = db.session.query(models.User).get(new_user["id"])
     assert  new_user_got_from_db != None
     assert new_user_got_from_db.is_admin == True
 
@@ -86,7 +86,7 @@ def test_delete_user_fail_1(client, new_user):
     Delete user request fail, user id not found in uri params
     """
     add_new_user_to_mock_db(new_user, is_admin=True)
-    new_user_got_from_db = models.User.query.get(new_user["id"])
+    new_user_got_from_db = db.session.query(models.User).get(new_user["id"])
     assert  new_user_got_from_db != None
     assert new_user_got_from_db.is_admin == True
 
@@ -104,7 +104,7 @@ def test_delete_user_fail_2(client, new_user):
     Delete user request fail, user with recived id doesn't exist
     """
     add_new_user_to_mock_db(new_user, is_admin=True)
-    new_user_got_from_db = models.User.query.get(new_user["id"])
+    new_user_got_from_db = db.session.query(models.User).get(new_user["id"])
     assert  new_user_got_from_db != None
     assert new_user_got_from_db.is_admin == True
 

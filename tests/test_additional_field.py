@@ -12,10 +12,10 @@ def test_add_new_additional_field_success(client, new_user, new_record, new_addi
     """
     
     add_new_user_to_mock_db(new_user)
-    assert models.User.query.get(new_user["id"])
+    assert db.session.query(models.User).get(new_user["id"])
 
     add_new_record_to_mock_db(new_user, new_record)
-    assert models.Record.query.get(new_record["id"])
+    assert db.session.query(models.Record).get(new_record["id"])
 
     token = get_mock_token(new_user)
     
@@ -34,10 +34,10 @@ def test_add_new_additional_field_fail_1(client, new_user, new_record, new_addit
     """
 
     add_new_user_to_mock_db(new_user)
-    assert models.User.query.get(new_user["id"])
+    assert db.session.query(models.User).get(new_user["id"])
 
     add_new_record_to_mock_db(new_user, new_record)
-    assert models.Record.query.get(new_record["id"])
+    assert db.session.query(models.Record).get(new_record["id"])
 
     token = get_mock_token(new_user)
     #Sending post request with new additional field and not existing record id in it
@@ -54,10 +54,10 @@ def test_add_new_additional_field_fail_2(client, new_user, new_record, new_addit
     belong to the current user
     """
     add_new_user_to_mock_db(new_user)
-    assert models.User.query.get(new_user["id"])
+    assert db.session.query(models.User).get(new_user["id"])
 
     add_new_record_to_mock_db(new_user, new_record)
-    record_got_from_db = models.Record.query.get(new_record["id"])
+    record_got_from_db = db.session.query(models.Record).get(new_record["id"])
     assert record_got_from_db != None
 
     record_got_from_db.user_id += "x"
@@ -79,10 +79,10 @@ def test_add_new_additional_field_fail_3(client, new_user, new_record, new_addit
     """
     
     add_new_user_to_mock_db(new_user)
-    assert models.User.query.get(new_user["id"])
+    assert db.session.query(models.User).get(new_user["id"])
 
     add_new_record_to_mock_db(new_user, new_record)
-    assert models.Record.query.get(new_record["id"])
+    assert db.session.query(models.Record).get(new_record["id"])
 
     token = get_mock_token(new_user)
     
@@ -102,10 +102,10 @@ def test_add_new_additional_field_fail_4(client, new_user, new_record, new_addit
     """
     
     add_new_user_to_mock_db(new_user)
-    assert models.User.query.get(new_user["id"])
+    assert db.session.query(models.User).get(new_user["id"])
 
     add_new_record_to_mock_db(new_user, new_record)
-    assert models.Record.query.get(new_record["id"])
+    assert db.session.query(models.Record).get(new_record["id"])
 
     token = get_mock_token(new_user)
     
@@ -128,13 +128,13 @@ def test_delete_additional_field_success(client, new_user, new_record, new_addit
     """
     
     add_new_user_to_mock_db(new_user)
-    assert models.User.query.get(new_user["id"])
+    assert db.session.query(models.User).get(new_user["id"])
 
     add_new_record_to_mock_db(new_user, new_record)
-    assert models.Record.query.get(new_record["id"])
+    assert db.session.query(models.Record).get(new_record["id"])
 
     add_new_additional_field_to_mock_db(new_record, new_additional_field)
-    assert models.AdditionalField.query.get(new_additional_field["id"])
+    assert db.session.query(models.AdditionalField).get(new_additional_field["id"])
 
     token = get_mock_token(new_user)
     
@@ -152,7 +152,7 @@ def test_delete_additional_field_fail_1(client, new_user):
     """
     
     add_new_user_to_mock_db(new_user)
-    assert models.User.query.get(new_user["id"])
+    assert db.session.query(models.User).get(new_user["id"])
 
     token = get_mock_token(new_user)
     
@@ -169,7 +169,7 @@ def test_delete_additional_field_fail_2(client, new_user, new_additional_field):
     """
     
     add_new_user_to_mock_db(new_user)
-    assert models.User.query.get(new_user["id"])
+    assert db.session.query(models.User).get(new_user["id"])
 
     token = get_mock_token(new_user)
     
@@ -188,19 +188,19 @@ def test_get_additional_fields_success(client, new_user, new_record, new_additio
     Successful additional fields get
     """
     add_new_user_to_mock_db(new_user)
-    assert models.User.query.get(new_user["id"])
+    assert db.session.query(models.User).get(new_user["id"])
 
     add_new_record_to_mock_db(new_user, new_record)
-    assert models.Record.query.get(new_record["id"])
+    assert db.session.query(models.Record).get(new_record["id"])
 
     add_new_additional_field_to_mock_db(new_record, new_additional_field)
-    assert models.AdditionalField.query.get(new_additional_field["id"])
+    assert db.session.query(models.AdditionalField).get(new_additional_field["id"])
 
     new_additional_field_2 = new_additional_field.copy()
     new_additional_field_2["id"] += "x"
     new_additional_field_2["field_name"] += "x"
     add_new_additional_field_to_mock_db(new_record, new_additional_field_2)
-    assert models.AdditionalField.query.get(new_additional_field_2["id"]) != None
+    assert db.session.query(models.AdditionalField).get(new_additional_field_2["id"]) != None
 
     token = get_mock_token(new_user)
     
@@ -218,7 +218,7 @@ def test_get_additional_fields_fail_1(client, new_user):
     Additional fields get fail, record id is missing in uri args
     """
     add_new_user_to_mock_db(new_user)
-    assert models.User.query.get(new_user["id"])
+    assert db.session.query(models.User).get(new_user["id"])
 
     token = get_mock_token(new_user)
     
@@ -233,7 +233,7 @@ def test_get_additional_fields_fail_2(client, new_user, new_record):
     Additional fields get fail, not existing record id
     """
     add_new_user_to_mock_db(new_user)
-    assert models.User.query.get(new_user["id"])
+    assert db.session.query(models.User).get(new_user["id"])
 
     token = get_mock_token(new_user)
     
@@ -249,10 +249,10 @@ def test_get_additional_fields_fail_3(client, new_user, new_record):
     Additional fields get fail, record doesnt't belong to the current user
     """
     add_new_user_to_mock_db(new_user)
-    assert models.User.query.get(new_user["id"])
+    assert db.session.query(models.User).get(new_user["id"])
 
     add_new_record_to_mock_db(new_user, new_record)
-    record_got_from_db = models.Record.query.get(new_record["id"])
+    record_got_from_db = db.session.query(models.Record).get(new_record["id"])
     assert record_got_from_db != None
 
     token = get_mock_token(new_user)
@@ -272,10 +272,10 @@ def test_get_additional_fields_fail_4(client, new_user, new_record, new_addition
     Additional fields get fail, record has no additional fields
     """
     add_new_user_to_mock_db(new_user)
-    assert models.User.query.get(new_user["id"])
+    assert db.session.query(models.User).get(new_user["id"])
 
     add_new_record_to_mock_db(new_user, new_record)
-    assert models.Record.query.get(new_record["id"])
+    assert db.session.query(models.Record).get(new_record["id"])
 
     token = get_mock_token(new_user)
     
@@ -292,13 +292,13 @@ def test_edit_additional_field_success(client, new_user, new_record, new_additio
     Successful additional fields edit (PATCH)
     """
     add_new_user_to_mock_db(new_user)
-    assert models.User.query.get(new_user["id"])
+    assert db.session.query(models.User).get(new_user["id"])
 
     add_new_record_to_mock_db(new_user, new_record)
-    assert models.Record.query.get(new_record["id"])
+    assert db.session.query(models.Record).get(new_record["id"])
 
     add_new_additional_field_to_mock_db(new_record, new_additional_field)
-    assert models.AdditionalField.query.get(new_additional_field["id"])
+    assert db.session.query(models.AdditionalField).get(new_additional_field["id"])
 
     edited_additional_field = new_additional_field.copy()
     edited_additional_field["record_id"] = new_record["id"]
@@ -318,10 +318,10 @@ def test_edit_additional_field_fail_1(client, new_user, new_record, new_addition
     Edit additional field fail, additional field with requested id doesn't exist
     """
     add_new_user_to_mock_db(new_user)
-    assert models.User.query.get(new_user["id"])
+    assert db.session.query(models.User).get(new_user["id"])
 
     add_new_record_to_mock_db(new_user, new_record)
-    assert models.Record.query.get(new_record["id"])
+    assert db.session.query(models.Record).get(new_record["id"])
 
     
     token = get_mock_token(new_user)
@@ -339,13 +339,13 @@ def test_edit_additional_field_fail_2(client, new_user, new_record, new_addition
     Edit additional field fail, additional field with requested id doesn't exist
     """
     add_new_user_to_mock_db(new_user)
-    assert models.User.query.get(new_user["id"])
+    assert db.session.query(models.User).get(new_user["id"])
 
     add_new_record_to_mock_db(new_user, new_record)
-    assert models.Record.query.get(new_record["id"])
+    assert db.session.query(models.Record).get(new_record["id"])
 
     add_new_additional_field_to_mock_db(new_record, new_additional_field)
-    assert models.AdditionalField.query.get(new_additional_field["id"])
+    assert db.session.query(models.AdditionalField).get(new_additional_field["id"])
 
     
     token = get_mock_token(new_user)
@@ -363,14 +363,14 @@ def test_edit_additional_field_fail_3(client, new_user, new_record, new_addition
     Additional fields edit fail, af's record doesn't belong to the current user
     """
     add_new_user_to_mock_db(new_user)
-    assert models.User.query.get(new_user["id"])
+    assert db.session.query(models.User).get(new_user["id"])
 
     add_new_record_to_mock_db(new_user, new_record)
-    record_got_from_db = models.Record.query.get(new_record["id"])
+    record_got_from_db = db.session.query(models.Record).get(new_record["id"])
     assert record_got_from_db != None
 
     add_new_additional_field_to_mock_db(new_record, new_additional_field)
-    assert models.AdditionalField.query.get(new_additional_field["id"])
+    assert db.session.query(models.AdditionalField).get(new_additional_field["id"])
 
     token = get_mock_token(new_user)
 
@@ -390,20 +390,20 @@ def test_edit_additional_field_fail_4(client, new_user, new_record, new_addition
     Additional fields edit fail, additional field doesn't belong to record
     """
     add_new_user_to_mock_db(new_user)
-    assert models.User.query.get(new_user["id"])
+    assert db.session.query(models.User).get(new_user["id"])
 
     add_new_record_to_mock_db(new_user, new_record)
-    record_got_from_db = models.Record.query.get(new_record["id"])
+    record_got_from_db = db.session.query(models.Record).get(new_record["id"])
     assert record_got_from_db != None
 
     new_record_2 = new_record.copy()
     new_record_2["id"] = new_record["id"] + "x"
     new_record_2["login"] = new_record["login"] + "x"
     add_new_record_to_mock_db(new_user, new_record_2)
-    assert models.Record.query.get(new_record_2["id"])
+    assert db.session.query(models.Record).get(new_record_2["id"])
 
     add_new_additional_field_to_mock_db(new_record, new_additional_field)
-    assert models.AdditionalField.query.get(new_additional_field["id"])
+    assert db.session.query(models.AdditionalField).get(new_additional_field["id"])
 
     token = get_mock_token(new_user)
     
@@ -420,20 +420,20 @@ def test_edit_additional_field_fail_5(client, new_user, new_record, new_addition
     Additional fields edit fail, additional field with that name already exists in thist record
     """
     add_new_user_to_mock_db(new_user)
-    assert models.User.query.get(new_user["id"])
+    assert db.session.query(models.User).get(new_user["id"])
 
     add_new_record_to_mock_db(new_user, new_record)
-    assert models.Record.query.get(new_record["id"])
+    assert db.session.query(models.Record).get(new_record["id"])
 
     add_new_additional_field_to_mock_db(new_record, new_additional_field)
-    assert models.AdditionalField.query.get(new_additional_field["id"])
+    assert db.session.query(models.AdditionalField).get(new_additional_field["id"])
 
     new_additional_field_2 = new_additional_field.copy()
     new_additional_field_2["id"] += "x"
     new_additional_field_2["field_name"] += "x"
     new_additional_field_2["record_id"] = new_record["id"]
     add_new_additional_field_to_mock_db(new_record, new_additional_field_2)
-    assert models.AdditionalField.query.get(new_additional_field_2["id"])
+    assert db.session.query(models.AdditionalField).get(new_additional_field_2["id"])
 
 
     edited_additional_field = new_additional_field_2.copy()

@@ -22,10 +22,10 @@ class Record(Resource):
         parser.add_argument("nonce", type=non_empty_string, help="Record's nonce is missing at all, value is null or value is empty", required=True, nullable=False)
         args = parser.parse_args()
 
-        if models.Record.query.get(args["id"]):
+        if db.session.query(models.Record).get(args["id"]):
             return {"message": f"Record with id '{args['id']}' already exist"}, 409
         
-        records_with_requested_name = models.Record.query.filter_by(user_id=current_user.id, name=args["name"]).all()
+        records_with_requested_name = db.session.query(models.Record).filter_by(user_id=current_user.id, name=args["name"]).all()
         
         for record_with_requested_name in records_with_requested_name:
             if record_with_requested_name.login == args["login"]:
@@ -54,7 +54,7 @@ class Record(Resource):
         parser.add_argument("nonce",  type=non_empty_string, help="Record's nonce is missing at all, value is null or value is empty", required=True, nullable=False)
         args = parser.parse_args()
 
-        record = models.Record.query.get(args["id"])
+        record = db.session.query(models.Record).get(args["id"])
 
         if not record:
             return {"message": f"Record with id '{args['id']}' doesn't exist"}, 404
@@ -91,7 +91,7 @@ class Record(Resource):
         if not record_id:
             return {"message": f"Record id is missing in uri args"}, 400
 
-        record = models.Record.query.get(record_id)
+        record = db.session.query(models.Record).get(record_id)
 
         if not record:
             return {"message": "Record with that id doesn't exist"}, 404

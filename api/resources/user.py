@@ -22,9 +22,9 @@ class User(Resource):
         additionaly_hashed_master_password = hashing.hash_mp_additionally(password_hash=args["master_password_hash"], 
                                                 salt=args["email"])
 
-        if models.User.query.get(args["id"]):
+        if db.session.query(models.User).get(args["id"]):
             return {"message": f"User with received id '{args['id']}' already exists"}, 409
-        elif models.User.query.filter_by(email=args["email"]).all():
+        elif db.session.query(models.User).filter_by(email=args["email"]).all():
             return {"message": f"User with received email '{args['email']}' already exists"}, 409
 
         new_user = models.User(id=args["id"], email=args["email"], 
@@ -46,7 +46,7 @@ class User(Resource):
             return {"message": "User id not found in the url params"}, 400
 
         
-        user = models.User.query.get(user_id)
+        user = db.session.query(models.User).get(user_id)
         
         if not user:
             return {"message": "User with that id doesn't exist"}, 404
@@ -63,8 +63,7 @@ class User(Resource):
         """
         Returns current user
         """
-        user = models.User.query.get(current_user.id)
-        return marshal(user, USER_RESOURCE_FIELDS), 200
+        return marshal(current_user, USER_RESOURCE_FIELDS), 200
 
 
 

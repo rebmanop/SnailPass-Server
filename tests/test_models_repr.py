@@ -1,7 +1,6 @@
 import models
-from models import db
-from tests import utils
 import datetime
+from tests import utils
 
 def test_user_repr():
     user = models.User(id=utils.get_random_id(), email=utils.get_random_email(), 
