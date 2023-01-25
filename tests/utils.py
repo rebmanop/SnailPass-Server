@@ -31,7 +31,7 @@ def add_new_record_to_mock_db(new_user, new_record):
     
     new_record_db_model_object = models.Record(id=new_record["id"], name=new_record["name"], login=new_record["login"], 
                                 encrypted_password=new_record["encrypted_password"], user_id=new_user["id"], creation_time=datetime.datetime.now(), 
-                                update_time=datetime.datetime.now(), nonce=new_record["nonce"])
+                                update_time=datetime.datetime.now())
     
     db.session.add(new_record_db_model_object)
     db.session.commit()
@@ -43,7 +43,7 @@ def add_new_note_to_mock_db(new_user, new_note):
     """
     
     new_note_db_model_object = models.Note(id=new_note["id"], name=new_note["name"], content=new_note["content"], user_id=new_user["id"], creation_time=datetime.datetime.now(), 
-                                update_time=datetime.datetime.now(), nonce=new_note["nonce"])
+                                update_time=datetime.datetime.now())
     
     db.session.add(new_note_db_model_object)
     db.session.commit()
@@ -55,7 +55,7 @@ def add_new_additional_field_to_mock_db(new_record, new_additional_field):
     """
     
     new_additional_field_db_model_object = models.AdditionalField(id=new_additional_field["id"], field_name=new_additional_field["field_name"], value=new_additional_field["value"], 
-                                record_id=new_record["id"], nonce=new_additional_field["nonce"])
+                                record_id=new_record["id"])
     
     db.session.add(new_additional_field_db_model_object)
     db.session.commit()

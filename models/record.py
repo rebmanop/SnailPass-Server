@@ -2,7 +2,6 @@ from .base import db
 
 
 class Record(db.Model): 
-
     __tablename__ = "records"
 
     id = db.Column(db.String, primary_key=True)
@@ -14,7 +13,6 @@ class Record(db.Model):
     is_deleted = db.Column(db.Boolean, default=False)
     creation_time = db.Column(db.DateTime, nullable=False)
     update_time = db.Column(db.DateTime, nullable=False)
-    nonce = db.Column(db.String, nullable=False)
     
     additional_fields = db.relationship("AdditionalField", cascade="all,delete", backref="record") 
 
@@ -29,6 +27,6 @@ class Record(db.Model):
                 f'is_deleted: {self.is_deleted}\n'
                 f'creation_time: {self.creation_time}\n'
                 f'update_time: {self.update_time}\n'
-                f'nonce: {self.nonce}'
                 f'\n***Record***'
                 )
+

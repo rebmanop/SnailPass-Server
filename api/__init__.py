@@ -32,3 +32,4 @@ def create_app(config: Config):
 
 app = create_app(DevelopmentConfig())
 
+

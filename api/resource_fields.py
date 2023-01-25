@@ -5,8 +5,7 @@ ADDITIONAL_FIELD_RESOURCE_FIELDS = {
                                     'id': fields.String, 
                                     'field_name': fields.String,
                                     'value': fields.String,
-                                    'record_id': fields.String,
-                                    'nonce': fields.String
+                                    'record_id': fields.String
                                    }
 
 
@@ -18,8 +17,7 @@ NOTE_RESOURCE_FIELDS = {
                         'is_favorite': fields.Boolean,
                         'is_deleted': fields.Boolean,
                         'creation_time': fields.DateTime,
-                        'update_time': fields.DateTime,
-                        'nonce': fields.String
+                        'update_time': fields.DateTime
                        }
 
 
@@ -32,8 +30,7 @@ RECORD_RESOURCE_FIELDS = {
                           'is_favorite': fields.Boolean,
                           'is_deleted': fields.Boolean,
                           'creation_time': fields.DateTime,
-                          'update_time': fields.DateTime,
-                          'nonce': fields.String
+                          'update_time': fields.DateTime
                          }
 
 
@@ -41,5 +38,5 @@ USER_RESOURCE_FIELDS = {
                         'id': fields.String, 
                         'email': fields.String,
                         'is_admin': fields.Boolean,
-                        'hint': fields.String,
+                        'hint': fields.String
                        }

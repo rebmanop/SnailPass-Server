@@ -12,7 +12,6 @@ class Note(db.Model):
     is_deleted = db.Column(db.Boolean, default=False)
     creation_time = db.Column(db.DateTime, nullable=False)
     update_time = db.Column(db.DateTime, nullable=False)
-    nonce = db.Column(db.String, nullable=False)
 
     def __repr__(self):
                return (
@@ -24,7 +23,8 @@ class Note(db.Model):
                 f'is_favorite: {self.is_favorite}\n'
                 f'is_deleted: {self.is_deleted}\n'
                 f'creation_time: {self.creation_time}\n'
-                f'update_time: {self.update_time}\n'
-                f'nonce: {self.nonce}'
+                f'update_time: {self.update_time}'
                 f'\n***Note***'
                 )
+
+

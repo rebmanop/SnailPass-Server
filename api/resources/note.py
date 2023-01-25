@@ -18,7 +18,6 @@ class Note(Resource):
         parser.add_argument("id", type=non_empty_string, help="Record id is missing at all, value is null or value is empty", required=True, nullable=False)
         parser.add_argument("name", type=non_empty_string, help="Record name is missing at all, value is null or value is empty", required=True, nullable=False)
         parser.add_argument("content", type=non_empty_string, help="Record content is missing at all, value is null or value is empty", required=True, nullable=False)
-        parser.add_argument("nonce", type=non_empty_string, help="Nonce is missing at all, value is null or value is empty", required=True, nullable=False)
         args = parser.parse_args()
 
 
@@ -29,7 +28,7 @@ class Note(Resource):
 
 
         note = models.Note(id=args["id"], name=args["name"], content=args["content"], user_id=current_user.id, creation_time=datetime.datetime.now(), 
-                                update_time=datetime.datetime.now(), nonce=args["nonce"])
+                                update_time=datetime.datetime.now())
 
                                 
         db.session.add(note)
@@ -48,7 +47,6 @@ class Note(Resource):
         parser.add_argument("content", type=non_empty_string, help="Note content is missing at all, value is null or value is empty", required=True, nullable=False)
         parser.add_argument("is_favorite", type=bool, help="Note 'is_favorite' status is missing at all, value is null or value is empty", required=True, nullable=False)
         parser.add_argument("is_deleted", type=bool, help="Note 'is_deleted' status is missing at all, value is null or value is empty", required=True, nullable=False)
-        parser.add_argument("nonce", type=non_empty_string, help="Note nonce is missing at all, value is null or value is empty", required=True, nullable=False)
         args = parser.parse_args()
 
         note = db.session.query(models.Note).get(args["id"])
@@ -65,7 +63,6 @@ class Note(Resource):
 
         note.name = args["name"]
         note.content = args["content"]
-        note.nonce = args["nonce"]
         note.is_favorite = args["is_favorite"]
         note.is_deleted = args["is_deleted"]
         note.update_time = datetime.datetime.now()

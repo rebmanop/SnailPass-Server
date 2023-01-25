@@ -17,7 +17,6 @@ class AdditionalField(Resource):
         parser.add_argument("field_name", type=non_empty_string, help="Additional field name is missing at all, value is null or value is empty", required=True, nullable=False)
         parser.add_argument("value", type=non_empty_string, help="Additional field value is missing at all, value is null or value is empty", required=True, nullable=False)
         parser.add_argument("record_id", type=non_empty_string, help="Additional field's record id is missing at all, value is null or value is empty", required=True, nullable=False)
-        parser.add_argument("nonce", type=non_empty_string, help="Additional field's nonce is missing at all, value is null or value is empty", required=True, nullable=False)
 
         args = parser.parse_args()
         record_with_recived_record_id = db.session.query(models.Record).get(args["record_id"])
@@ -34,7 +33,7 @@ class AdditionalField(Resource):
     
 
         additional_field = models.AdditionalField(id=args["id"], field_name=args["field_name"], value=args["value"], 
-                                record_id=record_with_recived_record_id.id, nonce=args["nonce"])
+                                record_id=record_with_recived_record_id.id)
 
 
         db.session.add(additional_field)
@@ -73,7 +72,6 @@ class AdditionalField(Resource):
         parser.add_argument("field_name", type=non_empty_string, help="Additional field's name is missing at all, value is null or value is empty", required=True, nullable=False)
         parser.add_argument("value", type=non_empty_string, help="Additional field's value is missing at all, value is null or value is empty", required=True, nullable=False)
         parser.add_argument("record_id", type=non_empty_string, help="Additional field's record id is missing at all, value is null or value is empty", required=True, nullable=False)
-        parser.add_argument("nonce", type=non_empty_string, help="Additional field's nonce is missing at all, value is null or value is empty", required=True, nullable=False)
         
         args = parser.parse_args()
 
@@ -99,7 +97,6 @@ class AdditionalField(Resource):
 
         additional_field.field_name = args["field_name"]
         additional_field.value = args["value"]
-        additional_field.nonce = args["nonce"]
 
         
         db.session.commit()
