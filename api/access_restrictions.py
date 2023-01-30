@@ -1,9 +1,8 @@
 import jwt
-import api
 import models
 from functools import wraps
 from models import db
-from flask import request, make_response
+from flask import request, make_response, current_app
 
 
 def token_required(f):
@@ -18,7 +17,7 @@ def token_required(f):
             return make_response({'message': 'Token is missing'}, 400)
 
         try: 
-            data = jwt.decode(token, key=api.app.config['SECRET_KEY'], algorithms=["HS256"])
+            data = jwt.decode(token, key=current_app.config['SECRET_KEY'], algorithms=["HS256"])
             current_user = db.session.query(models.User).get(data['id'])
 
         except(jwt.ExpiredSignatureError): 
@@ -44,7 +43,7 @@ def admin_only_function(f):
             return make_response({'message': 'Token is missing'}, 400)
         
         try: 
-            data = jwt.decode(token, key=api.app.config['SECRET_KEY'], algorithms=["HS256"])
+            data = jwt.decode(token, key=current_app.config['SECRET_KEY'], algorithms=["HS256"])
             current_user = db.session.query(models.User).get(data['id'])
 
         except(jwt.ExpiredSignatureError): 

@@ -1,4 +1,12 @@
 Flask==2.2.2
 Flask_RESTful==0.3.9
-Flask_SQLAlchemy==2.5.1
+Flask_Script==2.0.5
+Flask_SQLAlchemy==3.0.2
+Flask-Migrate==2.6.0
 PyJWT==2.6.0
+pytest==7.2.1
+requests==2.27.1
+SQLAlchemy_Utils==0.39.0
+psycopg2==2.9.5
+flask_migrate==2.6.0
+python-dotenv==0.21.1

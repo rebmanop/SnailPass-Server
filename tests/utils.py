@@ -2,6 +2,7 @@ import jwt
 import api
 import models
 import datetime
+from flask import current_app
 import secrets
 import requests
 from hashlib import sha1
@@ -66,7 +67,7 @@ def get_mock_token(new_user, token_ttl_minutes = api.TOKEN_TTL):
     Mocks new_user's auth token for tests
     """
     data = {'id': new_user["id"], 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=token_ttl_minutes)}
-    token = jwt.encode(payload=data, key=api.app.config['SECRET_KEY'], algorithm="HS256")
+    token = jwt.encode(payload=data, key=current_app.config['SECRET_KEY'], algorithm="HS256")
     return token
 
 

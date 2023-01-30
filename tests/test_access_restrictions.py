@@ -21,7 +21,7 @@ def test_access_restrictions_token_expired(client, new_user):
     add_new_user_to_mock_db(new_user)
     assert db.session.query(models.User).get(new_user["id"]) != None
     
-    token = get_mock_token(new_user, token_ttl_minutes=0.001)
+    token = get_mock_token(new_user, token_ttl_minutes=0.0001)
 
     response = client.get("/users", headers={"x-access-token": f"{token}"})
     response = client.delete("/users", headers={"x-access-token": f"{token}"})

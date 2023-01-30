@@ -1,3 +1,5 @@
 __pycache__
 config.conf
 .pytest_cache
+postgres-data/
+.vscode

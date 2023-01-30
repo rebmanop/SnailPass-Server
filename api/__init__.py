@@ -1,19 +1,26 @@
 from flask import Flask
 from flask_restful import Api
-from config import Config, DevelopmentConfig, ProductionConfig
-
-
+import os
+from config import config, Config
+from flask_migrate import Migrate
 TOKEN_TTL = 10.0 #in minutes
 NUMBER_OF_HASH_ITERATIONS = 40000
 
-def create_app(config: Config):
-    app = Flask(__name__)
+def create_app(test_config: Config = None):
+    app = Flask("snailpass-rest-api")
     api = Api(app)
 
-    app.config.from_object(config)
+    if test_config:
+        app.config.from_object(test_config)
+    else:
+        env = os.environ.get("FLASK_DEBUG")
+        app.config.from_object(config[env])
+
     
     from models import db
     db.init_app(app)
+    Migrate(app, db)
+
 
     from api.resources.user import User
     from api.resources.record import Record
@@ -30,6 +37,5 @@ def create_app(config: Config):
     return app
 
 
-app = create_app(DevelopmentConfig())
 
 
