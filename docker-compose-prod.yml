@@ -1,0 +1,29 @@
+version: '2.1'
+services:
+  postgres:
+    restart: always
+    image: postgres:10
+    environment:
+      - POSTGRES_USER=${PROD_POSTGRES_USER}
+      - POSTGRES_PASSWORD=${PROD_POSTGRES_PASSWORD}
+      - POSTGRES_DB=${PROD_POSTGRES_DB}
+    volumes:
+      - ~/snailpass-data/postgres-data/postgres:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+  api:
+    restart: always
+    environment:
+      - SNAILPASS_SECRET_KEY=${SNAILPASS_SECRET_KEY}
+      - SNAILPASS_DATABASE_URI=${SNAILPASS_DATABASE_URI}
+      - SNAILPASS_CONFIGURATION=prod
+    image: snailpass-rest-api-image
+    build: 
+      context: .
+      dockerfile: Dockerfile-prod
+    depends_on:
+      - postgres
+    ports:
+      - 80:80
+    entrypoint: 
+      - scripts/start_prod.sh

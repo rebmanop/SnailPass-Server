@@ -7,5 +7,7 @@ PyJWT==2.6.0
 pytest==7.2.1
 requests==2.27.1
 SQLAlchemy_Utils==0.39.0
+psycopg2-binary==2.9.5
 flask_migrate==2.6.0
 python-dotenv==0.21.1
+uWSGI==2.0.21

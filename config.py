@@ -17,12 +17,12 @@ class TestingConfig(Config):
 
 
 class DevelopmentConfig(Config):
-    SQLALCHEMY_DATABASE_URI = "postgresql://devusr:password@postgres/devdb"
+    SQLALCHEMY_DATABASE_URI = "sqlite:///../devdatabase.db"
     DEBUG = True
 
 
 class ProductionConfig(Config):
-    SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URI")  
+    SQLALCHEMY_DATABASE_URI = os.environ.get("SNAILPASS_DATABASE_URI")
     DEBUG = False
 
 config = {"testing": TestingConfig, "dev": DevelopmentConfig, "prod": ProductionConfig}

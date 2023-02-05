@@ -14,13 +14,8 @@ manager.add_command("db", MigrateCommand)
 
 
 @manager.command
-def runserver():
+def run_dev_server():
     app.run(host="0.0.0.0", port=5000)
-
-
-@manager.command
-def runworker():
-    app.run(debug=False)
 
 
 @manager.command

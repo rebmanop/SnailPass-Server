@@ -13,7 +13,7 @@ def create_app(test_config: Config = None):
     if test_config:
         app.config.from_object(test_config)
     else:
-        env = os.environ.get("FLASK_DEBUG")
+        env = os.environ.get("SNAILPASS_CONFIGURATION")
         app.config.from_object(config[env])
 
     

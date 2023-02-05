@@ -1,0 +1,19 @@
+version: '2.1'
+services:
+  api:
+    restart: always
+    image: snailpass-rest-api-dev-image
+    environment:
+      - SNAILPASS_SECRET_KEY=development_env_secret_key
+      - SNAILPASS_CONFIGURATION=dev
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 5000:5000
+    volumes:
+      - .:/snailpass-rest-api
+    entrypoint: 
+      - scripts/start_dev.sh
+    
+      

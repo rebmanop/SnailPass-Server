@@ -1,5 +1,6 @@
 __pycache__
-config.conf
 .pytest_cache
-postgres-data/
 .vscode
+devdatabase.db
+instance/
+.env
