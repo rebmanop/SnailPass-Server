@@ -4,11 +4,12 @@ import tempfile
 class Config(object):
     TESTING = False
     DEBUG = False
-    SECRET_KEY = os.environ['SNAILPASS_SECRET_KEY']
+    SECRET_KEY = os.environ.get('SNAILPASS_SECRET_KEY')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 
 class TestingConfig(Config):
+    SECRET_KEY = "testing_env_secret_key"
     TESTING = True
     @property
     def SQLALCHEMY_DATABASE_URI(self):  

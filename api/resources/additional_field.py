@@ -3,7 +3,7 @@ from models import db
 from flask_restful import Resource, reqparse, marshal, request
 from api.access_restrictions import token_required
 from api.resource_fields import ADDITIONAL_FIELD_RESOURCE_FIELDS
-from api.utils import non_empty_string
+from api.utils import non_empty_string, ARGUMENT_MISSING_RESPONSE
 
 
 class AdditionalField(Resource):
@@ -13,10 +13,10 @@ class AdditionalField(Resource):
         """Create new additional field"""
 
         parser = reqparse.RequestParser()
-        parser.add_argument("id", type=non_empty_string, help="Additional field id is missing at all, value is null or value is empty", required=True, nullable=False)
-        parser.add_argument("field_name", type=non_empty_string, help="Additional field name is missing at all, value is null or value is empty", required=True, nullable=False)
-        parser.add_argument("value", type=non_empty_string, help="Additional field value is missing at all, value is null or value is empty", required=True, nullable=False)
-        parser.add_argument("record_id", type=non_empty_string, help="Additional field's record id is missing at all, value is null or value is empty", required=True, nullable=False)
+        parser.add_argument("id", type=non_empty_string, help="Additional field id" + ARGUMENT_MISSING_RESPONSE, required=True, nullable=False)
+        parser.add_argument("field_name", type=non_empty_string, help="Additional field name" + ARGUMENT_MISSING_RESPONSE, required=True, nullable=False)
+        parser.add_argument("value", type=non_empty_string, help="Additional field value" + ARGUMENT_MISSING_RESPONSE, required=True, nullable=False)
+        parser.add_argument("record_id", type=non_empty_string, help="Additional field's record id" + ARGUMENT_MISSING_RESPONSE, required=True, nullable=False)
 
         args = parser.parse_args()
         record_with_recived_record_id = db.session.query(models.Record).get(args["record_id"])
@@ -68,10 +68,10 @@ class AdditionalField(Resource):
     def patch(self, current_user):
 
         parser = reqparse.RequestParser()
-        parser.add_argument("id", type=non_empty_string, help="Additional field's id is missing at all, value is null or value is empty", required=True, nullable=False)
-        parser.add_argument("field_name", type=non_empty_string, help="Additional field's name is missing at all, value is null or value is empty", required=True, nullable=False)
-        parser.add_argument("value", type=non_empty_string, help="Additional field's value is missing at all, value is null or value is empty", required=True, nullable=False)
-        parser.add_argument("record_id", type=non_empty_string, help="Additional field's record id is missing at all, value is null or value is empty", required=True, nullable=False)
+        parser.add_argument("id", type=non_empty_string, help="Additional field's id" + ARGUMENT_MISSING_RESPONSE, required=True, nullable=False)
+        parser.add_argument("field_name", type=non_empty_string, help="Additional field's name" + ARGUMENT_MISSING_RESPONSE, required=True, nullable=False)
+        parser.add_argument("value", type=non_empty_string, help="Additional field's value" + ARGUMENT_MISSING_RESPONSE, required=True, nullable=False)
+        parser.add_argument("record_id", type=non_empty_string, help="Additional field's record id" + ARGUMENT_MISSING_RESPONSE, required=True, nullable=False)
         
         args = parser.parse_args()
 
