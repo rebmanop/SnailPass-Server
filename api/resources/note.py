@@ -5,7 +5,7 @@ from api.access_restrictions import token_required
 from api.resource_fields import NOTE_RESOURCE_FIELDS
 from flask_restful import Resource, reqparse, request
 from flask_restful import Resource, marshal, reqparse
-from api.utils import non_empty_string
+from api.core import non_empty_string, ARGUMENT_MISSING_RESPONSE
 
 
 class Note(Resource):
@@ -15,9 +15,9 @@ class Note(Resource):
         """Create new note"""
 
         parser = reqparse.RequestParser()
-        parser.add_argument("id", type=non_empty_string, help="Record id is missing at all, value is null or value is empty", required=True, nullable=False)
-        parser.add_argument("name", type=non_empty_string, help="Record name is missing at all, value is null or value is empty", required=True, nullable=False)
-        parser.add_argument("content", type=non_empty_string, help="Record content is missing at all, value is null or value is empty", required=True, nullable=False)
+        parser.add_argument("id", type=non_empty_string, help="Record id" + ARGUMENT_MISSING_RESPONSE, required=True, nullable=False)
+        parser.add_argument("name", type=non_empty_string, help="Record name" + ARGUMENT_MISSING_RESPONSE, required=True, nullable=False)
+        parser.add_argument("content", type=non_empty_string, help="Record content" + ARGUMENT_MISSING_RESPONSE, required=True, nullable=False)
         args = parser.parse_args()
 
 
@@ -42,11 +42,11 @@ class Note(Resource):
         """Edit existing note"""
         
         parser = reqparse.RequestParser()
-        parser.add_argument("id", type=non_empty_string, help="Note id is missing at all, value is null or value is empty", required=True, nullable=False)
-        parser.add_argument("name", type=non_empty_string, help="Note name is missing at all, value is null or value is empty", required=True, nullable=False)
-        parser.add_argument("content", type=non_empty_string, help="Note content is missing at all, value is null or value is empty", required=True, nullable=False)
-        parser.add_argument("is_favorite", type=bool, help="Note 'is_favorite' status is missing at all, value is null or value is empty", required=True, nullable=False)
-        parser.add_argument("is_deleted", type=bool, help="Note 'is_deleted' status is missing at all, value is null or value is empty", required=True, nullable=False)
+        parser.add_argument("id", type=non_empty_string, help="Note id" + ARGUMENT_MISSING_RESPONSE, required=True, nullable=False)
+        parser.add_argument("name", type=non_empty_string, help="Note name" + ARGUMENT_MISSING_RESPONSE, required=True, nullable=False)
+        parser.add_argument("content", type=non_empty_string, help="Note content" + ARGUMENT_MISSING_RESPONSE, required=True, nullable=False)
+        parser.add_argument("is_favorite", type=bool, help="Note 'is_favorite' status" + ARGUMENT_MISSING_RESPONSE, required=True, nullable=False)
+        parser.add_argument("is_deleted", type=bool, help="Note 'is_deleted' status" + ARGUMENT_MISSING_RESPONSE, required=True, nullable=False)
         args = parser.parse_args()
 
         note = db.session.query(models.Note).get(args["id"])

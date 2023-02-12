@@ -3,7 +3,7 @@ from models import db
 from flask_restful import Resource, reqparse, marshal, request
 from api.access_restrictions import token_required
 from api.resource_fields import ADDITIONAL_FIELD_RESOURCE_FIELDS
-from api.utils import non_empty_string, ARGUMENT_MISSING_RESPONSE
+from api.core import non_empty_string, ARGUMENT_MISSING_RESPONSE
 
 
 class AdditionalField(Resource):

@@ -4,7 +4,7 @@ from models import db
 from api.access_restrictions import admin_only_function, token_required
 from flask_restful import Resource, reqparse, request, fields, marshal
 from api.resource_fields import USER_RESOURCE_FIELDS
-from api.utils import non_empty_string, ARGUMENT_MISSING_RESPONSE
+from api.core import non_empty_string, ARGUMENT_MISSING_RESPONSE
 
 
 class User(Resource):
