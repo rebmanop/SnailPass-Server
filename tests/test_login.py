@@ -48,7 +48,7 @@ def test_login_fail_2(client, new_user):
 
     expected_response_message = f"User with recieved email '{new_user['email']}' doesn't exist"
 
-    assert response.status_code == 401
+    assert response.status_code == 403
     assert expected_response_message.encode() in response.data
 
 
@@ -65,7 +65,7 @@ def test_login_fail_3(client, new_user):
     credentials = b64encode(auth_str.encode()).decode('utf-8')
     response = client.get("/login", headers={"Authorization": f"Basic {credentials}"})
 
-    assert response.status_code == 401
+    assert response.status_code == 403
     assert b"Incorrect password" in response.data
     
     

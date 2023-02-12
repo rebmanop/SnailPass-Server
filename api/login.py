@@ -5,7 +5,8 @@ import hashing
 from flask import Blueprint, current_app
 from models import db
 from api import TOKEN_TTL
-from flask import request, make_response, jsonify
+from flask import request, jsonify
+from api.errors import APIAuthError
 
 
 login_blueprint = Blueprint('login', __name__)
@@ -13,18 +14,19 @@ login_blueprint = Blueprint('login', __name__)
 
 @login_blueprint.route('/login')
 def login():
-    """Login procedure"""
-    """Returns authorization token if login is approved"""
-
+    """
+    Authentication procedure. Returns session token if authentication is successful
+    """
+    
     auth = request.authorization
 
     if not auth or not auth.username or not auth.password:
-        return make_response({'message': f"Authorization info missing or it's incomplete"}, 400)
+        raise APIAuthError(f"Authentication info missing or it's incomplete")
 
     user = db.session.query(models.User).filter_by(email=auth.username).first()
 
     if not user:
-        return make_response({'message': f"User with recieved email '{auth.username}' doesn't exist"}, 401) 
+        raise APIAuthError(f"User with recieved email '{auth.username}' doesn't exist")
 
 
     if user.master_password_hash == hashing.hash_mp_additionally(auth.password, auth.username):
@@ -33,7 +35,7 @@ def login():
         return jsonify({'token': token})
 
 
-    return  make_response({'message': 'Incorrect password'}, 401)
+    raise APIAuthError("Incorrect password")
 
     
 

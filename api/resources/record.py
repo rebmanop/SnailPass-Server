@@ -6,6 +6,7 @@ from flask_restful import Resource, marshal, reqparse
 from flask_restful import Resource, reqparse, request
 from api.resource_fields import RECORD_RESOURCE_FIELDS
 from api.utils import non_empty_string
+from api.validator import Validator
 
 
 class Record(Resource):
@@ -21,15 +22,9 @@ class Record(Resource):
         parser.add_argument("encrypted_password", type=non_empty_string, help="Record's encrypted password is missing at all, value is null or value is empty", required=True, nullable=False)
         args = parser.parse_args()
 
-        if db.session.query(models.Record).get(args["id"]):
-            return {"message": f"Record with id '{args['id']}' already exist"}, 409
-        
-        records_with_requested_name = db.session.query(models.Record).filter_by(user_id=current_user.id, name=args["name"]).all()
-        
-        for record_with_requested_name in records_with_requested_name:
-            if record_with_requested_name.login == args["login"]:
-                return {"message": f"Record with name '{args['name']}' and with login '{args['login']}' already exist in current user's vault"}, 409
-                
+        validator = Validator(args)
+        validator.validate_data_format() 
+
         record = models.Record(id=args["id"], name=args["name"], login=args["login"], 
                                 encrypted_password=args["encrypted_password"], user_id=current_user.id, creation_time=datetime.datetime.now(), 
                                 update_time=datetime.datetime.now())
