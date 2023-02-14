@@ -25,7 +25,7 @@ RECORD_RESOURCE_FIELDS = {
                           'id': fields.String, 
                           'name': fields.String,
                           'login': fields.String,
-                          'encrypted_password': fields.String,
+                          'password': fields.String,
                           'user_id': fields.String,
                           'is_favorite': fields.Boolean,
                           'is_deleted': fields.Boolean,

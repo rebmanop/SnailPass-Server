@@ -2,11 +2,11 @@ import models
 import datetime
 from models import db
 from api.validator import Validator
+from api.core import MISSING_PARAMETER_RESPONSE, create_response
 from api.access_restrictions import token_required
 from flask_restful import Resource, marshal, reqparse
 from flask_restful import Resource, reqparse, request
 from api.resource_fields import RECORD_RESOURCE_FIELDS
-from api.core import non_empty_string, ARGUMENT_MISSING_RESPONSE
 
 
 class Record(Resource):
@@ -16,23 +16,23 @@ class Record(Resource):
         """Create new record"""
 
         parser = reqparse.RequestParser()
-        parser.add_argument("id", type=non_empty_string, help="Record id" + ARGUMENT_MISSING_RESPONSE, required=True, nullable=False)
-        parser.add_argument("name", type=non_empty_string, help="Record name" + ARGUMENT_MISSING_RESPONSE, required=True, nullable=False)
-        parser.add_argument("login", type=non_empty_string, help="Record login" + ARGUMENT_MISSING_RESPONSE, required=True, nullable=False)
-        parser.add_argument("encrypted_password", type=non_empty_string, help="Record's encrypted password" + ARGUMENT_MISSING_RESPONSE, required=True, nullable=False)
+        parser.add_argument("id", type=str, help=MISSING_PARAMETER_RESPONSE, required=True, nullable=False)
+        parser.add_argument("name", type=str, help=MISSING_PARAMETER_RESPONSE, required=True, nullable=False)
+        parser.add_argument("login", type=str, help=MISSING_PARAMETER_RESPONSE,required=True, nullable=False)
+        parser.add_argument("password", type=str, help=MISSING_PARAMETER_RESPONSE, required=True, nullable=False)
         args = parser.parse_args()
 
-        validator = Validator(args)
+        validator = Validator(args, exclude_from_validation=["id"])
         validator.validate_data_format()
                 
         record = models.Record(id=args["id"], name=args["name"], login=args["login"], 
-                                encrypted_password=args["encrypted_password"], user_id=current_user.id, creation_time=datetime.datetime.now(), 
+                                password=args["password"], user_id=current_user.id, creation_time=datetime.datetime.now(), 
                                 update_time=datetime.datetime.now())
 
                                 
         db.session.add(record)
         db.session.commit()
-        return {"message": f"Record created successfully"}, 201
+        return create_response("Record created", 201)
         
 
 
@@ -40,12 +40,12 @@ class Record(Resource):
     def patch(self, current_user):
         
         parser = reqparse.RequestParser()
-        parser.add_argument("id", type=non_empty_string, help="Record id" + ARGUMENT_MISSING_RESPONSE, required=True, nullable=False)
-        parser.add_argument("name", type=non_empty_string, help="Record name" + ARGUMENT_MISSING_RESPONSE, required=True, nullable=False)
-        parser.add_argument("login", type=non_empty_string, help="Record login" + ARGUMENT_MISSING_RESPONSE, required=True, nullable=False)
-        parser.add_argument("encrypted_password", type=non_empty_string, help="Record encrypted password" + ARGUMENT_MISSING_RESPONSE, required=True, nullable=False)
-        parser.add_argument("is_favorite", type=bool, help="Record's 'is_favorite' status" + ARGUMENT_MISSING_RESPONSE, required=True, nullable=False)
-        parser.add_argument("is_deleted", type=bool, help="Record's 'is_deleted' status" + ARGUMENT_MISSING_RESPONSE, required=True, nullable=False)
+        parser.add_argument("id", type=str, help="Record id" + MISSING_PARAMETER_RESPONSE, required=True, nullable=False)
+        parser.add_argument("name", type=str, help="Record name" + MISSING_PARAMETER_RESPONSE, required=True, nullable=False)
+        parser.add_argument("login", type=str, help="Record login" + MISSING_PARAMETER_RESPONSE, required=True, nullable=False)
+        parser.add_argument("password", type=str, help="Record password" + MISSING_PARAMETER_RESPONSE, required=True, nullable=False)
+        parser.add_argument("is_favorite", type=bool, help="Record's 'is_favorite' status" + MISSING_PARAMETER_RESPONSE, required=True, nullable=False)
+        parser.add_argument("is_deleted", type=bool, help="Record's 'is_deleted' status" + MISSING_PARAMETER_RESPONSE, required=True, nullable=False)
         args = parser.parse_args()
 
         record = db.session.query(models.Record).get(args["id"])
@@ -65,7 +65,7 @@ class Record(Resource):
 
         record.name = args["name"]
         record.login = args["login"]
-        record.encrypted_password = args["encrypted_password"]
+        record.password = args["password"]
         record.is_favorite = args["is_favorite"]
         record.is_deleted = args["is_deleted"]
         record.update_time = datetime.datetime.now()

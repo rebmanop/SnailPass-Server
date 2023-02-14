@@ -3,7 +3,7 @@ from flask_restful import Api
 import os
 from config import config, Config
 from flask_migrate import Migrate
-from api.errors import APIError
+from api.errors import APIError, APIDataFormatError
 from flask import jsonify
 import traceback
 
@@ -39,10 +39,12 @@ def create_app(test_config: Config = None):
     api.add_resource(AdditionalField, "/additional_fields")
     api.add_resource(Note, "/notes")
 
-    from api.core import handle_exception, handle_unknown_exception
+    from api.core import handle_exception, handle_unknown_exception, handle_validation_exception
     app.register_error_handler(APIError, handle_exception)
     app.register_error_handler(500, handle_unknown_exception)
     app.register_error_handler(Exception, handle_unknown_exception)
+    app.register_error_handler(APIDataFormatError, handle_validation_exception)
+
 
 
     app.register_blueprint(login_blueprint)

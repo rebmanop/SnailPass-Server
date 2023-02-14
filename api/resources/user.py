@@ -1,10 +1,10 @@
 import models
 import hashing
 from models import db
-from api.access_restrictions import admin_only_function, token_required
+from api.access_restrictions import token_required
 from flask_restful import Resource, reqparse, request, fields, marshal
 from api.resource_fields import USER_RESOURCE_FIELDS
-from api.core import non_empty_string, ARGUMENT_MISSING_RESPONSE
+from api.core import  MISSING_PARAMETER_RESPONSE
 
 
 class User(Resource):
@@ -13,7 +13,7 @@ class User(Resource):
 
         parser = reqparse.RequestParser()
 
-        parser.add_argument("id", type=str, help="User id" + ARGUMENT_MISSING_RESPONSE, required=True, nullable=False)
+        parser.add_argument("id", type=str, help="User id" + MISSING_PARAMETER_RESPONSE, required=True, nullable=False)
         parser.add_argument("email", type=str, help="User email is missing at all, value is null or value is empty", required=True, nullable=False)
         parser.add_argument("master_password_hash", type=str, help="User's master password hash is missing at all, value is null or value is empty", required=True, nullable=False)
         parser.add_argument("hint", type=str, nullable=False)
@@ -34,28 +34,6 @@ class User(Resource):
         db.session.commit()
 
         return {"message": f"User '{new_user.email}' created successfully"}, 201 
-
-    
-    @admin_only_function
-    def delete(self): 
-        """Delete user (admin only function)"""
-           
-        user_id = request.args.get("id")
-        
-        if not user_id:
-            return {"message": "User id not found in the url params"}, 400
-
-        
-        user = db.session.query(models.User).get(user_id)
-        
-        if not user:
-            return {"message": "User with that id doesn't exist"}, 404
-
-
-        db.session.delete(user)
-        db.session.commit()
-
-        return {"message": f"User '{user.email}' deleted successfully"}, 200
 
 
     @token_required

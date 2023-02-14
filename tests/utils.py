@@ -31,7 +31,7 @@ def add_new_record_to_mock_db(new_user, new_record):
     """
     
     new_record_db_model_object = models.Record(id=new_record["id"], name=new_record["name"], login=new_record["login"], 
-                                encrypted_password=new_record["encrypted_password"], user_id=new_user["id"], creation_time=datetime.datetime.now(), 
+                                password=new_record["password"], user_id=new_user["id"], creation_time=datetime.datetime.now(), 
                                 update_time=datetime.datetime.now())
     
     db.session.add(new_record_db_model_object)

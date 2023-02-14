@@ -7,7 +7,7 @@ class Record(db.Model):
     id = db.Column(db.String, primary_key=True)
     name = db.Column(db.String, nullable=False)
     login = db.Column(db.String, nullable=False)
-    encrypted_password = db.Column(db.String, nullable=False)
+    password = db.Column(db.String, nullable=False)
     user_id = db.Column(db.String, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
     is_favorite = db.Column(db.Boolean, default=False)
     is_deleted = db.Column(db.Boolean, default=False)
@@ -22,7 +22,7 @@ class Record(db.Model):
                 f'id: {self.id}\n'
                 f'name: {self.name}\n'
                 f'login: {self.login}\n'
-                f'encrypted_password: {self.encrypted_password}\n'
+                f'password: {self.password}\n'
                 f'is_favorite: {self.is_favorite}\n'
                 f'is_deleted: {self.is_deleted}\n'
                 f'creation_time: {self.creation_time}\n'

@@ -2,9 +2,11 @@ from api import IV_AND_DATA_DELIMETER
 from api.errors import APIDataFormatError
 
 class Validator():
-    def __init__(self, args: dict):
+    def __init__(self, args: dict, exclude_from_validation=None):
         self.data = args.copy()
-        self.data.pop("id")
+        if exclude_from_validation:
+            for arg_to_exclude in exclude_from_validation:
+                self.data.pop(arg_to_exclude)
  
     def validate_data_format(self) -> None:
         wrong_format_args = []
@@ -15,5 +17,5 @@ class Validator():
                 wrong_format_args.append(key)
                 
         if len(wrong_format_args) > 0:        
-            raise APIDataFormatError(f"Some arguments are in wrong format: {wrong_format_args}")
+            raise APIDataFormatError(wrong_format_args)
         

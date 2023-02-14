@@ -2,7 +2,8 @@ import jwt
 import models
 from functools import wraps
 from models import db
-from flask import request, make_response, current_app
+from flask import request, current_app
+from api.errors import APIAuthError, APIResourceNotFoundError, APIMissingRequestHeaderError
 
 
 def token_required(f):
@@ -14,50 +15,27 @@ def token_required(f):
             token = request.headers['x-access-token']
 
         if not token:
-            return make_response({'message': 'Token is missing'}, 400)
+            raise APIMissingRequestHeaderError("Token is missing in x-access-token header")
 
         try: 
             data = jwt.decode(token, key=current_app.config['SECRET_KEY'], algorithms=["HS256"])
             current_user = db.session.query(models.User).get(data['id'])
+            if not current_user:
+                raise TypeError
 
         except(jwt.ExpiredSignatureError): 
-            return make_response({'message': 'Token already expired'}, 401)
-        
+            raise APIAuthError("Token already expired")
+
+        except(TypeError):
+            raise APIResourceNotFoundError("Current user does not exist")
+            
         except:
-            return make_response({'message': 'Token is invalid'}, 401)
+            raise APIAuthError("Token is invalid")
 
         return f(*args, current_user, **kwargs)
 
     return decorated
 
-
-def admin_only_function(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        token = None
-
-        if 'x-access-token' in request.headers:
-            token = request.headers['x-access-token']
-
-        if not token:
-            return make_response({'message': 'Token is missing'}, 400)
-        
-        try: 
-            data = jwt.decode(token, key=current_app.config['SECRET_KEY'], algorithms=["HS256"])
-            current_user = db.session.query(models.User).get(data['id'])
-
-        except(jwt.ExpiredSignatureError): 
-            return make_response({'message': 'Token already expired'}, 401)
-
-        except:
-            return make_response({'message': 'Token is invalid'}, 401)
-
-        if not current_user.is_admin:
-            return make_response({'message': 'Admin only function'}, 403)
-
-        return f(*args, **kwargs)
-
-    return decorated
         
 
         

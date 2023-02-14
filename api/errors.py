@@ -15,4 +15,25 @@ class APIDataFormatError(APIError):
     description = "Data Format Error"
 
 
+class APIResourceNotFoundError(APIError):
+    """Custom Resource Not Found Error Class"""
+    code = 404
+    description = "Resource Not Found"
+
+
+class APIMissingParameterError(APIError):
+    """Custom Missing Parameter Error Class"""
+    code = 400
+    description = "Missing Parameter"
+
+
+class APIMissingRequestHeaderError(APIError):
+    """Custom Missing Header Error Class"""
+    code = 400
+    description = "Missing Request Header"
+
+
+
+
+
 

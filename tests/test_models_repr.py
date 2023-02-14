@@ -9,7 +9,7 @@ def test_user_repr():
 
 def test_record_repr():
     record = models.Record(id=utils.get_random_id(), name=utils.get_random_word(), login=utils.get_random_email(), 
-                                encrypted_password=utils.get_random_word_hash(), user_id=utils.get_random_id(), creation_time=datetime.datetime.now(), 
+                                password=utils.get_random_word_hash(), user_id=utils.get_random_id(), creation_time=datetime.datetime.now(), 
                                 update_time=datetime.datetime.now())
     print(record)
 

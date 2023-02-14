@@ -40,7 +40,7 @@ def new_record():
     "id": utils.get_random_id(),
     "name": utils.get_random_word(),
     "login": utils.get_random_email(),
-    "encrypted_password": utils.get_random_word_hash(),
+    "password": utils.get_random_word_hash(),
     }
 
     return new_record

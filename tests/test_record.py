@@ -232,7 +232,7 @@ def test_edit_record_success(client, new_user, new_record):
     #Sending patch request with edited record
     edited_record = new_record.copy()
     
-    edited_record["encrypted_password"] += "x"
+    edited_record["password"] += "x"
     edited_record["is_deleted"] = new_record_got_from_db.is_deleted
     edited_record["is_favorite"] =new_record_got_from_db.is_favorite
 
@@ -240,7 +240,7 @@ def test_edit_record_success(client, new_user, new_record):
     expected_respones_message = f"Changes for the record '{new_record['id']}' were successfully made"
     assert response.status_code == 200
     assert expected_respones_message.encode() in response.data
-    assert db.session.query(models.Record).get(new_record["id"]).encrypted_password == edited_record["encrypted_password"]
+    assert db.session.query(models.Record).get(new_record["id"]).password == edited_record["password"]
 
 
 def test_edit_record_fail_1(client, new_user, new_record):
