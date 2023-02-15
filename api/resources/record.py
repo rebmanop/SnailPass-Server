@@ -1,13 +1,14 @@
 import models
 import datetime
 from models import db
+from flask import current_app
 from api.validator import Validator
 from api.access_restrictions import token_required
-from api.errors import APIResourceAlreadyExistsError
 from flask_restful import Resource, marshal, reqparse
 from flask_restful import Resource, reqparse, request
 from api.resource_fields import RECORD_RESOURCE_FIELDS
 from api.core import MISSING_ARGUMENT_RESPONSE, create_successful_response
+from api.errors import APIResourceAlreadyExistsError, APIResourceNotFoundError, APIAccessDeniedError, APIMissingParameterError
 
 
 class Record(Resource):
@@ -56,9 +57,7 @@ class Record(Resource):
 
     @token_required
     def post(self, current_user):
-        
         """Create new record"""
-
         
         args = self.parser.parse_args()
         self.validator.validate_args(args)
@@ -68,40 +67,30 @@ class Record(Resource):
                 
         record = models.Record(id=args["id"], name=args["name"], login=args["login"], 
                                 password=args["password"], user_id=current_user.id, creation_time=datetime.datetime.now(), 
-                                update_time=datetime.datetime.now())
+                                update_time=datetime.datetime.now(), is_favorite=args["is_favorite"], is_deleted=args["is_deleted"])
 
         db.session.add(record)
         db.session.commit()
+
+        current_app.logger.debug(f"Record created successfully: {record}")
         return create_successful_response("Record created", 201)
         
 
 
     @token_required
     def patch(self, current_user):
+        """Edit existing record"""
         
-        parser = reqparse.RequestParser()
-        parser.add_argument("id", type=str, help="Record id" + MISSING_ARGUMENT_RESPONSE, required=True, nullable=False)
-        parser.add_argument("name", type=str, help="Record name" + MISSING_ARGUMENT_RESPONSE, required=True, nullable=False)
-        parser.add_argument("login", type=str, help="Record login" + MISSING_ARGUMENT_RESPONSE, required=True, nullable=False)
-        parser.add_argument("password", type=str, help="Record password" + MISSING_ARGUMENT_RESPONSE, required=True, nullable=False)
-        parser.add_argument("is_favorite", type=bool, help="Record's 'is_favorite' status" + MISSING_ARGUMENT_RESPONSE, required=True, nullable=False)
-        parser.add_argument("is_deleted", type=bool, help="Record's 'is_deleted' status" + MISSING_ARGUMENT_RESPONSE, required=True, nullable=False)
-        args = parser.parse_args()
+        args = self.parser.parse_args()
+        self.validator.validate_args()
 
         record = db.session.query(models.Record).get(args["id"])
 
         if not record:
-            return {"message": f"Record with id '{args['id']}' doesn't exist"}, 404
+            raise APIResourceNotFoundError("Record with that id doesn't exist")
         
         if current_user.id != record.user_id:
-            return {"message": f"Record with id '{record.id}' doesn't belong to the current user"}, 403
-        
-        record_with_same_login_and_name = db.session.query(models.Record).filter(models.Record.id != record.id,
-                            models.Record.name == args["name"], models.Record.login == args["login"]).first()
-
-        if record_with_same_login_and_name:
-            return {"message": f"Record with name '{args['name']}' and with login '{args['login']}' already exist in current user's vault"}, 409
-        
+            raise APIAccessDeniedError("Record with that id doesn't belong to the current user")
 
         record.name = args["name"]
         record.login = args["login"]
@@ -111,32 +100,33 @@ class Record(Resource):
         record.update_time = datetime.datetime.now()
         
         db.session.commit()
-        return {"message": f"Changes for the record '{args['id']}' were successfully made"}, 200
+        current_app.logger.debug(f"Record changed successfully: {record}")
+        return create_successful_response("Changes for the record were successfully made", 200)
 
     
     @token_required
     def delete(self, current_user):
-
         "Delete record"
 
         record_id = request.args.get("id")
 
         if not record_id:
-            return {"message": f"Record id is missing in uri args"}, 400
+            raise APIMissingParameterError("Record id is missing in uri args")
 
         record = db.session.query(models.Record).get(record_id)
 
         if not record:
-            return {"message": "Record with that id doesn't exist"}, 404
+            raise APIResourceNotFoundError("Record with that id doesn't exist")
 
         if current_user.id != record.user_id:
-            return {"message": f"Record with id '{record.id}' doesn't belong to the current user"}, 403
+            raise APIAccessDeniedError("Record with that id doesn't belong to the current user")
 
         
         db.session.delete(record)
         db.session.commit()
-
-        return {"message": f"Record '{record.name}' deleted successfully (user = '{current_user.email}')"}, 200
+        
+        current_app.logger.debug(f"Record deleted successfully: {record}")
+        return create_successful_response("Record deleted successfully", 200)
 
 
     @token_required
@@ -145,8 +135,10 @@ class Record(Resource):
         """Get user records"""
 
         if len(current_user.records) == 0:
-             return {"message": f"User '{current_user.email}' has no records"}, 404
+            current_app.logger.debug(f"Current user {current_user} has no records")
+            raise APIResourceNotFoundError("Current user has no records")
         else:
+            current_app.logger.debug("Current user's records return")
             return [marshal(record, RECORD_RESOURCE_FIELDS) for record in current_user.records], 200
             
 

@@ -5,7 +5,7 @@ class APIError(Exception):
 
 class APIAuthError(APIError):
     """Custom Authentication Error Class."""
-    code = 403
+    code = 401
     description = "Authentication Error"
 
 
@@ -37,6 +37,12 @@ class APIResourceAlreadyExistsError(APIError):
     """Custom Resource Already Exists Error Class"""
     code = 409
     description = "Resource Already Exists"
+
+
+class APIAccessDeniedError(APIError):
+    """Custom Access Denied Error"""
+    code = 403
+    description = "Access Denied"
 
 
 

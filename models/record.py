@@ -26,7 +26,7 @@ class Record(db.Model):
                 f'is_favorite: {self.is_favorite}\n'
                 f'is_deleted: {self.is_deleted}\n'
                 f'creation_time: {self.creation_time}\n'
-                f'update_time: {self.update_time}\n'
+                f'update_time: {self.update_time}'
                 f'\n***Record***'
                 )
 

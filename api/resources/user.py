@@ -61,8 +61,8 @@ class User(Resource):
         db.session.add(new_user)
         db.session.commit()
 
-        current_app.logger.debug(f"User {new_user.email} created successfully")
-        return create_successful_response(message="User created successfully", status_code=201) 
+        current_app.logger.debug(f"User created successfully: {new_user}")
+        return create_successful_response("User created successfully", 201) 
 
 
     @token_required
