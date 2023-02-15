@@ -1,39 +1,68 @@
 import models
 import hashing
 from models import db
+from flask import current_app
+from api.validator import Validator
+from api.errors import APIResourceAlreadyExistsError
 from api.access_restrictions import token_required
-from flask_restful import Resource, reqparse, request, fields, marshal
+from flask_restful import Resource, reqparse, marshal
 from api.resource_fields import USER_RESOURCE_FIELDS
-from api.core import  MISSING_PARAMETER_RESPONSE
+from api.core import  MISSING_ARGUMENT_RESPONSE, create_successful_response
+
 
 
 class User(Resource):
+    def __init__(self):
+        self.parser = reqparse.RequestParser()
+
+        self.parser.add_argument("id", 
+                                type=str, 
+                                help=MISSING_ARGUMENT_RESPONSE, 
+                                required=True, 
+                                nullable=False)
+
+        self.parser.add_argument("email", 
+                                type=str, 
+                                help=MISSING_ARGUMENT_RESPONSE, 
+                                required=True, 
+                                nullable=False)
+
+        self.parser.add_argument("master_password_hash", 
+                                type=str, 
+                                help=MISSING_ARGUMENT_RESPONSE, 
+                                required=True, 
+                                nullable=False)
+        
+        self.parser.add_argument("hint", 
+                                type=str, 
+                                nullable=False)
+        
+        self.validator = Validator(all_not_encrypted=True)
+
+
     def post(self):
         """Signup procedure"""
+        args = self.parser.parse_args()
+        self.validator.validate_args(args)
 
-        parser = reqparse.RequestParser()
-
-        parser.add_argument("id", type=str, help="User id" + MISSING_PARAMETER_RESPONSE, required=True, nullable=False)
-        parser.add_argument("email", type=str, help="User email is missing at all, value is null or value is empty", required=True, nullable=False)
-        parser.add_argument("master_password_hash", type=str, help="User's master password hash is missing at all, value is null or value is empty", required=True, nullable=False)
-        parser.add_argument("hint", type=str, nullable=False)
-        args = parser.parse_args()
-
-        additionaly_hashed_master_password = hashing.hash_mp_additionally(password_hash=args["master_password_hash"], 
+        additionaly_hashed_master_password = hashing.hash_mp_additionally(
+                                                password_hash=args["master_password_hash"], 
                                                 salt=args["email"])
-
+        
         if db.session.query(models.User).get(args["id"]):
-            return {"message": f"User with received id '{args['id']}' already exists"}, 409
-        elif db.session.query(models.User).filter_by(email=args["email"]).all():
-            return {"message": f"User with received email '{args['email']}' already exists"}, 409
+            raise APIResourceAlreadyExistsError("User with this id already exists")
+        if db.session.query(models.User).filter_by(email=args["email"]).first():
+            raise APIResourceAlreadyExistsError("User with this email already exists")
 
         new_user = models.User(id=args["id"], email=args["email"], 
-                                master_password_hash=additionaly_hashed_master_password, hint=args["hint"])
+                                master_password_hash=additionaly_hashed_master_password, 
+                                hint=args["hint"])
         
         db.session.add(new_user)
         db.session.commit()
 
-        return {"message": f"User '{new_user.email}' created successfully"}, 201 
+        current_app.logger.debug(f"User {new_user.email} created successfully")
+        return create_successful_response(message="User created successfully", status_code=201) 
 
 
     @token_required
@@ -41,6 +70,7 @@ class User(Resource):
         """
         Returns current user
         """
+        current_app.logger.debug(f"Current user successfully returned: {current_user}")
         return marshal(current_user, USER_RESOURCE_FIELDS), 200
 
 

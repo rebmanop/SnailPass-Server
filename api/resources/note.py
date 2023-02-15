@@ -5,7 +5,7 @@ from api.access_restrictions import token_required
 from api.resource_fields import NOTE_RESOURCE_FIELDS
 from flask_restful import Resource, reqparse, request
 from flask_restful import Resource, marshal, reqparse
-from api.core import MISSING_PARAMETER_RESPONSE
+from api.core import MISSING_ARGUMENT_RESPONSE
 
 
 class Note(Resource):
@@ -15,9 +15,9 @@ class Note(Resource):
         """Create new note"""
 
         parser = reqparse.RequestParser()
-        parser.add_argument("id", type=str, help="Record id" + MISSING_PARAMETER_RESPONSE, required=True, nullable=False)
-        parser.add_argument("name", type=str, help="Record name" + MISSING_PARAMETER_RESPONSE, required=True, nullable=False)
-        parser.add_argument("content", type=str, help="Record content" + MISSING_PARAMETER_RESPONSE, required=True, nullable=False)
+        parser.add_argument("id", type=str, help="Record id" + MISSING_ARGUMENT_RESPONSE, required=True, nullable=False)
+        parser.add_argument("name", type=str, help="Record name" + MISSING_ARGUMENT_RESPONSE, required=True, nullable=False)
+        parser.add_argument("content", type=str, help="Record content" + MISSING_ARGUMENT_RESPONSE, required=True, nullable=False)
         args = parser.parse_args()
 
 
@@ -42,11 +42,11 @@ class Note(Resource):
         """Edit existing note"""
         
         parser = reqparse.RequestParser()
-        parser.add_argument("id", type=str, help="Note id" + MISSING_PARAMETER_RESPONSE, required=True, nullable=False)
-        parser.add_argument("name", type=str, help="Note name" + MISSING_PARAMETER_RESPONSE, required=True, nullable=False)
-        parser.add_argument("content", type=str, help="Note content" + MISSING_PARAMETER_RESPONSE, required=True, nullable=False)
-        parser.add_argument("is_favorite", type=bool, help="Note 'is_favorite' status" + MISSING_PARAMETER_RESPONSE, required=True, nullable=False)
-        parser.add_argument("is_deleted", type=bool, help="Note 'is_deleted' status" + MISSING_PARAMETER_RESPONSE, required=True, nullable=False)
+        parser.add_argument("id", type=str, help="Note id" + MISSING_ARGUMENT_RESPONSE, required=True, nullable=False)
+        parser.add_argument("name", type=str, help="Note name" + MISSING_ARGUMENT_RESPONSE, required=True, nullable=False)
+        parser.add_argument("content", type=str, help="Note content" + MISSING_ARGUMENT_RESPONSE, required=True, nullable=False)
+        parser.add_argument("is_favorite", type=bool, help="Note 'is_favorite' status" + MISSING_ARGUMENT_RESPONSE, required=True, nullable=False)
+        parser.add_argument("is_deleted", type=bool, help="Note 'is_deleted' status" + MISSING_ARGUMENT_RESPONSE, required=True, nullable=False)
         args = parser.parse_args()
 
         note = db.session.query(models.Note).get(args["id"])

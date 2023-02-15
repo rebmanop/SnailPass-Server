@@ -1,14 +1,15 @@
 import traceback
-from flask import jsonify, current_app
 from typing import Tuple
+from flask import jsonify, current_app
 
-MISSING_PARAMETER_RESPONSE = "This JSON body parameter is missing at all or it's value is null"
-WRONG_FORMAT_PARAMETER_RESPONSE = "This JSON body parameter is in wrong format. Correct format is IV:Data"
+MISSING_ARGUMENT_RESPONSE = "This JSON body argument is missing at all or it's value is null"
+WRONG_FORMAT_ARGUMENT_RESPONSE = "This JSON body argument is in wrong format. Correct format is IV:Data"
+EMPTY_STRING_ARGUMENT_RESPONSE = "This JSON body argument is an empty string"
 
-
-def create_response(message: str = "", status_code: int = 200) -> Tuple[dict, int]: 
-    """Wraps response in a consistent format throughout the API"""
+def create_successful_response(message: str = "", status_code: int = 200) -> Tuple[dict, int]: 
+    """Wraps successful response in a consistent format throughout the API"""
     return {"message": {"success" : message}}, status_code
+
 
 def handle_exception(err):
         """Return custom JSON when APIError or its children are raised"""
@@ -33,10 +34,7 @@ def handle_validation_exception(err):
     Used by custom data validator, so validation error response structure would look like request parser's error response structure
     """
     response = {}
-    wrong_format_args = {}
-    
-    for wrong_format_arg in err.args[0]:
-        wrong_format_args[wrong_format_arg] = WRONG_FORMAT_PARAMETER_RESPONSE
+    wrong_format_args =  err.args[0] 
 
     response["message"] = wrong_format_args
     return jsonify(response), err.code

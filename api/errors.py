@@ -33,6 +33,12 @@ class APIMissingRequestHeaderError(APIError):
     description = "Missing Request Header"
 
 
+class APIResourceAlreadyExistsError(APIError):
+    """Custom Resource Already Exists Error Class"""
+    code = 409
+    description = "Resource Already Exists"
+
+
 
 
 
