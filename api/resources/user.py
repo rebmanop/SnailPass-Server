@@ -2,6 +2,7 @@ import models
 import hashing
 from models import db
 from flask import current_app
+from nameof import nameof
 from api.validator import Validator
 from api.errors import APIResourceAlreadyExistsError
 from api.access_restrictions import token_required
@@ -15,25 +16,25 @@ class User(Resource):
     def __init__(self):
         self.parser = reqparse.RequestParser()
 
-        self.parser.add_argument("id", 
+        self.parser.add_argument(nameof(models.User.id), 
                                 type=str, 
                                 help=MISSING_ARGUMENT_RESPONSE, 
                                 required=True, 
                                 nullable=False)
 
-        self.parser.add_argument("email", 
+        self.parser.add_argument(nameof(models.User.email), 
                                 type=str, 
                                 help=MISSING_ARGUMENT_RESPONSE, 
                                 required=True, 
                                 nullable=False)
 
-        self.parser.add_argument("master_password_hash", 
+        self.parser.add_argument(nameof(models.User.master_password_hash), 
                                 type=str, 
                                 help=MISSING_ARGUMENT_RESPONSE, 
                                 required=True, 
                                 nullable=False)
         
-        self.parser.add_argument("hint", 
+        self.parser.add_argument(nameof(models.User.hint),
                                 type=str, 
                                 nullable=False)
         
