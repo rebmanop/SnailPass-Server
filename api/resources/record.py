@@ -86,7 +86,7 @@ class Record(Resource):
 
 
     @token_required
-    def patch(self, current_user):
+    def put(self, current_user):
         """Edit existing record"""
         
         args = self.parser.parse_args()

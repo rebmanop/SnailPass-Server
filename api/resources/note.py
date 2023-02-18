@@ -79,7 +79,7 @@ class Note(Resource):
 
 
     @token_required
-    def patch(self, current_user):
+    def put(self, current_user):
         """Edit existing note"""
         
         args = self.parser.parse_args()

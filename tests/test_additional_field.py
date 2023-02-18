@@ -23,7 +23,7 @@ def test_add_new_additional_field_success(client, new_user, new_record, new_addi
     new_additional_field["record_id"] = new_record["id"]
     response = client.post("/additional_fields", headers={"x-access-token": f"{token}"}, json=new_additional_field)
 
-    expected_response_message = f"Additional field {new_additional_field['id']} changed successfully"
+    expected_response_message = f"Additional field {new_additional_field['id']} created"
     assert response.status_code == 201
     assert expected_response_message.encode() in response.data and b"success" in response.data
 
@@ -178,7 +178,7 @@ def test_delete_additional_field_fail_3(client, new_user, new_record, new_additi
     record_got_from_db.user_id += "x"
     db.session.commit()
     
-    #Sending patch additional field request when af's record doesn't belong to the current user
+    #Sending put additional field request when af's record doesn't belong to the current user
     new_additional_field["record_id"] = new_record["id"] 
     response = client.delete("/additional_fields", headers={"x-access-token": f"{token}"}, query_string={'id': new_additional_field["id"]})
     expected_response_message = f"Additional field {new_additional_field['id']} doesn't belong to the current user {new_user['id']}"
@@ -312,8 +312,8 @@ def test_edit_additional_field_success(client, new_user, new_record, new_additio
 
     token = get_mock_token(new_user)
     
-    #Sending patch additional field request 
-    response = client.patch("/additional_fields", headers={"x-access-token": f"{token}"}, json=edited_additional_field)
+    #Sending put additional field request 
+    response = client.put("/additional_fields", headers={"x-access-token": f"{token}"}, json=edited_additional_field)
     expected_response_message = f"Additional field {new_additional_field['id']} changed successfully"
     assert response.status_code == 200
     assert expected_response_message.encode() in response.data and b"success" in response.data
@@ -332,9 +332,9 @@ def test_edit_additional_field_fail_1(client, new_user, new_record, new_addition
     
     token = get_mock_token(new_user)
     
-    #Sending patch additional field request, when there is no af with that id in db 
+    #Sending put additional field request, when there is no af with that id in db 
     new_additional_field["record_id"] = new_record["id"]
-    response = client.patch("/additional_fields", headers={"x-access-token": f"{token}"}, json=new_additional_field)
+    response = client.put("/additional_fields", headers={"x-access-token": f"{token}"}, json=new_additional_field)
     expected_response_message = f"Additional field with id {new_additional_field['id']} doesn't exist"
     assert response.status_code == 404
     assert expected_response_message.encode() in response.data and b"error" in response.data
@@ -359,9 +359,9 @@ def test_edit_additional_field_fail_3(client, new_user, new_record, new_addition
     record_got_from_db.user_id += "x"
     db.session.commit()
     
-    #Sending patch additional field request when af's record doesn't belong to the current user
+    #Sending put additional field request when af's record doesn't belong to the current user
     new_additional_field["record_id"] = new_record["id"] 
-    response = client.patch("/additional_fields", headers={"x-access-token": f"{token}"}, json=new_additional_field)
+    response = client.put("/additional_fields", headers={"x-access-token": f"{token}"}, json=new_additional_field)
     expected_response_message = f"Additional field {new_additional_field['id']} doesn't belong to the current user {new_user['id']}"
     assert response.status_code == 403
     assert expected_response_message.encode() in response.data and b"error" in response.data

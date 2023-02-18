@@ -186,14 +186,14 @@ def test_edit_note_success(client, new_user, new_note):
 
     token = get_mock_token(new_user)
 
-    #Sending patch request with edited note
+    #Sending put request with edited note
     edited_note = new_note.copy()
     
     edited_note["content"] += "x"
     edited_note["is_deleted"] = new_note_got_from_db.is_deleted
     edited_note["is_favorite"] =new_note_got_from_db.is_favorite
 
-    response = client.patch("/notes", headers={"x-access-token": f"{token}"}, json=edited_note)
+    response = client.put("/notes", headers={"x-access-token": f"{token}"}, json=edited_note)
     expected_respones_message = f"Note {new_note['id']} changed successfully"
     assert response.status_code == 200
     assert expected_respones_message.encode() in response.data and b"success" in response.data
@@ -210,10 +210,10 @@ def test_edit_note_fail_1(client, new_user, new_note):
 
     token = get_mock_token(new_user)
 
-    #Sending patch request when user has notes, expecting unexisting note error
+    #Sending put request when user has notes, expecting unexisting note error
     new_note["is_favorite"] = False
     new_note["is_deleted"] = False
-    response = client.patch("/notes", headers={"x-access-token": f"{token}"}, json=new_note)
+    response = client.put("/notes", headers={"x-access-token": f"{token}"}, json=new_note)
     expected_respones_message = f"Note with id {new_note['id']} doesn't exist"
     assert response.status_code == 404
     assert expected_respones_message.encode() in response.data and b"error" in response.data
@@ -238,7 +238,7 @@ def test_edit_note_fail_2(client, new_user, new_note):
     #Sending delete request, where note's user id changed so it doesn't belong to current user
     new_note["is_favorite"] = False
     new_note["is_deleted"] = False
-    response = client.patch("/notes", headers={"x-access-token": f"{token}"}, 
+    response = client.put("/notes", headers={"x-access-token": f"{token}"}, 
                             json=new_note)
 
     expected_response_message = f"Note {new_note['id']} doesn't belong to the current user {new_user['id']}"

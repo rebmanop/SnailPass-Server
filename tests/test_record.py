@@ -186,14 +186,14 @@ def test_edit_record_success(client, new_user, new_record):
 
     token = get_mock_token(new_user)
 
-    #Sending patch request with edited record
+    #Sending put request with edited record
     edited_record = new_record.copy()
     
     edited_record["password"] += "x"
     edited_record["is_deleted"] = new_record_got_from_db.is_deleted
     edited_record["is_favorite"] =new_record_got_from_db.is_favorite
 
-    response = client.patch("/records", headers={"x-access-token": f"{token}"}, json=edited_record)
+    response = client.put("/records", headers={"x-access-token": f"{token}"}, json=edited_record)
     expected_respones_message = f"Record {new_record['id']} changed successfully"
     assert response.status_code == 200
     assert expected_respones_message.encode() in response.data and b"success" in response.data
@@ -210,10 +210,10 @@ def test_edit_record_fail_1(client, new_user, new_record):
 
     token = get_mock_token(new_user)
 
-    #Sending patch request when user has no records, expecting unexisting record error
+    #Sending put request when user has no records, expecting unexisting record error
     new_record["is_favorite"] = False
     new_record["is_deleted"] = False
-    response = client.patch("/records", headers={"x-access-token": f"{token}"}, json=new_record)
+    response = client.put("/records", headers={"x-access-token": f"{token}"}, json=new_record)
     expected_respones_message = f"Record with id {new_record['id']}"
     assert response.status_code == 404
     assert expected_respones_message.encode() in response.data and b"error" in response.data
@@ -238,7 +238,7 @@ def test_edit_record_fail_2(client, new_user, new_record):
     #Sending delete request, where record's user id changed so it doesn't belong to current user
     new_record["is_favorite"] = False
     new_record["is_deleted"] = False
-    response = client.patch("/records", headers={"x-access-token": f"{token}"}, 
+    response = client.put("/records", headers={"x-access-token": f"{token}"}, 
                             json=new_record)
 
     expected_response_message = f"Record {new_record['id']} doesn't belong to the current user {new_user['id']}"
