@@ -8,8 +8,6 @@ from models import db
 app = create_app()
 
 
-
-
 manager = Manager(app)
 migrate = Migrate(app, db)
 
@@ -35,4 +33,3 @@ def recreate_db():
 
 if __name__ == "__main__":
     manager.run()
-
