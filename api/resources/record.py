@@ -1,6 +1,7 @@
 import models
 import datetime
 from models import db
+import api.errors as err
 from nameof import nameof
 from flask import current_app
 from api.validator import Validator
@@ -9,11 +10,9 @@ from flask_restful import Resource, marshal, reqparse
 from flask_restful import Resource, reqparse, request
 from api.resource_fields import RECORD_RESOURCE_FIELDS
 from api.core import MISSING_ARGUMENT_RESPONSE, create_successful_response
-from api.errors import APIResourceAlreadyExistsError, APIResourceNotFoundError, APIAccessDeniedError, APIMissingParameterError
 
 
 class Record(Resource):
-
     def __init__(self):
         self.parser = reqparse.RequestParser()
         
@@ -57,6 +56,8 @@ class Record(Resource):
                                                        nameof(models.Record.is_favorite), 
                                                        nameof(models.Record.is_deleted)])
 
+
+
     @token_required
     def post(self, current_user):
         """Create new record"""
@@ -64,12 +65,18 @@ class Record(Resource):
         args = self.parser.parse_args()
         self.validator.validate_args(args)
 
-        if db.session.query(models.Record).get(args["id"]):
-            raise APIResourceAlreadyExistsError(f"Record with id {args['id']} already exists")
+        if db.session.query(models.Record).get(args[nameof(models.Record.id)]):
+            raise err.APIResourceAlreadyExistsError(f"Record with id {args[nameof(models.Record.id)]} already exists")
                 
-        record = models.Record(id=args["id"], name=args["name"], login=args["login"], 
-                                password=args["password"], user_id=current_user.id, creation_time=datetime.datetime.now(), 
-                                update_time=datetime.datetime.now(), is_favorite=args["is_favorite"], is_deleted=args["is_deleted"])
+        record = models.Record(id=args[nameof(models.Record.id)], 
+                               name=args[nameof(models.Record.name)], 
+                               login=args[nameof(models.Record.login)], 
+                               password=args[nameof(models.Record.password)], 
+                               is_favorite=args[nameof(models.Record.is_favorite)], 
+                               is_deleted=args[nameof(models.Record.is_deleted)],
+                               creation_time=datetime.datetime.utcnow(), 
+                               update_time=datetime.datetime.utcnow(), 
+                               user_id=current_user.id)
 
         db.session.add(record)
         db.session.commit()
@@ -83,43 +90,43 @@ class Record(Resource):
         """Edit existing record"""
         
         args = self.parser.parse_args()
-        self.validator.validate_args()
+        self.validator.validate_args(args)
 
-        record = db.session.query(models.Record).get(args["id"])
+        record = db.session.query(models.Record).get(args[nameof(models.Record.id)])
 
         if not record:
-            raise APIResourceNotFoundError(f"Record with id {args['id']} doesn't exist")
+            raise err.APIResourceNotFoundError(f"Record with id {args[nameof(models.Record.id)]} doesn't exist")
         
         if current_user.id != record.user_id:
-            raise APIAccessDeniedError(f"Record {record.id} doesn't belong to the current user {current_user.id}")
+            raise err.APIAccessDeniedError(f"Record {record.id} doesn't belong to the current user {current_user.id}")
 
-        record.name = args["name"]
-        record.login = args["login"]
-        record.password = args["password"]
-        record.is_favorite = args["is_favorite"]
-        record.is_deleted = args["is_deleted"]
-        record.update_time = datetime.datetime.now()
+        record.name = args[nameof(models.Record.name)]
+        record.login = args[nameof(models.Record.login)]
+        record.password = args[nameof(models.Record.password)]
+        record.is_favorite = args[nameof(models.Record.is_favorite)]
+        record.is_deleted = args[nameof(models.Record.is_deleted)]
+        record.update_time = datetime.datetime.utcnow()
         
         db.session.commit()
-        return create_successful_response(f"Changes for the record {record.id} were successfully made", 200)
+        return create_successful_response(f"Record {record.id} changed successfully", 200)
 
     
     @token_required
     def delete(self, current_user):
         "Delete record"
 
-        record_id = request.args.get("id")
+        record_id = request.args.get(nameof(models.Record.id))
 
         if not record_id:
-            raise APIMissingParameterError("Record id is missing in URI arguments")
+            raise err.APIMissingParameterError(f"Record id is missing in URI arguments")
 
         record = db.session.query(models.Record).get(record_id)
 
         if not record:
-            raise APIResourceNotFoundError(f"Record with id {record_id} doesn't exist")
+            raise err.APIResourceNotFoundError(f"Record with id {record_id} doesn't exist")
 
         if current_user.id != record.user_id:
-            raise APIAccessDeniedError(f"Record {record.id} doesn't belong to the current user {current_user.id}")
+            raise err.APIAccessDeniedError(f"Record {record.id} doesn't belong to the current user {current_user.id}")
 
         
         db.session.delete(record)
@@ -134,9 +141,8 @@ class Record(Resource):
         """Get user records"""
 
         if len(current_user.records) == 0:
-            raise APIResourceNotFoundError(f"Current user {current_user.id} has no records")
+            raise err.APIResourceNotFoundError(f"Current user {current_user.id} has no records")
         else:
-            current_app.logger.debug("Current user's records RETURN")
             return [marshal(record, RECORD_RESOURCE_FIELDS) for record in current_user.records], 200
             
 

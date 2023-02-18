@@ -6,6 +6,8 @@ from api import create_app
 from config import TestingConfig
 
 
+
+
 @pytest.fixture()
 def client():
     testing_config = TestingConfig()
@@ -21,7 +23,7 @@ def client():
 
 
 @pytest.fixture
-def new_user():
+def new_user() -> dict:
     
     new_user = {
     "id": utils.get_random_id(),
@@ -34,37 +36,41 @@ def new_user():
 
 
 @pytest.fixture
-def new_record():
+def new_record() -> dict:
     
     new_record = {
     "id": utils.get_random_id(),
-    "name": utils.get_random_word(),
-    "login": utils.get_random_email(),
-    "password": utils.get_random_word_hash(),
+    "name": utils.MOCK_ENCRYPTED_DATA,
+    "login": utils.MOCK_ENCRYPTED_DATA,
+    "password": utils.MOCK_ENCRYPTED_DATA,
+    "is_favorite": False,
+    "is_deleted": False
     }
 
     return new_record
 
 
 @pytest.fixture
-def new_note():
+def new_note() -> dict:
     
     new_note = {
     "id": utils.get_random_id(),
-    "name": utils.get_random_word(),
-    "content": utils.get_random_word() + " " + utils.get_random_word(),
+    "name":  utils.MOCK_ENCRYPTED_DATA,
+    "content":  utils.MOCK_ENCRYPTED_DATA,
+    "is_favorite": False,
+    "is_deleted": False
     }
 
     return new_note
 
 
 @pytest.fixture
-def new_additional_field():
+def new_additional_field() -> dict:
     
     additional_field = {
     "id": utils.get_random_id(),
-    "field_name": utils.get_random_word(),
-    "value": utils.get_random_word(),
+    "name":  utils.MOCK_ENCRYPTED_DATA,
+    "value":  utils.MOCK_ENCRYPTED_DATA,
     }
 
     return additional_field

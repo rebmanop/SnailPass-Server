@@ -1,6 +1,10 @@
 import models
 import datetime
 from models import db
+import api.errors as err
+from nameof import nameof
+from api.validator import Validator
+from api.core import create_successful_response
 from api.access_restrictions import token_required
 from api.resource_fields import NOTE_RESOURCE_FIELDS
 from flask_restful import Resource, reqparse, request
@@ -9,92 +13,120 @@ from api.core import MISSING_ARGUMENT_RESPONSE
 
 
 class Note(Resource):
+    def __init__(self):
+        self.parser = reqparse.RequestParser()
+        
+        self.parser.add_argument(nameof(models.Note.id), 
+                                type=str, 
+                                help=MISSING_ARGUMENT_RESPONSE, 
+                                required=True, 
+                                nullable=False)
+
+        self.parser.add_argument(nameof(models.Note.name), 
+                                type=str, 
+                                help=MISSING_ARGUMENT_RESPONSE, 
+                                required=True, 
+                                nullable=False)
+
+        self.parser.add_argument(nameof(models.Note.content), 
+                                type=str, 
+                                help=MISSING_ARGUMENT_RESPONSE, 
+                                required=True, 
+                                nullable=False)
+
+        self.parser.add_argument(nameof(models.Note.is_favorite), 
+                                type=bool, 
+                                help=MISSING_ARGUMENT_RESPONSE, 
+                                required=True, 
+                                nullable=False)
+
+        self.parser.add_argument(nameof(models.Note.is_deleted), 
+                                type=bool, 
+                                help=MISSING_ARGUMENT_RESPONSE, 
+                                required=True, 
+                                nullable=False)
+
+        self.validator = Validator(not_encrypted_args=[nameof(models.Note.id), 
+                                               nameof(models.Note.is_favorite), 
+                                               nameof(models.Note.is_deleted)])
+
+        self.class_name = {self.__class__.__name__}
+        
+        
+
     @token_required
     def post(self, current_user):
-        
         """Create new note"""
 
-        parser = reqparse.RequestParser()
-        parser.add_argument("id", type=str, help="Record id" + MISSING_ARGUMENT_RESPONSE, required=True, nullable=False)
-        parser.add_argument("name", type=str, help="Record name" + MISSING_ARGUMENT_RESPONSE, required=True, nullable=False)
-        parser.add_argument("content", type=str, help="Record content" + MISSING_ARGUMENT_RESPONSE, required=True, nullable=False)
-        args = parser.parse_args()
+        args = self.parser.parse_args()
+        self.validator.validate_args(args)
 
+        if db.session.query(models.Note).get(args[nameof(models.Note.id)]):
+            raise err.APIResourceAlreadyExistsError(f"Note with id {args[nameof(models.Note.id)]} already exists")
 
-        if db.session.query(models.Note).get(args["id"]):
-            return {"message": f"Note with id '{args['id']}' already exist"}, 409
-        elif db.session.query(models.Note).filter_by(user_id=current_user.id, name=args["name"]).all():
-            return {"message": f"Note with name '{args['name']}' already exist in current user's vault"}, 409
-
-
-        note = models.Note(id=args["id"], name=args["name"], content=args["content"], user_id=current_user.id, creation_time=datetime.datetime.now(), 
-                                update_time=datetime.datetime.now())
-
-                                
+        note = models.Note(id=args[nameof(models.Note.id)], 
+                           name=args[nameof(models.Note.name)], 
+                           content=args[nameof(models.Note.name)], 
+                           user_id=current_user.id, 
+                           creation_time=datetime.datetime.utcnow(), 
+                           update_time=datetime.datetime.utcnow(),
+                           is_favorite=args[nameof(models.Note.is_favorite)],
+                           is_deleted=args[nameof(models.Note.is_deleted)])
+                                 
         db.session.add(note)
         db.session.commit()
-        return {"message": f"Note '{args['name']}' created successfully (user = '{current_user.email}')"}, 201
+        return create_successful_response(f"Note {note.id} created", 201)
 
 
     @token_required
     def patch(self, current_user):
-
         """Edit existing note"""
         
-        parser = reqparse.RequestParser()
-        parser.add_argument("id", type=str, help="Note id" + MISSING_ARGUMENT_RESPONSE, required=True, nullable=False)
-        parser.add_argument("name", type=str, help="Note name" + MISSING_ARGUMENT_RESPONSE, required=True, nullable=False)
-        parser.add_argument("content", type=str, help="Note content" + MISSING_ARGUMENT_RESPONSE, required=True, nullable=False)
-        parser.add_argument("is_favorite", type=bool, help="Note 'is_favorite' status" + MISSING_ARGUMENT_RESPONSE, required=True, nullable=False)
-        parser.add_argument("is_deleted", type=bool, help="Note 'is_deleted' status" + MISSING_ARGUMENT_RESPONSE, required=True, nullable=False)
-        args = parser.parse_args()
+        args = self.parser.parse_args()
+        self.validator.validate_args(args)
 
-        note = db.session.query(models.Note).get(args["id"])
+        note = db.session.query(models.Note).get(args[nameof(models.Note.id)])
 
         if not note:
-            return {"message": f"Note with id '{args['id']}' doesn't exist "}, 404
+            raise err.APIResourceNotFoundError(f"Note with id {args[nameof(models.Note.id)]} doesn't exist")
         
         if current_user.id != note.user_id:
-            return {"message": f"Note with id '{note.id}' doesn't belong to the current user"}, 403
+            raise err.APIAccessDeniedError(f"Note {note.id} doesn't belong to the current user {current_user.id}")
 
 
-        if db.session.query(models.Note).filter(models.Note.id != args["id"],models.Note.name == args["name"]).first():
-            return {"message": f"Note with name '{args['name']}' already exists in current user's vault"}, 409
-
-        note.name = args["name"]
-        note.content = args["content"]
-        note.is_favorite = args["is_favorite"]
-        note.is_deleted = args["is_deleted"]
-        note.update_time = datetime.datetime.now()
+        note.name = args[nameof(models.Note.name)]
+        note.content = args[nameof(models.Note.content)]
+        note.is_favorite = args[nameof(models.Note.is_favorite)]
+        note.is_deleted = args[nameof(models.Note.is_deleted)]
+        note.update_time = datetime.datetime.utcnow()
 
         db.session.commit()
      
-        return {"message": f"Changes for the note '{args['id']}' were successfully made"}, 200
+        return create_successful_response(f"Note {note.id} changed successfully", 200)
        
     
     @token_required
     def delete(self, current_user):
-
         "Delete note"
-
-        note_id = request.args.get("id")
+        
+        note_id = request.args.get(nameof(models.Note.id))
 
         if not note_id:
-            return {"message": f"Note id is missing in uri args"}, 400
+            raise err.APIMissingParameterError(f"Note id is missing in URI arguments")
 
         note = db.session.query(models.Note).get(note_id)
 
         if not note:
-            return {"message": "Note with that id doesn't exist"}, 404
+            raise err.APIResourceNotFoundError(f"Note with id {note_id} doesn't exist")
 
         if current_user.id != note.user_id:
-            return {"message": f"Note with id '{note.id}' doesn't belong to the current user"}, 403
+            raise err.APIAccessDeniedError(f"Note {note.id} doesn't belong to the current user {current_user.id}")
 
         
         db.session.delete(note)
         db.session.commit()
 
-        return {"message": f"Note '{note.name}' deleted successfully (user = '{current_user.email}')"}, 200
+        return create_successful_response(f"Note {note.id} deleted successfully", 200)
 
 
     @token_required
@@ -103,7 +135,7 @@ class Note(Resource):
         """Get user notes"""
 
         if len(current_user.notes) == 0:
-            return {"message": f"User '{current_user.email}' has no notes"}, 404
+            raise err.APIResourceNotFoundError(f"Current user {current_user.id} has no notes")
         else:
             return [marshal(note, NOTE_RESOURCE_FIELDS) for note in current_user.notes], 200
 

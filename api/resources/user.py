@@ -1,15 +1,14 @@
 import models
 import hashing
 from models import db
-from flask import current_app
 from nameof import nameof
+from flask import current_app
 from api.validator import Validator
 from api.errors import APIResourceAlreadyExistsError
 from api.access_restrictions import token_required
 from flask_restful import Resource, reqparse, marshal
 from api.resource_fields import USER_RESOURCE_FIELDS
 from api.core import  MISSING_ARGUMENT_RESPONSE, create_successful_response
-
 
 
 class User(Resource):
@@ -41,29 +40,31 @@ class User(Resource):
         self.validator = Validator(all_not_encrypted=True)
 
 
+
     def post(self):
         """Signup procedure"""
         args = self.parser.parse_args()
         self.validator.validate_args(args)
 
         additionaly_hashed_master_password = hashing.hash_mp_additionally(
-                                                password_hash=args["master_password_hash"], 
-                                                salt=args["email"])
+                                                password_hash=args[nameof(models.User.master_password_hash)], 
+                                                salt=args[nameof(models.User.email)])
         
-        if db.session.query(models.User).get(args["id"]):
-            raise APIResourceAlreadyExistsError("User with this id already exists")
-        if db.session.query(models.User).filter_by(email=args["email"]).first():
-            raise APIResourceAlreadyExistsError("User with this email already exists")
+        if db.session.query(models.User).get(args[nameof(models.User.id)]):
+            raise APIResourceAlreadyExistsError(f"User with id {args[nameof(models.User.id)]} already exists")
+        
+        if db.session.query(models.User).filter_by(email=args[nameof(models.User.email)]).first():
+            raise APIResourceAlreadyExistsError(f"User with this email already exists")
 
-        new_user = models.User(id=args["id"], email=args["email"], 
+        new_user = models.User(id=args[nameof(models.User.id)], 
+                                email=args[nameof(models.User.email)], 
                                 master_password_hash=additionaly_hashed_master_password, 
-                                hint=args["hint"])
+                                hint=args[nameof(models.User.hint)])
         
         db.session.add(new_user)
         db.session.commit()
 
-        current_app.logger.debug(f"User created successfully: {new_user}")
-        return create_successful_response("User created successfully", 201) 
+        return create_successful_response(f"User created successfully {new_user.id}", 201) 
 
 
     @token_required
@@ -71,7 +72,6 @@ class User(Resource):
         """
         Returns current user
         """
-        current_app.logger.debug(f"Current user successfully returned: {current_user}")
         return marshal(current_user, USER_RESOURCE_FIELDS), 200
 
 

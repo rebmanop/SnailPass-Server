@@ -3,7 +3,7 @@ from flask_restful import fields
 
 ADDITIONAL_FIELD_RESOURCE_FIELDS = {
                                     'id': fields.String, 
-                                    'field_name': fields.String,
+                                    'name': fields.String,
                                     'value': fields.String,
                                     'record_id': fields.String
                                    }
@@ -37,6 +37,5 @@ RECORD_RESOURCE_FIELDS = {
 USER_RESOURCE_FIELDS = {
                         'id': fields.String, 
                         'email': fields.String,
-                        'is_admin': fields.Boolean,
                         'hint': fields.String
                        }

@@ -8,7 +8,6 @@ class User(db.Model):
     email = db.Column(db.String(100), nullable=False)
     master_password_hash = db.Column(db.String(100), nullable=False)
     hint = db.Column(db.String(100), nullable=True)
-    is_admin = db.Column(db.Boolean, default=False)
     
     records = db.relationship("Record", cascade="all,delete", backref="user")
     notes = db.relationship("Note", cascade="all, delete", backref="user") 
@@ -19,7 +18,6 @@ class User(db.Model):
                 f'id: {self.id}\n'
                 f'email: {self.email}\n'
                 f'master_password_hash: {self.master_password_hash}\n'
-                f'hint: {self.hint}\n'
-                f'is_admin: {self.is_admin}'
+                f'hint: {self.hint}'
                 f'\n***User***'
                 )

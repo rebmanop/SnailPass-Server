@@ -1,127 +1,142 @@
 import models
 from models import db
+import api.errors as err
+from nameof import nameof
+from api.validator import Validator
 from flask_restful import Resource, reqparse, marshal, request
 from api.access_restrictions import token_required
 from api.resource_fields import ADDITIONAL_FIELD_RESOURCE_FIELDS
+from api.core import create_successful_response
 from api.core import MISSING_ARGUMENT_RESPONSE
 
 
 class AdditionalField(Resource):
+    def __init__(self):
+        self.parser = reqparse.RequestParser()
+        
+        self.parser.add_argument(nameof(models.AdditionalField.id), 
+                                type=str, 
+                                help=MISSING_ARGUMENT_RESPONSE, 
+                                required=True, 
+                                nullable=False)
+
+        self.parser.add_argument(nameof(models.AdditionalField.name), 
+                                type=str, 
+                                help=MISSING_ARGUMENT_RESPONSE, 
+                                required=True, 
+                                nullable=False)
+        
+        self.parser.add_argument(nameof(models.AdditionalField.value), 
+                                type=str, 
+                                help=MISSING_ARGUMENT_RESPONSE, 
+                                required=True, 
+                                nullable=False)
+
+        self.parser.add_argument(nameof(models.AdditionalField.record_id), 
+                                type=str, 
+                                help=MISSING_ARGUMENT_RESPONSE, 
+                                required=True, 
+                                nullable=False)
+
+        self.validator = Validator(not_encrypted_args=[nameof(models.AdditionalField.id), 
+                                                       nameof(models.AdditionalField.record_id)])
+
+    
+    
     @token_required
     def post(self, current_user):
-        
         """Create new additional field"""
 
-        parser = reqparse.RequestParser()
-        parser.add_argument("id", type=str, help="Additional field id" + MISSING_ARGUMENT_RESPONSE, required=True, nullable=False)
-        parser.add_argument("field_name", type=str, help="Additional field name" + MISSING_ARGUMENT_RESPONSE, required=True, nullable=False)
-        parser.add_argument("value", type=str, help="Additional field value" + MISSING_ARGUMENT_RESPONSE, required=True, nullable=False)
-        parser.add_argument("record_id", type=str, help="Additional field's record id" + MISSING_ARGUMENT_RESPONSE, required=True, nullable=False)
-
-        args = parser.parse_args()
-        record_with_recived_record_id = db.session.query(models.Record).get(args["record_id"])
+        args = self.parser.parse_args()
+        self.validator.validate_args(args)
+        new_afs_record = db.session.query(models.Record).get(args[nameof(models.AdditionalField.record_id)])
 
 
-        if not record_with_recived_record_id:
-            return {"message": f"Record with recived record id doesn't exist"}, 404
-        elif current_user.id != record_with_recived_record_id.user_id:
-            return {"message": f"Record with id {record_with_recived_record_id.id} doesn't belong to the current user"}, 403
-        elif db.session.query(models.AdditionalField).get(args["id"]):
-            return {"message": f"Additional field with id '{args['id']}' already exist"}, 409
-        elif db.session.query(models.AdditionalField).filter_by(record_id=record_with_recived_record_id.id, field_name=args["field_name"]).all():
-            return {"message": f"Additional field with name '{args['field_name']}' already exist in this record"}, 409
-    
+        if not new_afs_record:
+           raise err.APIResourceNotFoundError(f"Record with id {args[nameof(models.AdditionalField.record_id)]} doesn't exist")
+        
+        if current_user.id != new_afs_record.user_id:
+            raise err.APIAccessDeniedError(f"Record {new_afs_record.id} doesn't belong to the current user {current_user.id}")
+        
+        if db.session.query(models.AdditionalField).get(args[nameof(models.AdditionalField.id)]):
+            raise err.APIResourceAlreadyExistsError(f"Additional field with id {args[nameof(models.AdditionalField.id)]} already exists")
 
-        additional_field = models.AdditionalField(id=args["id"], field_name=args["field_name"], value=args["value"], 
-                                record_id=record_with_recived_record_id.id)
-
+        additional_field = models.AdditionalField(id=args[nameof(models.AdditionalField.id)], 
+                                                  name=args[nameof(models.AdditionalField.name)], 
+                                                  value=args[nameof(models.AdditionalField.value)], 
+                                                  record_id=new_afs_record.id)
 
         db.session.add(additional_field)
         db.session.commit()
 
-        return {"message": f"Additional record field '{args['field_name']}' created successfully (record_name = '{record_with_recived_record_id.name}',  user = '{current_user.email}')"}, 201
+        return create_successful_response(f"Additional field {additional_field.id} created", 201)
     
     
     @token_required
     def delete(self, current_user):
-
         "Delete additional field"
 
-        af_id = request.args.get("id")
+        af_id = request.args.get(nameof(models.AdditionalField.id))
 
         if not af_id:
-            return {"message": f"Additional field id is missing in uri args"}, 400
+            raise err.APIMissingParameterError(f"Additional field id is missing in URI arguments")
 
         additional_field = db.session.query(models.AdditionalField).get(af_id)
        
         if not additional_field:
-            return {"message": f"Additional field with id '{af_id}' doesn't exist"}, 404
+            raise err.APIResourceNotFoundError(f"Additional field with id {af_id} doesn't exist")
+        
+        if additional_field.record.user_id != current_user.id:
+            raise err.APIAccessDeniedError(f"Additional field {additional_field.id} doesn't belong to the current user {current_user.id}")
 
 
         db.session.delete(additional_field)
         db.session.commit()
 
-        return {"message": f"Additional field '{additional_field.field_name}' deleted successfully (user = '{current_user.email}')"}, 200
+        return create_successful_response(f"Additional field {additional_field.id} deleted successfully", 200)
         
 
     @token_required
     def patch(self, current_user):
+        """Edit existing additional field"""
 
-        parser = reqparse.RequestParser()
-        parser.add_argument("id", type=str, help="Additional field's id" + MISSING_ARGUMENT_RESPONSE, required=True, nullable=False)
-        parser.add_argument("field_name", type=str, help="Additional field's name" + MISSING_ARGUMENT_RESPONSE, required=True, nullable=False)
-        parser.add_argument("value", type=str, help="Additional field's value" + MISSING_ARGUMENT_RESPONSE, required=True, nullable=False)
-        parser.add_argument("record_id", type=str, help="Additional field's record id" + MISSING_ARGUMENT_RESPONSE, required=True, nullable=False)
-        
-        args = parser.parse_args()
-
-        additional_field = db.session.query(models.AdditionalField).get(args["id"])
-        record_with_recived_record_id = db.session.query(models.Record).get(args["record_id"])
-
+        args = self.parser.parse_args()
+        self.validator.validate_args(args)
+        additional_field = db.session.query(models.AdditionalField).get(args[nameof(models.AdditionalField.id)])
+     
 
         if not additional_field:
-            return {"message": f"Additional field with id '{args['id']}' doesn't exist "}, 404
-        elif not record_with_recived_record_id:
-            return {"message": f"Record with id '{args['record_id']}' doesn't exist"}, 404
-        elif current_user.id != record_with_recived_record_id.user_id:
-            return {"message": f"Record with id '{args['record_id']}' doesn't belong to the current user"}, 403
-        elif args['record_id'] != additional_field.record_id:
-            return {"message": f"Additional field with id '{additional_field.id}' doesn't belong to the record with id '{args['record_id']}'"}, 409
-
-
-        if db.session.query(models.AdditionalField).filter(models.AdditionalField.record_id == additional_field.record_id,
-                                                           models.AdditionalField.field_name == args["field_name"], 
-                                                           models.AdditionalField.id != additional_field.id).first(): 
-            return {"message": f"Additional field with name '{args['field_name']}' already exists in record with id '{additional_field.record_id}' (user = '{current_user.email}')"}, 409
+            raise err.APIResourceNotFoundError(f"Additional field with id {args[nameof(models.AdditionalField.id)]} doesn't exist")
         
-
-        additional_field.field_name = args["field_name"]
-        additional_field.value = args["value"]
+        if additional_field.record.user_id != current_user.id:
+            raise err.APIAccessDeniedError(f"Additional field {additional_field.id} doesn't belong to the current user {current_user.id}")
+        
+        additional_field.name = args[nameof(models.AdditionalField.name)]
+        additional_field.value = args[nameof(models.AdditionalField.value)]
 
         
         db.session.commit()
-        return {"message": f"Changes for the additional field '{args['id']}' were successfully made"}, 200
+        return create_successful_response(f"Additional field {additional_field.id} changed successfully", 200)
 
 
     @token_required
     def get(self, current_user):
-
         """Get additional fields by record id"""
 
-        record_id = request.args.get("id")
+        record_id = request.args.get(nameof(models.Record.id))
 
         if not record_id:
-            return {"message": f"Record id is missing in uri args"}, 400
+            raise err.APIMissingParameterError(f"Record id is missing in URI arguments")
 
         record = db.session.query(models.Record).get(record_id)
 
         if not record:
-            return {"message": f"Record with id '{record_id}' doesn't exist "}, 404
+            raise err.APIResourceNotFoundError(f"Record with id {record_id} doesn't exist")
         elif current_user.id != record.user_id:
-            return {"message": f"Record with id '{record_id}' doesn't belong to the current user"}, 403
+            raise err.APIAccessDeniedError(f"Record {record.id} doesn't belong to the current user {current_user.id}")
 
         if len(record.additional_fields) == 0:
-            return {"message": f"Record with id '{record_id}' has no additional fields"}, 404
+           raise err.APIResourceNotFoundError(f"Current user's {current_user.id} record {record.id}  has no additional fields")
         else:
             return [marshal(additional_field, ADDITIONAL_FIELD_RESOURCE_FIELDS) for additional_field in record.additional_fields], 200
 

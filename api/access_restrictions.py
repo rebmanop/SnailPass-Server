@@ -3,7 +3,7 @@ import models
 from functools import wraps
 from models import db
 from flask import request, current_app
-from api.errors import APIAuthError, APIResourceNotFoundError, APIMissingRequestHeaderError
+import api.errors as err
 
 
 def token_required(f):
@@ -15,7 +15,7 @@ def token_required(f):
             token = request.headers['x-access-token']
 
         if not token:
-            raise APIMissingRequestHeaderError("Token is missing in x-access-token header")
+            raise err.APIMissingRequestHeaderError("Token is missing in x-access-token header")
 
         try: 
             data = jwt.decode(token, key=current_app.config['SECRET_KEY'], algorithms=["HS256"])
@@ -24,13 +24,13 @@ def token_required(f):
                 raise TypeError
 
         except(jwt.ExpiredSignatureError): 
-            raise APIAuthError("Token already expired")
+            raise err.APIAuthError("Token already expired")
 
         except(TypeError):
-            raise APIResourceNotFoundError("Current user does not exist")
+            raise err.APIResourceNotFoundError("Current user does not exist")
             
         except:
-            raise APIAuthError("Token is invalid")
+            raise err.APIAuthError("Token is invalid")
 
         return f(*args, current_user, **kwargs)
 

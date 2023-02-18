@@ -16,9 +16,9 @@ def test_add_new_note_success(client, new_user, new_note):
     token = get_mock_token(new_user)
     response = client.post("/notes", headers={"x-access-token": f"{token}"}, json=new_note)
 
-    expected_response_message = f"Note '{new_note['name']}' created successfully (user = '{new_user['email']}')"
+    expected_response_message = f"Note {new_note['id']} created"
     assert response.status_code == 201
-    assert expected_response_message.encode() in response.data
+    assert expected_response_message.encode() in response.data and b"success" in response.data
 
 
 def test_add_new_note_fail_1(client, new_user, new_note):
@@ -36,30 +36,10 @@ def test_add_new_note_fail_1(client, new_user, new_note):
     #Sending second POST with same note to get 'note with that id already exists' error"
     response = client.post("/notes", headers={"x-access-token": f"{token}"}, json=new_note)
     
-    expected_response_message = f"Note with id '{new_note['id']}' already exist"
+    expected_response_message = f"Note with id {new_note['id']} already exists"
     response.status_code == 409
-    assert expected_response_message.encode() in response.data
-
-
-def test_add_new_note_fail_2(client, new_user, new_note):
-    """
-    Note creation fail, note with recieved name already exists
-    """
-
-    add_new_user_to_mock_db(new_user)
-    assert db.session.query(models.User).get(new_user["id"]) != None
-    
-    token = get_mock_token(new_user)
-    response = client.post("/notes", headers={"x-access-token": f"{token}"}, json=new_note)
-    assert response.status_code == 201
-    
-    #Sending second POST with new note id but same name"
-    new_note["id"] += "x"
-    response = client.post("/notes", headers={"x-access-token": f"{token}"}, json=new_note)
-    
-    expected_response_message = f"Note with name '{new_note['name']}' already exist in current user's vault"
-    response.status_code == 409
-    assert expected_response_message.encode() in response.data
+    assert expected_response_message.encode() in response.data and b"error" in response.data
+ 
 
 
 #-------------------------------------DELETE NOTE TESTS (DELETE REQUEST)---------------
@@ -82,9 +62,9 @@ def test_delete_note_success(client, new_user, new_note):
     response = client.delete("/notes", headers={"x-access-token": f"{token}"}, 
                             query_string={'id': new_note["id"]})
     
-    expected_response_message = f"Note '{new_note['name']}' deleted successfully (user = '{new_user['email']}')"
+    expected_response_message = f"Note {new_note['id']} deleted successfully"
     assert response.status_code == 200
-    assert expected_response_message.encode() in response.data
+    assert expected_response_message.encode() in response.data and b"success" in response.data
 
 
 def test_delete_note_fail_1(client, new_user):
@@ -99,7 +79,7 @@ def test_delete_note_fail_1(client, new_user):
     response = client.delete("/notes", headers={"x-access-token": f"{token}"})
     
     assert response.status_code == 400
-    assert b"Note id is missing in uri args" in response.data
+    assert b"Note id is missing in URI arguments" in response.data and b"error"
 
 
 def test_delete_note_fail_2(client, new_user, new_note):
@@ -115,8 +95,9 @@ def test_delete_note_fail_2(client, new_user, new_note):
     response = client.delete("/notes", headers={"x-access-token": f"{token}"}, 
                             query_string={'id': new_note["id"]})
     
+    expected_response_message =f"Note with id {new_note['id']} doesn't exist"
     assert response.status_code == 404
-    assert b"Note with that id doesn't exist" in response.data
+    assert expected_response_message.encode() in response.data and b"error" in response.data
 
 
 def test_delete_note_fail_3(client, new_user, new_note):
@@ -139,9 +120,9 @@ def test_delete_note_fail_3(client, new_user, new_note):
     response = client.delete("/notes", headers={"x-access-token": f"{token}"}, 
                             query_string={'id': new_note["id"]})
     
-    expected_response_message = f"Note with id '{new_note['id']}' doesn't belong to the current user"
+    expected_response_message = f"Note {new_note['id']} doesn't belong to the current user {new_user['id']}"
     assert response.status_code == 403
-    assert expected_response_message.encode() in response.data
+    assert expected_response_message.encode() in response.data and b"error" in response.data
 
 
 #-------------------------------------GET CURRENT USER NOTES TESTS (GET REQUEST)---------------
@@ -185,9 +166,9 @@ def test_get_note_fail(client, new_user):
 
     #Sending get user notes request, when user has no notes
     response = client.get("/notes", headers={"x-access-token": f"{token}"})
-    expected_resoponse_message = f"User '{new_user['email']}' has no notes"
+    expected_resoponse_message = f"Current user {new_user['id']} has no notes"
     assert response.status_code == 404
-    assert expected_resoponse_message.encode() in response.data
+    assert expected_resoponse_message.encode() in response.data and b"error" in response.data
 
 
 #-------------------------------------EDIT NOTE TESTS (PATCH REQUEST)---------------
@@ -213,9 +194,9 @@ def test_edit_note_success(client, new_user, new_note):
     edited_note["is_favorite"] =new_note_got_from_db.is_favorite
 
     response = client.patch("/notes", headers={"x-access-token": f"{token}"}, json=edited_note)
-    expected_respones_message = f"Changes for the note '{new_note['id']}' were successfully made"
+    expected_respones_message = f"Note {new_note['id']} changed successfully"
     assert response.status_code == 200
-    assert expected_respones_message.encode() in response.data
+    assert expected_respones_message.encode() in response.data and b"success" in response.data
     assert db.session.query(models.Note).get(new_note["id"]).content == edited_note["content"]
 
 
@@ -233,9 +214,9 @@ def test_edit_note_fail_1(client, new_user, new_note):
     new_note["is_favorite"] = False
     new_note["is_deleted"] = False
     response = client.patch("/notes", headers={"x-access-token": f"{token}"}, json=new_note)
-    expected_respones_message = f"Note with id '{new_note['id']}' doesn't exist"
+    expected_respones_message = f"Note with id {new_note['id']} doesn't exist"
     assert response.status_code == 404
-    assert expected_respones_message.encode() in response.data
+    assert expected_respones_message.encode() in response.data and b"error" in response.data
 
 
 def test_edit_note_fail_2(client, new_user, new_note):
@@ -260,41 +241,6 @@ def test_edit_note_fail_2(client, new_user, new_note):
     response = client.patch("/notes", headers={"x-access-token": f"{token}"}, 
                             json=new_note)
 
-    expected_response_message = f"Note with id '{new_note['id']}' doesn't belong to the current user"
+    expected_response_message = f"Note {new_note['id']} doesn't belong to the current user {new_user['id']}"
     assert response.status_code == 403
-    assert expected_response_message.encode() in response.data
-
-
-def test_edit_note_fail_3(client, new_user, new_note):
-    """
-    Note edit fail, note with requested name and login already exists
-    """
-    add_new_user_to_mock_db(new_user)
-    assert  db.session.query(models.User).get(new_user["id"]) != None
-
-    add_new_note_to_mock_db(new_user, new_note)
-    new_record_got_from_db = db.session.query(models.Note).get(new_note["id"])
-    assert new_record_got_from_db != None
-
-    new_note_2 = new_note.copy()
-    new_note_2["id"] += "x"
-    new_note_2["name"] += "x"
-    add_new_note_to_mock_db(new_user, new_note_2)
-    new_record_got_from_db_2 = db.session.query(models.Note).get(new_note_2["id"])
-    assert new_record_got_from_db_2 != None
-
-    token = get_mock_token(new_user)
-
-    """"
-    Sending delete request, where note's name changed to 
-    already existing note's name
-    """
-    new_note_2["name"] = new_note["name"]
-    new_note_2["is_favorite"] = False
-    new_note_2["is_deleted"] = False
-    response = client.patch("/notes", headers={"x-access-token": f"{token}"}, 
-                            json=new_note_2)
-
-    expected_response_message = f"Note with name '{new_note_2['name']}' already exists in current user's vault"
-    assert response.status_code == 409
-    assert expected_response_message.encode() in response.data
+    assert expected_response_message.encode() in response.data and b"error" in response.data
