@@ -1,13 +1,13 @@
 import jwt
 import api
-import models
+import api.models as models
 import datetime
 from flask import current_app
 import secrets
 from hashlib import sha1
 from uuid import uuid4
-from models import db
-from hashing import hash_mp_additionally
+from api.models import db
+from api.hashing import hash_mp_additionally
 from nameof import nameof
 
 
@@ -111,7 +111,7 @@ def get_mock_token(new_user: dict, token_ttl_minutes=api.TOKEN_TTL):
 
 words = []
 
-with open("tests/mockdata/wordlist.txt") as file:
+with open("mockdata/wordlist.txt") as file:
     while line := file.readline().rstrip():
         words.append(line)
 

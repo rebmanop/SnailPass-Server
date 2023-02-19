@@ -1,5 +1,5 @@
-import models
-from models import db
+import api.models as models
+from api.models import db
 import api.errors as err
 from nameof import nameof
 from api.validator import Validator

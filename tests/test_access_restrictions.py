@@ -1,5 +1,5 @@
-import models
-from models import db
+import api.models as models
+from api.models import db
 from tests.utils import add_new_user_to_mock_db, get_mock_token
 
 

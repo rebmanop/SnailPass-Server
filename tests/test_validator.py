@@ -1,7 +1,7 @@
 from tests.utils import add_new_user_to_mock_db, get_mock_token
 from api.core import WRONG_FORMAT_ARGUMENT_RESPONSE, EMPTY_STRING_ARGUMENT_RESPONSE
-import models
-from models import db
+import api.models as models
+from api.models import db
 
 
 def test_validator_fail(client, new_user, new_record):

@@ -1,8 +1,8 @@
 import jwt
-import models
-import hashing
+import api.models as models
+from api.hashing import hash_mp_additionally
 import datetime
-from models import db
+from api.models import db
 from api import TOKEN_TTL
 from flask import request, jsonify
 from api.errors import APIAuthError
@@ -26,8 +26,7 @@ def login():
     user = db.session.query(models.User).filter_by(email=auth.username).first()
 
     if not user or (
-        user.master_password_hash
-        != hashing.hash_mp_additionally(auth.password, auth.username)
+        user.master_password_hash != hash_mp_additionally(auth.password, auth.username)
     ):
         raise APIAuthError("Incorrect credentials")
 

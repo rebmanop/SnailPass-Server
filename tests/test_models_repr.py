@@ -1,4 +1,4 @@
-import models
+import api.models as models
 import datetime
 from tests import utils
 

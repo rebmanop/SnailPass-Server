@@ -1,6 +1,6 @@
-import models
+import api.models as models
 import datetime
-from models import db
+from api.models import db
 import api.errors as err
 from nameof import nameof
 from flask import current_app

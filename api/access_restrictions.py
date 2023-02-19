@@ -1,7 +1,7 @@
 import jwt
-import models
+import api.models as models
 from functools import wraps
-from models import db
+from api.models import db
 from flask import request, current_app
 import api.errors as err
 

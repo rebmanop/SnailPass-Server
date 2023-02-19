@@ -1,9 +1,9 @@
 import os
 import pytest
 from tests import utils
-from models import db
+from api.models import db
 from api import create_app
-from config import TestingConfig
+from api.config import TestingConfig
 
 
 @pytest.fixture()

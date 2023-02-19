@@ -1,6 +1,6 @@
-import models
-import hashing
-from models import db
+import api.models as models
+from api.hashing import hash_mp_additionally
+from api.models import db
 from nameof import nameof
 from flask import current_app
 from api.validator import Validator
@@ -48,7 +48,7 @@ class User(Resource):
         args = self.parser.parse_args()
         self.validator.validate_args(args)
 
-        additionaly_hashed_master_password = hashing.hash_mp_additionally(
+        additionaly_hashed_master_password = hash_mp_additionally(
             password_hash=args[nameof(models.User.master_password_hash)],
             salt=args[nameof(models.User.email)],
         )

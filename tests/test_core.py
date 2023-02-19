@@ -1,4 +1,4 @@
-from models import db
+from api.models import db
 
 
 def test_unknown_exception_handler(client, new_user):
