@@ -22,7 +22,7 @@ Encryption in client applications implemented using a symmetric algorithm with a
 - `pytest` as a library for codebase testing
 
 # Developer Documentation
-Please refer to the [Deployment Guide](https://github.com/rebmanop/SnailPass-Server/edit/master/README.md#deploy) down below to quickly spin up server container. And check out [API Documentation](https://github.com/rebmanop/SnailPass-REST-api/wiki/api-Documentation) to get information about all the endpoints and request/response structure.
+Please refer to the [Deployment Guide](https://github.com/rebmanop/SnailPass-Server/wiki/Deployment-Guide) down below to quickly spin up server container. And check out [API Documentation](https://github.com/rebmanop/SnailPass-REST-api/wiki/api-Documentation) to get information about all the endpoints and request/response structure.
 
 # Deploy
 <p align="center">
