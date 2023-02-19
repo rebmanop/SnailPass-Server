@@ -17,12 +17,12 @@ Encryption in client applications implemented using a symmetric algorithm with a
 - SHA-512 as a hash function.
 
 #### Libraries and extensions 
-- `Flask-RESTful` as an extension for Flask that adds an abstruction for building REST APIs
+- `Flask-RESTful` as an extension for Flask that adds an abstraction for building REST APIs
 - `SQLAlchemy` as a SQL toolkit and ORM
 - `pytest` as a library for codebase testing
 
 # Developer Documentation
-Please refer to the [Deployment Guide](https://github.com/rebmanop/SnailPass-Server/wiki/Deployment-Guide) down below to quickly spin up server container. And check out [API Documentation](https://github.com/rebmanop/SnailPass-REST-api/wiki/api-Documentation) to get information about all the endpoints and request/response structure.
+Please refer to the [Deployment Guide](https://github.com/rebmanop/SnailPass-Server/wiki/Deployment-Guide) down below to quickly spin up a server container. Check out [API Documentation](https://github.com/rebmanop/SnailPass-REST-api/wiki/api-Documentation) to learn about all the features, endpoints and request/response structures.
 
 # Deploy
 <p align="center">
@@ -40,7 +40,7 @@ You can deploy *SnailPass-Server* using Docker containers on Windows, macOS, and
 
 
 ### Development configuration
-Uses Flask's development server and SQLite database which recreates every time container is started. 
+Uses Flask's development server (port 5000) and SQLite database which recreates every time container is started. 
 
 ```
 docker-compose build
@@ -48,7 +48,7 @@ docker-compose run -d
 ```
 
 ### Production configuration
-Uses uWSGI server, postgres database and nginx as reverse proxy.
+Uses uWSGI server, postgres database and nginx as reverse proxy (port 80).
 ```
 docker-compose -f docker-compose-prod.yml build
 docker-compose -f docker-compose-prod.yml up -d
