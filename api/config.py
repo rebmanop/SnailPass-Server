@@ -8,6 +8,7 @@ class Config(object):
     SECRET_KEY = os.environ.get("SNAILPASS_SECRET_KEY")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     BUNDLE_ERRORS = True
+    PROPAGATE_EXCEPTIONS = True
 
 
 class TestingConfig(Config):
