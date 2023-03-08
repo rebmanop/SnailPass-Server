@@ -1,8 +1,7 @@
 # SnailPass-Server
 
 <p align="center">
-    <img src="https://user-images.githubusercontent.com/45130182/219900956-8ec8f945-b13d-42e3-97e1-d8b402cc93fb.png" alt="SnailPass logo" />
-  </a>
+  <img src="https://user-images.githubusercontent.com/45130182/223817450-925448be-83a0-4ca9-9a09-d92caeacf606.svg" width=25% height=25%>
 </p>
 
 *SnailPass* is a simple, opensource and multiplatform password manager. At the moment there are clients only for [Windows](https://github.com/badlocale/SnailPass-Desktop-Client) and [Android](https://github.com/IlyaYDen/SnailPass-Android-Client). This repository is the server. *SnailPass-Server* project contains the RESTful API, database, and other core infrastructure items needed for the "backend" of all client applications.
@@ -22,7 +21,7 @@ Encryption in client applications implemented using a symmetric algorithm with a
 - `pytest` as a library for codebase testing
 
 # Developer Documentation
-Please refer to the [Deployment Guide](https://github.com/rebmanop/SnailPass-Server/wiki/Deployment-Guide) down below to quickly spin up a server container. Check out [API Documentation](https://github.com/rebmanop/SnailPass-Server/wiki) to learn about all the features, endpoints and request/response structures.
+Please refer to the [Deployment Guide](https://github.com/rebmanop/SnailPass-Server#deploy) down below to quickly spin up a server container. Check out [API Documentation](https://github.com/rebmanop/SnailPass-Server/wiki/API-Documentation-Main-Page) to learn about all the features, endpoints and request/response structures.
 
 # Deploy
 <p align="center">
@@ -44,7 +43,7 @@ Uses Flask's development server (port 5000) and SQLite database which recreates 
 
 ```
 docker-compose build
-docker-compose run -d
+docker-compose up -d
 ```
 
 ### Production configuration

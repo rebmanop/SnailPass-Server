@@ -81,7 +81,7 @@ class Note(Resource):
         note = models.Note(
             id=args[nameof(models.Note.id)],
             name=args[nameof(models.Note.name)],
-            content=args[nameof(models.Note.name)],
+            content=args[nameof(models.Note.content)],
             user_id=current_user.id,
             creation_time=datetime.datetime.utcnow(),
             update_time=datetime.datetime.utcnow(),
