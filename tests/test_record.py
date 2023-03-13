@@ -5,6 +5,7 @@ from tests.utils import (
     add_new_user_to_mock_db,
     get_mock_token,
     add_new_record_to_mock_db,
+    add_new_additional_field_to_mock_db,
 )
 from api.resource_fields import RECORD_RESOURCE_FIELDS
 
@@ -151,7 +152,7 @@ def test_delete_record_fail_3(client, new_user, new_record):
 
 
 # -------------------------------------GET CURRENT USER RECORDS TESTS (GET REQUEST)---------------
-def test_get_records_success(client, new_user, new_record):
+def test_get_records_success(client, new_user, new_record, new_additional_field):
     """
     Successful get user records request
     """
@@ -168,6 +169,11 @@ def test_get_records_success(client, new_user, new_record):
     add_new_record_to_mock_db(new_user, new_record_2)
     assert db.session.query(models.Record).get(new_record_2["id"]) != None
 
+    add_new_additional_field_to_mock_db(new_record, new_additional_field)
+    assert (
+        db.session.query(models.AdditionalField).get(new_additional_field["id"]) != None
+    )
+
     token = get_mock_token(new_user)
 
     # Sending get user records request
@@ -177,7 +183,8 @@ def test_get_records_success(client, new_user, new_record):
 
     list_of_records = json.loads(response.data.decode("utf-8"))
     assert len(list_of_records) == 2
-    assert len(RECORD_RESOURCE_FIELDS) == len(list_of_records[0])
+    assert len(RECORD_RESOURCE_FIELDS) + 1 == len(list_of_records[0])
+    assert list_of_records[0]["additional_fields"] != None
 
 
 def test_get_records_fail(client, new_user):

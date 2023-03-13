@@ -111,7 +111,7 @@ def get_mock_token(new_user: dict, token_ttl_minutes=api.TOKEN_TTL):
 
 words = []
 
-with open("mockdata/wordlist.txt") as file:
+with open("tests/mockdata/wordlist.txt") as file:
     while line := file.readline().rstrip():
         words.append(line)
 
