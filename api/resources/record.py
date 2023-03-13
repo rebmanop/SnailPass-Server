@@ -8,7 +8,7 @@ from api.validator import Validator
 from api.access_restrictions import token_required
 from flask_restful import Resource, marshal, reqparse
 from flask_restful import Resource, reqparse, request
-from api.resource_fields import RECORD_RESOURCE_FIELDS
+from api.resource_fields import RECORD_RESOURCE_FIELDS, ADDITIONAL_FIELD_RESOURCE_FIELDS
 from api.core import MISSING_ARGUMENT_RESPONSE, create_successful_response
 
 
@@ -162,15 +162,24 @@ class Record(Resource):
 
     @token_required
     def get(self, current_user):
-
-        """Get user records"""
+        """
+        Get user records with corresponding additional fields
+        """
 
         if len(current_user.records) == 0:
             raise err.APIResourceNotFoundError(
                 f"Current user {current_user.id} has no records"
             )
         else:
-            return [
+            serialized_records = [
                 marshal(record, RECORD_RESOURCE_FIELDS)
                 for record in current_user.records
-            ], 200
+            ]
+            for record, serialized_record in zip(
+                current_user.records, serialized_records
+            ):
+                serialized_record[nameof(models.Record.additional_fields)] = [
+                    marshal(additional_field, ADDITIONAL_FIELD_RESOURCE_FIELDS)
+                    for additional_field in record.additional_fields
+                ]
+            return serialized_records, 200
