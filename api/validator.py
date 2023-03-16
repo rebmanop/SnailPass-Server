@@ -5,18 +5,26 @@ from api.core import WRONG_FORMAT_ARGUMENT_RESPONSE, EMPTY_STRING_ARGUMENT_RESPO
 
 class Validator:
     def __init__(
-        self, not_encrypted_args: list = None, all_not_encrypted: bool = False
+        self,
+        not_encrypted_args: list = None,
+        all_not_encrypted: bool = False,
+        empty_string_allowed: list = None,
     ):
         self.not_encrypted_args = []
+        self.empty_string_allowed = []
         self.all_not_encrypted = all_not_encrypted
 
         if not_encrypted_args:
             self.not_encrypted_args = not_encrypted_args
 
+        if empty_string_allowed:
+            self.empty_string_allowed = empty_string_allowed
+
     def __check_for_empty_string(self, args: dict, wrong_format_args: dict) -> None:
         for key, value in args.items():
             if value == "" and key not in wrong_format_args:
-                wrong_format_args[key] = EMPTY_STRING_ARGUMENT_RESPONSE
+                if key not in self.empty_string_allowed:
+                    wrong_format_args[key] = EMPTY_STRING_ARGUMENT_RESPONSE
 
     def __check_for_correct_format(self, args: dict, wrong_format_args: dict) -> None:
         for key, value in args.items():

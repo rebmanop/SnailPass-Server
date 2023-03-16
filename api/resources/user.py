@@ -39,9 +39,11 @@ class User(Resource):
             nullable=False,
         )
 
-        self.parser.add_argument(nameof(models.User.hint), type=str, nullable=False)
+        self.parser.add_argument(nameof(models.User.hint), type=str, nullable=True)
 
-        self.validator = Validator(all_not_encrypted=True)
+        self.validator = Validator(
+            all_not_encrypted=True, empty_string_allowed=[nameof(models.User.hint)]
+        )
 
     def post(self):
         """Signup procedure"""
@@ -71,6 +73,9 @@ class User(Resource):
             master_password_hash=additionaly_hashed_master_password,
             hint=args[nameof(models.User.hint)],
         )
+
+        if new_user.hint == "":
+            new_user.hint = None
 
         db.session.add(new_user)
         db.session.commit()
