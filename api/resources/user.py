@@ -1,14 +1,16 @@
 import api.models as models
 from api.hashing import hash_mp_additionally
 from api.models import db
+from api.mail import send_email
 from nameof import nameof
-from flask import current_app
+from flask import url_for, render_template, current_app
 from api.validator import Validator
 from api.errors import APIResourceAlreadyExistsError
 from api.access_restrictions import token_required
 from flask_restful import Resource, reqparse, marshal
 from api.resource_fields import USER_RESOURCE_FIELDS
 from api.core import MISSING_ARGUMENT_RESPONSE, create_successful_response
+from api.email_confirmation import send_email_confirmation_letter
 
 
 class User(Resource):
@@ -72,16 +74,23 @@ class User(Resource):
             email=args[nameof(models.User.email)],
             master_password_hash=additionaly_hashed_master_password,
             hint=args[nameof(models.User.hint)],
+            email_confirmed=False,
         )
 
         if new_user.hint == "":
             new_user.hint = None
 
+        if current_app.debug == True:
+            new_user.email_confirmed = True
+        else:
+            send_email_confirmation_letter(new_user)
+
         db.session.add(new_user)
         db.session.commit()
 
         return create_successful_response(
-            f"User created successfully {new_user.id}", 201
+            f"User created successfully {new_user.id}. Confirmation link is sent to your email",
+            201,
         )
 
     @token_required

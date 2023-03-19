@@ -5,8 +5,9 @@ import datetime
 from api.models import db
 from api import TOKEN_TTL
 from flask import request, jsonify
-from api.errors import APIAuthError
+from api.errors import APIAuthError, APIAccessDeniedError
 from flask import Blueprint, current_app
+from api.email_confirmation import send_email_confirmation_letter
 
 
 login_blueprint = Blueprint("login", __name__)
@@ -29,6 +30,12 @@ def login():
         user.master_password_hash != hash_mp_additionally(auth.password, auth.username)
     ):
         raise APIAuthError("Incorrect credentials")
+
+    if not user.email_confirmed:
+        send_email_confirmation_letter(user)
+        raise APIAccessDeniedError(
+            f"Email isn't confirmed. Resending email confirmation letter..."
+        )
 
     data = {
         "id": user.id,

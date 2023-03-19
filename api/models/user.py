@@ -8,6 +8,7 @@ class User(db.Model):
     email = db.Column(db.String(100), nullable=False)
     master_password_hash = db.Column(db.String(100), nullable=False)
     hint = db.Column(db.String(100), nullable=True)
+    email_confirmed = db.Column(db.Boolean, nullable=False, default=False)
 
     records = db.relationship("Record", cascade="all,delete", backref="user")
     notes = db.relationship("Note", cascade="all, delete", backref="user")

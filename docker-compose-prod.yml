@@ -16,14 +16,17 @@ services:
     environment:
       - SNAILPASS_SECRET_KEY=${SNAILPASS_SECRET_KEY}
       - SNAILPASS_DATABASE_URI=${SNAILPASS_DATABASE_URI}
+      - MAIL_DEFAULT_SENDER=${MAIL_DEFAULT_SENDER}
+      - MAIL_USERNAME=${MAIL_USERNAME}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
       - SNAILPASS_CONFIGURATION=prod
     image: snailpass-rest-api-image
-    build: 
+    build:
       context: .
       dockerfile: Dockerfile-prod
     depends_on:
       - postgres
     ports:
       - 80:80
-    entrypoint: 
+    entrypoint:
       - scripts/start_prod.sh
