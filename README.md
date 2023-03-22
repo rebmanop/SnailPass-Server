@@ -61,6 +61,9 @@ PROD_POSTGRES_PASSWORD=userpassword
 PROD_POSTGRES_DB=databasename
 SNAILPASS_DATABASE_URI=postgresql://username:userpassword@postgres/databasename
 SNAILPASS_SECRET_KEY=secretkey
+MAIL_DEFAULT_SENDER=maildefaultsender
+MAIL_USERNAME=mailusername
+MAIL_PASSWORD=mailpassword
 ```
 
  
