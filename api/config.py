@@ -14,6 +14,7 @@ class Config(object):
 class TestingConfig(Config):
     SECRET_KEY = "testing_env_secret_key"
     TESTING = True
+    DEBUG = True
 
     @property
     def SQLALCHEMY_DATABASE_URI(self):

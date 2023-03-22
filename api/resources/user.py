@@ -83,13 +83,13 @@ class User(Resource):
         if current_app.debug == True:
             new_user.email_confirmed = True
         else:
-            send_email_confirmation_letter(new_user)
+            send_email_confirmation_letter(recipient=new_user)
 
         db.session.add(new_user)
         db.session.commit()
 
         return create_successful_response(
-            f"User created successfully {new_user.id}. Confirmation link is sent to your email",
+            f"User created successfully {new_user.id}. Confirmation link is sent to user's email",
             201,
         )
 

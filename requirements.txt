@@ -10,4 +10,4 @@ SQLAlchemy_Utils==0.39.0
 flask_migrate==2.6.0
 python-dotenv==0.21.1
 nameof==0.0.1
-flask_mail
+Flask-Mail==0.9.1

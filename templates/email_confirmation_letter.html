@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
 
   <meta charset="utf-8">
@@ -7,101 +8,106 @@
   <title>Email Confirmation</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style type="text/css">
-  /**
+    /**
    * Google webfonts. Recommended to include the .woff version for cross-client compatibility.
    */
-  @media screen {
-    @font-face {
-      font-family: 'Source Sans Pro';
-      font-style: normal;
-      font-weight: 400;
-      src: local('Source Sans Pro Regular'), local('SourceSansPro-Regular'), url(https://fonts.gstatic.com/s/sourcesanspro/v10/ODelI1aHBYDBqgeIAH2zlBM0YzuT7MdOe03otPbuUS0.woff) format('woff');
+    @media screen {
+      @font-face {
+        font-family: 'Source Sans Pro';
+        font-style: normal;
+        font-weight: 400;
+        src: local('Source Sans Pro Regular'), local('SourceSansPro-Regular'), url(https://fonts.gstatic.com/s/sourcesanspro/v10/ODelI1aHBYDBqgeIAH2zlBM0YzuT7MdOe03otPbuUS0.woff) format('woff');
+      }
+
+      @font-face {
+        font-family: 'Source Sans Pro';
+        font-style: normal;
+        font-weight: 700;
+        src: local('Source Sans Pro Bold'), local('SourceSansPro-Bold'), url(https://fonts.gstatic.com/s/sourcesanspro/v10/toadOcfmlt9b38dHJxOBGFkQc6VGVFSmCnC_l7QZG60.woff) format('woff');
+      }
     }
-    @font-face {
-      font-family: 'Source Sans Pro';
-      font-style: normal;
-      font-weight: 700;
-      src: local('Source Sans Pro Bold'), local('SourceSansPro-Bold'), url(https://fonts.gstatic.com/s/sourcesanspro/v10/toadOcfmlt9b38dHJxOBGFkQc6VGVFSmCnC_l7QZG60.woff) format('woff');
-    }
-  }
-  /**
+
+    /**
    * Avoid browser level font resizing.
    * 1. Windows Mobile
    * 2. iOS / OSX
    */
-  body,
-  table,
-  td,
-  a {
-    -ms-text-size-adjust: 100%; /* 1 */
-    -webkit-text-size-adjust: 100%; /* 2 */
-  }
-  /**
+    body,
+    table,
+    td,
+    a {
+      -ms-text-size-adjust: 100%;
+      /* 1 */
+      -webkit-text-size-adjust: 100%;
+      /* 2 */
+    }
+
+    /**
    * Remove extra space added to tables and cells in Outlook.
    */
-  table,
-  /**
+    table,
+    /**
    * Better fluid images in Internet Explorer.
    */
-  img {
-    -ms-interpolation-mode: bicubic;
-  }
-  /**
+    img {
+      -ms-interpolation-mode: bicubic;
+    }
+
+    /**
    * Remove blue links for iOS devices.
    */
-  a[x-apple-data-detectors] {
-    font-family: inherit !important;
-    font-size: inherit !important;
-    font-weight: inherit !important;
-    line-height: inherit !important;
-    color: inherit !important;
-    text-decoration: none !important;
-  }
-  /**
+    a[x-apple-data-detectors] {
+      font-family: inherit !important;
+      font-size: inherit !important;
+      font-weight: inherit !important;
+      line-height: inherit !important;
+      color: inherit !important;
+      text-decoration: none !important;
+    }
+
+    /**
    * Fix centering issues in Android 4.4.
    */
-  div[style*="margin: 16px 0;"] {
-    margin: 0 !important;
-  }
-  body {
-    width: 100% !important;
-    height: 100% !important;
-    padding: 0 !important;
-    margin: 0 !important;
-  }
-  /**
+    div[style*="margin: 16px 0;"] {
+      margin: 0 !important;
+    }
+
+    body {
+      width: 100% !important;
+      height: 100% !important;
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+
+    /**
    * Collapse table borders to avoid space between cells.
    */
-  table {
-    border-collapse: collapse !important;
-  }
-  a {
-    color: #1a82e2;
-  }
-  img {
-    height: auto;
-    line-height: 100%;
-    text-decoration: none;
-    border: 0;
-    outline: none;
-  }
+    table {
+      border-collapse: collapse !important;
+    }
+
+    a {
+      color: #1a82e2;
+    }
+
+    img {
+      height: auto;
+      line-height: 100%;
+      text-decoration: none;
+      border: 0;
+      outline: none;
+    }
   </style>
+  <link rel="stylesheet" href="./node_modules/jetbrains-mono/css/jetbrains-mono.css">
 
 </head>
-<body style="background-color: #e9ecef;">
 
-  <!-- start preheader -->
-  <div class="preheader" style="display: none; max-width: 0; max-height: 0; overflow: hidden; font-size: 1px; line-height: 1px; color: #fff; opacity: 0;">
-    A preheader is the short summary text that follows the subject line when an email is viewed in the inbox.
-  </div>
-  <!-- end preheader -->
-
+<body style="background-color: #323540;">
   <!-- start body -->
   <table border="0" cellpadding="0" cellspacing="0" width="100%">
-
     <!-- start logo -->
     <tr>
-      <td align="center" bgcolor="#e9ecef">
+      <td align="center" bgcolor="#323540">
         <!--[if (gte mso 9)|(IE)]>
         <table align="center" border="0" cellpadding="0" cellspacing="0" width="600">
         <tr>
@@ -109,9 +115,10 @@
         <![endif]-->
         <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
           <tr>
-            <td align="center" valign="top" style="padding: 36px 24px;">
-              <a href="https://www.blogdesire.com" target="_blank" style="display: inline-block;">
-                <img src="https://user-images.githubusercontent.com/45130182/223817450-925448be-83a0-4ca9-9a09-d92caeacf606.svg" width=30% height=30%>
+            <td align="center" valign="top">
+              <img
+                src="https://user-images.githubusercontent.com/45130182/226654866-e5ff2f75-ba2b-417b-b0a0-ac8181cbaf88.png"
+                width=32% height=32%>
               </a>
             </td>
           </tr>
@@ -127,7 +134,7 @@
 
     <!-- start hero -->
     <tr>
-      <td align="center" bgcolor="#e9ecef">
+      <td align="center" bgcolor="#323540">
         <!--[if (gte mso 9)|(IE)]>
         <table align="center" border="0" cellpadding="0" cellspacing="0" width="600">
         <tr>
@@ -135,8 +142,13 @@
         <![endif]-->
         <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
           <tr>
-            <td align="center" bgcolor="#ffffff" style="padding: 36px 24px 0; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; border-top: 3px solid #d4dadf;">
-              <h1 style="margin: 0; font-size: 32px; font-weight: 700; letter-spacing: -1px; line-height: 48px;">Welcome to SnailPass!</h1>
+            <td align="center" bgcolor="#222529"
+              style="padding: 36px 24px 0; font-family: 'JetBrains Mono'; border-top: 3px solid #37393e;">
+              <h1
+                style="margin: 0; font-size: 30px; font-weight: 700; letter-spacing: -1px; line-height: 48px; color: #ffffff;">
+                Welcome
+                to Snail<span style="color: #56a4ff">Pass</span>!</h1>
+              </h1>
             </td>
           </tr>
         </table>
@@ -151,7 +163,7 @@
 
     <!-- start copy block -->
     <tr>
-      <td align="center" bgcolor="#e9ecef">
+      <td align="center" bgcolor="#323540">
         <!--[if (gte mso 9)|(IE)]>
         <table align="center" border="0" cellpadding="0" cellspacing="0" width="600">
         <tr>
@@ -161,22 +173,27 @@
 
           <!-- start copy -->
           <tr>
-            <td align="left" bgcolor="#ffffff" style="padding: 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px;">
-              <p style="margin: 0;">You are just one click away from getting started with SnailPass. All you need to do is verify your email address to activate your SnailPass account.</p>
+            <td align="left" bgcolor="#222529"
+              style="padding: 24px; font-family: 'JetBrains Mono'; font-size: 13px; line-height: 24px;">
+              <p style="margin: 0; color: #ffffff">You are just one click away from getting started with SnailPass. All
+                you need to do
+                is verify your email address to activate your SnailPass account.</p>
             </td>
           </tr>
           <!-- end copy -->
 
           <!-- start button -->
           <tr>
-            <td align="left" bgcolor="#ffffff">
+            <td align="left" bgcolor="#222529">
               <table border="0" cellpadding="0" cellspacing="0" width="100%">
                 <tr>
-                  <td align="center" bgcolor="#ffffff" style="padding: 12px;">
+                  <td align="center" bgcolor="#222529" style="padding: 12px;">
                     <table border="0" cellpadding="0" cellspacing="0">
                       <tr>
-                        <td align="center" bgcolor="#1a82e2" style="border-radius: 6px;">
-                          <a href="https://www.blogdesire.com" target="_blank" style="display: inline-block; padding: 16px 36px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; color: #ffffff; text-decoration: none; border-radius: 6px;">Confirm My Email</a>
+                        <td align="center" bgcolor="#686a6d" style="border-radius: 6px;">
+                          <a href="{{ confirm_url }}" target="_blank"
+                            style="display: inline-block; padding: 16px 36px; font-family: 'JetBrains Mono'; font-size: 13px; color: #ffffff; text-decoration: none; border-radius: 6px;">Confirm
+                            My Email</a>
                         </td>
                       </tr>
                     </table>
@@ -189,17 +206,23 @@
 
           <!-- start copy -->
           <tr>
-            <td align="left" bgcolor="#ffffff" style="padding: 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px; border-bottom: 3px solid #d4dadf">
-              <p style="margin: 0;">Once your account is activated, you can start using all of SnailPass features to securely store and organize your passwords and other sensetive data.</p>
-              <br><p style="margin: 0;">You’re receiving this email because you recently created a new SnailPass account. Confirmation link will expire in an hour. If this wasn’t you, please ignore this email.</p>
+            <td align="left" bgcolor="#222529"
+              style="padding: 24px; font-family: 'JetBrains Mono'; font-size: 13px; line-height: 24px; border-bottom: 3px solid #37393e">
+              <p style="margin: 0; color: #ffffff">Once your account is activated, you can start using all of SnailPass
+                features to
+                securely store and organize your passwords and other sensetive data.</p>
+              <br>
+              <p style="margin: 0; color: #ffffff">You’re receiving this email because you recently created a new
+                SnailPass account. If this wasn’t you, please ignore this email. Confirmation link will expire in an
+                hour.</p>
             </td>
           </tr>
 
-  
+
           <!-- end copy -->
 
         </table>
-  
+
         <!--[if (gte mso 9)|(IE)]>
         </td>
         </tr>
@@ -211,7 +234,7 @@
 
     <!-- start footer -->
     <tr>
-      <td align="center" bgcolor="#e9ecef" style="padding: 24px;">
+      <td align="center" bgcolor="#323540" style="padding: 24px;">
         <!--[if (gte mso 9)|(IE)]>
         <table align="center" border="0" cellpadding="0" cellspacing="0" width="600">
         <tr>
@@ -221,8 +244,11 @@
 
           <!-- start permission -->
           <tr>
-            <td align="center" bgcolor="#e9ecef" style="padding: 12px 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 20px; color: #666;">
-              <p style="margin: 0;">For help, contact us through an email:  <b>snailpass.corp@gmail.com</b></p>
+            <td align="center" bgcolor="#323540"
+              style="padding: 12px 24px; font-family: 'JetBrains Mono'; font-size: 12px; line-height: 20px; color: #666;">
+              <p style="margin: 0; color: #686a6d">For help, contact us through an email: <a
+                  href="mailto:snailpass.corp@gmail.com" style="color: #56a4ff">snailpass.corp@gmail.com</a>
+              </p>
             </td>
           </tr>
           <!-- end permission -->
@@ -237,43 +263,51 @@
     </tr>
     <!-- end footer -->
     <!-- start social media -->
-<tr>
-  <td align="center" bgcolor="#e9ecef">
-    <!--[if (gte mso 9)|(IE)]>
+    <tr>
+      <td align="center" bgcolor="#323540">
+        <!--[if (gte mso 9)|(IE)]>
     <table align="center" border="0" cellpadding="0" cellspacing="0" width="600">
     <tr>
     <td align="center" valign="top" width="600">
     <![endif]-->
-    <table border="0" cellpadding="0" cellspacing="0" width="10%">
-      <tr>
-        <td>
-          <a href="https://github.com/rebmanop/SnailPass-Server">
-            <img src="https://user-images.githubusercontent.com/45130182/226408938-9b19932d-43cd-47d8-a02e-b9ec179ee51f.png" width="32" height="32" alt="SnailPass-Server" style="display: inline-block; margin-right: 10px;">
-          </a>
-        </td>
-        <td>
-          <a href="https://github.com/badlocale/SnailPass-Desktop-Client">
-            <img src="https://user-images.githubusercontent.com/45130182/226407058-1e1e7741-2140-4b6f-8f06-34bed6cccdeb.png" width="32" height="32" alt="SnailPass-Windows-Clent" style="display: inline-block; margin-right: 10px;">
-          </a>
-        </td>
-        <td>
-          <a href="https://github.com/IlyaYDen/SnailPass-Android-Client">
-            <img src="https://user-images.githubusercontent.com/45130182/226409429-0ce4d51c-bd5b-4a06-b538-d89522429b5a.png" width="32" height="32" alt="SnailPass-Android-Clent" style="display: inline-block;">
-          </a>
-        </td>
-        
-      </tr>
-    </table>
-    <!--[if (gte mso 9)|(IE)]>
+        <table border="0" cellpadding="0" cellspacing="0" width="10%" style="margin-bottom: 5%;">
+          <tr>
+            <td>
+              <a href="https://github.com/rebmanop/SnailPass-Server">
+                <img
+                  src="https://user-images.githubusercontent.com/45130182/226609124-d5fad66e-995d-46b3-a6d2-7b08c95469c6.png"
+                  width="32" height="32" alt="SnailPass-Server" style="display: inline-block; margin-right: 10px;">
+              </a>
+            </td>
+            <td>
+              <a href="https://github.com/badlocale/SnailPass-Desktop-Client">
+                <img
+                  src="https://user-images.githubusercontent.com/45130182/226609152-6bf97774-b7b2-4c76-9cb7-1ddb59bdc8cf.png"
+                  width="32" height="32" alt="SnailPass-Windows-Clent"
+                  style="display: inline-block; margin-right: 10px;">
+              </a>
+            </td>
+            <td>
+              <a href="https://github.com/IlyaYDen/SnailPass-Android-Client">
+                <img
+                  src="https://user-images.githubusercontent.com/45130182/226609185-2224bf00-981e-4b4b-aa3c-496a474433a8.png"
+                  width="32" height="32" alt="SnailPass-Android-Clent" style="display: inline-block;">
+              </a>
+            </td>
+
+          </tr>
+        </table>
+        <!--[if (gte mso 9)|(IE)]>
     </td>
     </tr>
     </table>
     <![endif]-->
-  </td>
-</tr>
-<!-- end social media -->
+      </td>
+    </tr>
+    <!-- end social media -->
   </table>
   <!-- end body -->
 
 </body>
+
 </html>
