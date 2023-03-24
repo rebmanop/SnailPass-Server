@@ -1,9 +1,8 @@
 import api.models as models
 from api.hashing import hash_mp_additionally
 from api.models import db
-from api.mail import send_email
 from nameof import nameof
-from flask import url_for, render_template, current_app
+from flask import current_app
 from api.validator import Validator
 from api.errors import APIResourceAlreadyExistsError
 from api.access_restrictions import token_required

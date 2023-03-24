@@ -5,8 +5,10 @@ import api.models as models
 from flask import flash, current_app
 from api import EMAIL_CONFIRMATION_TTL
 from flask import Blueprint, current_app, render_template, url_for
-from api.mail import send_email
+from api.mail import send_email_async
+from email_validator import validate_email, EmailNotValidError
 from api.errors import APIUnprocessableEntityError
+from threading import Thread
 
 
 email_confirmation_blueprint = Blueprint("email_confirmation", __name__)
@@ -16,9 +18,9 @@ email_confirmation_blueprint = Blueprint("email_confirmation", __name__)
 def confirm_email(token: str):
     try:
         user = verify_confirmation_token(token)
-    except (jwt.ExpiredSignatureError):
+    except jwt.ExpiredSignatureError:
         return render_template("email_confirmation_link_has_expired.html")
-    except (TypeError):
+    except TypeError:
         return render_template("user_does_not_exists.html")
     except:
         return render_template("email_confirmation_link_is_invalid.html")
@@ -49,7 +51,6 @@ def generate_confirmation_token(user: models.User) -> str:
 
 
 def verify_confirmation_token(token: str) -> models.User:
-
     data = jwt.decode(token, key=current_app.config["SECRET_KEY"], algorithms=["HS256"])
     user = db.session.query(models.User).get(data["id"])
     if not user:
@@ -65,8 +66,10 @@ def send_email_confirmation_letter(recipient: models.User) -> None:
     html = render_template("email_confirmation_letter.html", confirm_url=confirm_url)
     subject = "Please confirm your email"
     try:
-        send_email(recipient.email, subject, html)
-    except:
+        validate_email(recipient.email)
+    except EmailNotValidError:
         raise APIUnprocessableEntityError(
-            "Error while sending an email. The recipient address probably not valid"
+            "Error while sending an email. The recipient address is not valid"
         )
+
+    Thread(target=send_email_async, args=(recipient.email, subject, html)).start()
