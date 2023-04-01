@@ -9,7 +9,10 @@ from api.access_restrictions import token_required
 from flask_restful import Resource, reqparse, marshal
 from api.resource_fields import USER_RESOURCE_FIELDS
 from api.core import MISSING_ARGUMENT_RESPONSE, create_successful_response
-from api.email_confirmation import send_email_confirmation_letter
+from api.email_confirmation import (
+    send_email_confirmation_letter,
+    generate_confirmation_token,
+)
 
 
 class User(Resource):

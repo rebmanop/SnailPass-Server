@@ -1,10 +1,10 @@
 import os
 from flask import Flask
 from flask_restful import Api
-from api.mail import mail
-from api.config import config, Config
+from api.config import config, Config, ProductionConfig
 from flask_migrate import Migrate
 from api.errors import APIError, APIDataFormatError
+from celery import Celery
 
 
 TOKEN_TTL = 10.0  # in minutes
@@ -12,10 +12,14 @@ EMAIL_CONFIRMATION_TTL = 60.0
 NUMBER_OF_HASH_ITERATIONS = 40000
 IV_AND_DATA_DELIMETER = ":"
 
+celery = Celery(__name__, broker="redis://redis:6379/0")
+
 
 def create_app(test_config: Config = None):
     app = Flask("SnailPass-Server-API")
     api = Api(app)
+
+    celery.conf.update(app.config)
 
     if test_config:
         app.config.from_object(test_config)
@@ -28,6 +32,8 @@ def create_app(test_config: Config = None):
     db.init_app(app)
     Migrate(app, db)
 
+    from api.mail import mail
+
     mail.init_app(app)
 
     from api.resources.user import User
@@ -36,6 +42,7 @@ def create_app(test_config: Config = None):
     from api.resources.note import Note
     from api.login import login_blueprint
     from api.email_confirmation import email_confirmation_blueprint
+    from api.favicon import favicon_blueprint
 
     api.add_resource(User, "/users")
     api.add_resource(Record, "/records")
@@ -55,4 +62,5 @@ def create_app(test_config: Config = None):
 
     app.register_blueprint(login_blueprint)
     app.register_blueprint(email_confirmation_blueprint)
+    app.register_blueprint(favicon_blueprint)
     return app

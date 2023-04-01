@@ -25,6 +25,7 @@ def recreate_db():
     Recreates a database. This should only be used once
     when there's a new database instance. This shouldn't be
     used when you migrate your database.
+    If you will use it on an existing database all data will be lost.
     """
     db.drop_all()
     db.create_all()

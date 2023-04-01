@@ -8,8 +8,8 @@ RUN apt-get -y install nginx \
     && apt-get -y install build-essential
 
 
-WORKDIR /snailpass-rest-api
-COPY . /snailpass-rest-api
+WORKDIR /snailpass-server
+COPY . /snailpass-server
 
 RUN pip install --no-cache-dir -r requirements-prod.txt
 
