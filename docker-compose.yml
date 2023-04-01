@@ -1,9 +1,8 @@
 version: '2.1'
 services:
-  api:
+  flask:
     restart: always
-    container_name: api
-    image: snailpass-server-api-image
+    container_name: flask
     environment:
       - SNAILPASS_SECRET_KEY=development_env_secret_key
       - SNAILPASS_CONFIGURATION=dev
