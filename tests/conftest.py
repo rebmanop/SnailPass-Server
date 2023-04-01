@@ -22,7 +22,6 @@ def client():
 
 @pytest.fixture
 def new_user() -> dict:
-
     new_user = {
         "id": utils.get_random_id(),
         "email": utils.get_random_email(),
@@ -35,7 +34,6 @@ def new_user() -> dict:
 
 @pytest.fixture
 def new_record() -> dict:
-
     new_record = {
         "id": utils.get_random_id(),
         "name": utils.MOCK_ENCRYPTED_DATA,
@@ -50,7 +48,6 @@ def new_record() -> dict:
 
 @pytest.fixture
 def new_note() -> dict:
-
     new_note = {
         "id": utils.get_random_id(),
         "name": utils.MOCK_ENCRYPTED_DATA,
@@ -64,7 +61,6 @@ def new_note() -> dict:
 
 @pytest.fixture
 def new_additional_field() -> dict:
-
     additional_field = {
         "id": utils.get_random_id(),
         "name": utils.MOCK_ENCRYPTED_DATA,

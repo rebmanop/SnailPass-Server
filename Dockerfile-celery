@@ -1,7 +1,7 @@
 FROM python:3.10-slim
 
 WORKDIR /celery
-COPY ../requirements-celery.txt /app
+COPY ./requirements-celery.txt /celery
 RUN pip install -r requirements-celery.txt
 
-COPY .. /celery
+COPY . /celery

@@ -148,7 +148,6 @@ class Note(Resource):
 
     @token_required
     def get(self, current_user):
-
         """Get user notes"""
 
         if len(current_user.notes) == 0:
