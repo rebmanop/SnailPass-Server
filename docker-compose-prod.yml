@@ -13,9 +13,9 @@ services:
     ports:
       - "5432:5432"
 
-  api:
+  flask:
     restart: always
-    container_name: api
+    container_name: flask
     environment:
       - SNAILPASS_SECRET_KEY=${SNAILPASS_SECRET_KEY}
       - SNAILPASS_DATABASE_URI=${SNAILPASS_DATABASE_URI}
@@ -23,7 +23,6 @@ services:
       - MAIL_USERNAME=${MAIL_USERNAME}
       - MAIL_PASSWORD=${MAIL_PASSWORD}
       - SNAILPASS_CONFIGURATION=prod
-    image: snailpass-server-api-prod-image
     build:
       context: .
       dockerfile: Dockerfile-prod
@@ -38,13 +37,20 @@ services:
     image: redis:latest
     container_name: redis
     depends_on:
-      - api
+      - flask
 
   celery:
-    build:
-      context: ./celery
+    environment:
+          - SNAILPASS_SECRET_KEY=${SNAILPASS_SECRET_KEY}
+          - SNAILPASS_DATABASE_URI=${SNAILPASS_DATABASE_URI}
+          - MAIL_DEFAULT_SENDER=${MAIL_DEFAULT_SENDER}
+          - MAIL_USERNAME=${MAIL_USERNAME}
+          - MAIL_PASSWORD=${MAIL_PASSWORD}
+          - SNAILPASS_CONFIGURATION=prod
     container_name: celery
+    command: celery -A celery_app.celery worker --loglevel=info
+    build:
+      context: .
+      dockerfile: Dockerfile-celery
     depends_on:
       - redis
-    restart: unless-stopped
-    stdin_open: true

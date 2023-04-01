@@ -9,9 +9,10 @@ RUN apt-get -y install nginx \
 
 
 WORKDIR /snailpass-server
-COPY . /snailpass-server
+COPY ./requirements-prod.txt /snailpass-server
+RUN pip install -r requirements-prod.txt
 
-RUN pip install --no-cache-dir -r requirements-prod.txt
+COPY . /snailpass-server
 
 COPY nginx.conf /etc/nginx
 RUN chmod +x scripts/start_prod.sh
