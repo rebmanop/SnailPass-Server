@@ -51,7 +51,7 @@ Uses uWSGI server, postgres database and nginx as reverse proxy (port 80).
 ```
 docker-compose -f docker-compose-prod.yml build
 docker-compose -f docker-compose-prod.yml up -d
-docker-compose -f docker-compose-prod.yml exec api python manage.py recreate_db 
+docker-compose -f docker-compose-prod.yml exec flask python manage.py recreate_db 
 ```
 **NOTE:** Execute last command only if you starting container for the first time or if you want to **CLEAR** production database.<br>
 Production config also requires `.env` file with sensitive info in the project directory. File template: 
