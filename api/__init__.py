@@ -43,6 +43,7 @@ def create_app(test_config: Config = None):
     from api.login import login_blueprint
     from api.email_confirmation import email_confirmation_blueprint
     from api.favicon import favicon_blueprint
+    from api.index import index_blueprint
 
     api.add_resource(User, "/users")
     api.add_resource(Record, "/records")
@@ -63,4 +64,5 @@ def create_app(test_config: Config = None):
     app.register_blueprint(login_blueprint)
     app.register_blueprint(email_confirmation_blueprint)
     app.register_blueprint(favicon_blueprint)
+    app.register_blueprint(index_blueprint)
     return app
