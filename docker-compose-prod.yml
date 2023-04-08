@@ -32,6 +32,8 @@ services:
       - 80:80
     entrypoint:
       - scripts/start_prod.sh
+    volumes:
+      - .:/snailpass-server
 
   redis:
     image: redis:latest

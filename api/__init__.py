@@ -1,8 +1,7 @@
 import os
 from flask import Flask
 from flask_restful import Api
-from api.config import config, Config, ProductionConfig
-from flask_migrate import Migrate
+from api.config import config, Config
 from api.errors import APIError, APIDataFormatError
 from celery import Celery
 
@@ -30,7 +29,6 @@ def create_app(test_config: Config = None):
     from api.models import db
 
     db.init_app(app)
-    Migrate(app, db)
 
     from api.mail import mail
 
