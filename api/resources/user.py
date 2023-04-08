@@ -10,6 +10,7 @@ from flask_restful import Resource, reqparse, marshal
 from api.resource_fields import USER_RESOURCE_FIELDS
 from api.core import MISSING_ARGUMENT_RESPONSE, create_successful_response
 from api.email_confirmation import send_email_confirmation_letter
+from sqlalchemy import func
 
 
 class User(Resource):
@@ -43,7 +44,9 @@ class User(Resource):
         self.parser.add_argument(nameof(models.User.hint), type=str, nullable=True)
 
         self.validator = Validator(
-            all_not_encrypted=True, empty_string_allowed=[nameof(models.User.hint)]
+            all_not_encrypted=True,
+            empty_string_allowed=[nameof(models.User.hint)],
+            email_validation=True,
         )
 
     def post(self):
@@ -63,7 +66,10 @@ class User(Resource):
 
         if (
             db.session.query(models.User)
-            .filter_by(email=args[nameof(models.User.email)])
+            .filter(
+                func.lower(models.User.email)
+                == func.lower(args[nameof(models.User.email)])
+            )
             .first()
         ):
             raise APIResourceAlreadyExistsError(f"User with this email already exists")

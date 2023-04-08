@@ -10,6 +10,8 @@ WRONG_FORMAT_ARGUMENT_RESPONSE = (
 )
 EMPTY_STRING_ARGUMENT_RESPONSE = "This JSON body argument is an empty string"
 
+EMAIL_NOT_VALID = "Not valid or does not exist"
+
 
 def create_successful_response(
     message: str = "", status_code: int = 200

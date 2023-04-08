@@ -7,8 +7,6 @@ from flask import current_app
 from api import EMAIL_CONFIRMATION_TTL
 from flask import Blueprint, current_app, render_template, url_for
 from api.mail import send_email
-from email_validator import validate_email, EmailNotValidError
-from api.errors import APIUnprocessableEntityError
 
 
 email_confirmation_blueprint = Blueprint("email_confirmation", __name__)
@@ -59,19 +57,12 @@ def verify_confirmation_token(token: str) -> models.User:
 
 
 def send_email_confirmation_letter(recipient: models.User) -> None:
-
     confirm_token = generate_confirmation_token(recipient)
     confirm_url = url_for(
         "email_confirmation.confirm_email", token=confirm_token, _external=True
     )
     html = render_template("email_confirmation_letter.html", confirm_url=confirm_url)
     subject = "Please confirm your email"
-    try:
-        validate_email(recipient.email)
-    except EmailNotValidError:
-        raise APIUnprocessableEntityError(
-            "Error while sending an email. The recipient address is not valid"
-        )
 
     send_email.delay(
         recipient.email, subject, html, current_app.config["MAIL_DEFAULT_SENDER"]
