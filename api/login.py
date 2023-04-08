@@ -24,10 +24,13 @@ def login():
     if not auth or not auth.username or not auth.password:
         raise APIAuthError(f"Authentication info missing or it's incomplete")
 
-    user = db.session.query(models.User).filter_by(email=auth.username).first()
+    email = auth.username.lower()
+    master_password = auth.password
+
+    user = db.session.query(models.User).filter_by(email=email).first()
 
     if not user or (
-        user.master_password_hash != hash_mp_additionally(auth.password, auth.username)
+        user.master_password_hash != hash_mp_additionally(master_password, salt=email)
     ):
         raise APIAuthError("Incorrect credentials")
 

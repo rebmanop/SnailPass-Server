@@ -10,7 +10,6 @@ from flask_restful import Resource, reqparse, marshal
 from api.resource_fields import USER_RESOURCE_FIELDS
 from api.core import MISSING_ARGUMENT_RESPONSE, create_successful_response
 from api.email_confirmation import send_email_confirmation_letter
-from sqlalchemy import func
 
 
 class User(Resource):
@@ -54,6 +53,8 @@ class User(Resource):
         args = self.parser.parse_args()
         self.validator.validate_args(args)
 
+        args[nameof(models.User.email)] = (args[nameof(models.User.email)]).lower()
+
         additionaly_hashed_master_password = hash_mp_additionally(
             password_hash=args[nameof(models.User.master_password_hash)],
             salt=args[nameof(models.User.email)],
@@ -66,17 +67,14 @@ class User(Resource):
 
         if (
             db.session.query(models.User)
-            .filter(
-                func.lower(models.User.email)
-                == func.lower(args[nameof(models.User.email)])
-            )
+            .filter_by(email=args[nameof(models.User.email)])
             .first()
         ):
             raise APIResourceAlreadyExistsError(f"User with this email already exists")
 
         new_user = models.User(
             id=args[nameof(models.User.id)],
-            email=args[nameof(models.User.email)],
+            email=(args[nameof(models.User.email)]),
             master_password_hash=additionaly_hashed_master_password,
             hint=args[nameof(models.User.hint)],
             email_confirmed=False,
