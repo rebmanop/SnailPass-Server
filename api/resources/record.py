@@ -153,12 +153,18 @@ class Record(Resource):
                 f"Record {record.id} doesn't belong to the current user {current_user.id}"
             )
 
-        db.session.delete(record)
-        db.session.commit()
-
-        return create_successful_response(
-            f"Record {record.id} deleted successfully", 200
-        )
+        if record.is_deleted == False:
+            record.is_deleted = True
+            db.session.commit()
+            return create_successful_response(
+                f"Record {record.id} successfully marked as deleted", 200
+            )
+        else:
+            db.session.delete(record)
+            db.session.commit()
+            return create_successful_response(
+                f"Record {record.id} successfully permanently deleted", 200
+            )
 
     @token_required
     def get(self, current_user):

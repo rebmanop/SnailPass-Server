@@ -141,10 +141,18 @@ class Note(Resource):
                 f"Note {note.id} doesn't belong to the current user {current_user.id}"
             )
 
-        db.session.delete(note)
-        db.session.commit()
-
-        return create_successful_response(f"Note {note.id} deleted successfully", 200)
+        if note.is_deleted == False:
+            note.is_deleted = True
+            db.session.commit()
+            return create_successful_response(
+                f"Note {note.id} successfully marked as deleted", 200
+            )
+        else:
+            db.session.delete(note)
+            db.session.commit()
+            return create_successful_response(
+                f"Note {note.id} successfully permanently deleted", 200
+            )
 
     @token_required
     def get(self, current_user):
