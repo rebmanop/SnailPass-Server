@@ -73,7 +73,7 @@ class Record(Resource):
         )
 
     @token_required
-    def post(self, current_user):
+    def post(self, current_user: models.User):
         """Create new record"""
 
         args = self.parser.parse_args()
@@ -102,7 +102,7 @@ class Record(Resource):
         return create_successful_response(f"Record {record.id} created", 201)
 
     @token_required
-    def put(self, current_user):
+    def put(self, current_user: models.User):
         """Edit existing record"""
 
         args = self.parser.parse_args()
@@ -133,7 +133,7 @@ class Record(Resource):
         )
 
     @token_required
-    def delete(self, current_user):
+    def delete(self, current_user: models.User):
         "Delete record"
 
         record_id = request.args.get(nameof(models.Record.id))
@@ -167,7 +167,7 @@ class Record(Resource):
             )
 
     @token_required
-    def get(self, current_user):
+    def get(self, current_user: models.User):
         """
         Get user records with corresponding additional fields
         """

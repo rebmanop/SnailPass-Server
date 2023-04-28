@@ -14,7 +14,7 @@ IV_AND_DATA_DELIMETER = ":"
 celery = Celery(__name__, broker="redis://redis:6379/0")
 
 
-def create_app(test_config: Config = None):
+def create_app(test_config: Config = None) -> Flask:
     app = Flask("SnailPass-Server-API")
     api = Api(app)
 

@@ -10,6 +10,7 @@ from flask_restful import Resource, reqparse, marshal
 from api.resource_fields import USER_RESOURCE_FIELDS
 from api.core import MISSING_ARGUMENT_RESPONSE, create_successful_response
 from api.email_confirmation import send_email_confirmation_letter
+from typing import Tuple, Any
 
 
 class User(Resource):
@@ -48,7 +49,7 @@ class User(Resource):
             email_validation=True,
         )
 
-    def post(self):
+    def post(self) -> Tuple[dict, int]:
         """Signup procedure"""
         args = self.parser.parse_args()
         self.validator.validate_args(args)
@@ -97,7 +98,7 @@ class User(Resource):
         )
 
     @token_required
-    def get(self, current_user):
+    def get(self, current_user: models.User) -> tuple[Any | dict, int]:
         """
         Returns current user
         """

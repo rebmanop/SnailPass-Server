@@ -67,7 +67,7 @@ class Note(Resource):
         self.class_name = {self.__class__.__name__}
 
     @token_required
-    def post(self, current_user):
+    def post(self, current_user: models.User):
         """Create new note"""
 
         args = self.parser.parse_args()
@@ -94,7 +94,7 @@ class Note(Resource):
         return create_successful_response(f"Note {note.id} created", 201)
 
     @token_required
-    def put(self, current_user):
+    def put(self, current_user: models.User):
         """Edit existing note"""
 
         args = self.parser.parse_args()
@@ -123,7 +123,7 @@ class Note(Resource):
         return create_successful_response(f"Note {note.id} changed successfully", 200)
 
     @token_required
-    def delete(self, current_user):
+    def delete(self, current_user: models.User):
         "Delete note"
 
         note_id = request.args.get(nameof(models.Note.id))
@@ -155,7 +155,7 @@ class Note(Resource):
             )
 
     @token_required
-    def get(self, current_user):
+    def get(self, current_user: models.User):
         """Get user notes"""
 
         if len(current_user.notes) == 0:

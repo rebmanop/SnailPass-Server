@@ -1,6 +1,9 @@
 class APIError(Exception):
     """All custom API Exceptions"""
 
+    code = 0
+    description = "Base API Error"
+
 
 class APIAuthError(APIError):
     """Custom Authentication Error Class."""

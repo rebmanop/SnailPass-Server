@@ -1,6 +1,6 @@
 import traceback
-from typing import Tuple
 from flask import jsonify, current_app, Response
+from api.errors import APIDataFormatError, APIError
 
 MISSING_ARGUMENT_RESPONSE = (
     "This JSON body argument is missing at all or it's value is null"
@@ -15,13 +15,13 @@ EMAIL_NOT_VALID = "Not valid or does not exist"
 
 def create_successful_response(
     message: str = "", status_code: int = 200
-) -> Tuple[dict, int]:
+) -> tuple[dict, int]:
     """Wraps successful response in a consistent format throughout the API"""
     current_app.logger.debug(message)
     return {"message": {"success": message}}, status_code
 
 
-def handle_exception(err) -> Tuple[Response, int]:
+def handle_exception(err: APIError) -> tuple[Response, int]:
     """Return custom JSON when APIError or its children are raised"""
     response = {}
     if len(err.args) > 0:
@@ -30,7 +30,7 @@ def handle_exception(err) -> Tuple[Response, int]:
     return jsonify(response), err.code
 
 
-def handle_unknown_exception(err: list) -> Tuple[Response, int]:
+def handle_unknown_exception(err: Exception) -> tuple[Response, int]:
     """Return JSON instead of HTML for any other server error"""
     current_app.logger.error(f"Unknown Exception: {str(err)}")
     current_app.logger.debug(
@@ -42,7 +42,7 @@ def handle_unknown_exception(err: list) -> Tuple[Response, int]:
     return jsonify(response), 500
 
 
-def handle_validation_exception(err: list) -> Tuple[Response, int]:
+def handle_validation_exception(err: APIDataFormatError) -> tuple[Response, int]:
     """
     Return custom JSON when APIDataFormatError is raised
     Used by custom data validator, so validation error response would look like request parser's error response

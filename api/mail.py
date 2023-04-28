@@ -6,7 +6,7 @@ from api import celery
 
 
 @celery.task
-def send_email(to, subject, template, sender):
+def send_email(to: str, subject: str, template: str, sender: str) -> None:
     msg = Message(
         subject,
         recipients=[to],
