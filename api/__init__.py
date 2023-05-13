@@ -9,7 +9,7 @@ from celery import Celery
 TOKEN_TTL = 10.0  # in minutes
 EMAIL_CONFIRMATION_TTL = 60.0
 NUMBER_OF_HASH_ITERATIONS = 40000
-IV_AND_DATA_DELIMETER = ":"
+DATA_AND_IV_DELIMETER = ":"
 
 celery = Celery(__name__, broker="redis://redis:6379/0")
 
