@@ -4,3 +4,5 @@ __pycache__
 devdatabase.db
 instance/
 .env
+nginx.conf
+uwsgi.ini

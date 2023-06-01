@@ -30,10 +30,12 @@ services:
       - postgres
     ports:
       - 80:80
+      - 443:443
     entrypoint:
       - scripts/start_prod.sh
     volumes:
       - .:/snailpass-server
+      - /etc/letsencrypt:/etc/letsencrypt
 
   redis:
     image: redis:latest
