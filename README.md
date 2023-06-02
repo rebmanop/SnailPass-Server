@@ -21,7 +21,7 @@ Encryption in client applications implemented using a symmetric algorithm with a
 - `pytest` as a library for codebase testing
 
 # Developer Documentation
-Please refer to the [Deployment Guide](https://github.com/rebmanop/SnailPass-Server#deploy) down below to quickly spin up a server container. Check out [API Documentation](https://github.com/rebmanop/SnailPass-Server/wiki/API-Documentation-Main-Page) to learn about all the features, endpoints and request/response structures.
+Please refer to the [Deployment Guide](https://github.com/rebmanop/SnailPass-Server#deploy) down below to quickly spin up a server container. Check out [API Documentation](https://github.com/rebmanop/SnailPass-Server/wiki) to learn about all the features, endpoints and request/response structures.
 
 # Deploy
 <p align="center">
@@ -51,18 +51,20 @@ Uses uWSGI server, postgres database and nginx as reverse proxy (port 80).
 ```
 docker-compose -f docker-compose-prod.yml build
 docker-compose -f docker-compose-prod.yml up -d
-docker-compose -f docker-compose-prod.yml exec api python manage.py recreate_db 
+docker-compose -f docker-compose-prod.yml exec flask python manage.py recreate_db 
 ```
 **NOTE:** Execute last command only if you starting container for the first time or if you want to **CLEAR** production database.<br>
-Production config also requires `.env` file with sensitive info in the project directory. File template: 
+Production config also requires `.env`, `nginx.conf` and `uwsgi.ini` files with sensitive info in the project directory. <br><br>**`.env` file template:** 
 ```
 PROD_POSTGRES_USER=username
 PROD_POSTGRES_PASSWORD=userpassword
 PROD_POSTGRES_DB=databasename
 SNAILPASS_DATABASE_URI=postgresql://username:userpassword@postgres/databasename
 SNAILPASS_SECRET_KEY=secretkey
+MAIL_DEFAULT_SENDER=maildefaultsender
+MAIL_USERNAME=mailusername
+MAIL_PASSWORD=mailpassword
 ```
-
  
 
 

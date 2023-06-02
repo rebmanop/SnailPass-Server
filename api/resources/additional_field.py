@@ -54,7 +54,7 @@ class AdditionalField(Resource):
         )
 
     @token_required
-    def post(self, current_user):
+    def post(self, current_user: models.User):
         """Create new additional field"""
 
         args = self.parser.parse_args()
@@ -95,7 +95,7 @@ class AdditionalField(Resource):
         )
 
     @token_required
-    def delete(self, current_user):
+    def delete(self, current_user: models.User):
         "Delete additional field"
 
         af_id = request.args.get(nameof(models.AdditionalField.id))
@@ -125,7 +125,7 @@ class AdditionalField(Resource):
         )
 
     @token_required
-    def put(self, current_user):
+    def put(self, current_user: models.User):
         """Edit existing additional field"""
 
         args = self.parser.parse_args()
@@ -153,7 +153,7 @@ class AdditionalField(Resource):
         )
 
     @token_required
-    def get(self, current_user):
+    def get(self, current_user: models.User):
         """Get additional fields by record id"""
 
         record_id = request.args.get(nameof(models.Record.id))

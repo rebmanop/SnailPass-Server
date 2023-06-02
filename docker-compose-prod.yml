@@ -2,6 +2,7 @@ version: '2.1'
 services:
   postgres:
     restart: always
+    container_name: postgres
     image: postgres:10
     environment:
       - POSTGRES_USER=${PROD_POSTGRES_USER}
@@ -11,19 +12,49 @@ services:
       - ~/snailpass-data/postgres-data/postgres:/var/lib/postgresql/data
     ports:
       - "5432:5432"
-  api:
+
+  flask:
     restart: always
+    container_name: flask
     environment:
       - SNAILPASS_SECRET_KEY=${SNAILPASS_SECRET_KEY}
       - SNAILPASS_DATABASE_URI=${SNAILPASS_DATABASE_URI}
+      - MAIL_DEFAULT_SENDER=${MAIL_DEFAULT_SENDER}
+      - MAIL_USERNAME=${MAIL_USERNAME}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
       - SNAILPASS_CONFIGURATION=prod
-    image: snailpass-rest-api-image
-    build: 
+    build:
       context: .
       dockerfile: Dockerfile-prod
     depends_on:
       - postgres
     ports:
       - 80:80
-    entrypoint: 
+      - 443:443
+    entrypoint:
       - scripts/start_prod.sh
+    volumes:
+      - .:/snailpass-server
+      - /etc/letsencrypt:/etc/letsencrypt
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    depends_on:
+      - flask
+
+  celery:
+    environment:
+          - SNAILPASS_SECRET_KEY=${SNAILPASS_SECRET_KEY}
+          - SNAILPASS_DATABASE_URI=${SNAILPASS_DATABASE_URI}
+          - MAIL_DEFAULT_SENDER=${MAIL_DEFAULT_SENDER}
+          - MAIL_USERNAME=${MAIL_USERNAME}
+          - MAIL_PASSWORD=${MAIL_PASSWORD}
+          - SNAILPASS_CONFIGURATION=prod
+    container_name: celery
+    command: celery -A celery_app.celery worker --loglevel=info
+    build:
+      context: .
+      dockerfile: Dockerfile-celery
+    depends_on:
+      - redis

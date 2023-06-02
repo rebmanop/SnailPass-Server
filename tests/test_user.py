@@ -6,10 +6,28 @@ from tests.utils import add_new_user_to_mock_db, get_mock_token
 # -------------------------------------SIGN UP PROCEDURE TESTS (POST REQUEST)---------------
 
 
-def test_signup_new_user_success(client, new_user: dict):
+def test_signup_new_user_success_1(client, new_user: dict):
     """
     Successful sign procedure
     """
+    response = client.post("/users", json=new_user, follow_redirects=True)
+    assert response.status_code == 201
+    expected_response_message = (
+        f"User created successfully {new_user[nameof(models.User.id)]}"
+    )
+    assert (
+        expected_response_message.encode() in response.data
+        and b"success" in response.data
+    )
+    assert db.session.query(models.User).get(new_user["id"]) != None
+
+
+def test_signup_new_user_success_2(client, new_user: dict):
+    """
+    Successful sign procedure, hint is an empty string
+    """
+
+    new_user["hint"] = ""
     response = client.post("/users", json=new_user, follow_redirects=True)
     assert response.status_code == 201
     expected_response_message = (
@@ -64,6 +82,6 @@ def test_get_current_user_success(client, new_user):
     response = client.get("/users", headers={"x-access-token": f"{token}"})
 
     assert response.status_code == 200
-    assert new_user[nameof(models.User.id)].encode() in response.data
-    assert new_user[nameof(models.User.email)].encode() in response.data
-    assert new_user[nameof(models.User.hint)].encode() in response.data
+    assert new_user["id"].encode() in response.data
+    assert new_user["email"].encode() in response.data
+    assert new_user["hint"].encode() in response.data

@@ -1,7 +1,8 @@
 class APIError(Exception):
     """All custom API Exceptions"""
 
-    pass
+    code = 0
+    description = "Base API Error"
 
 
 class APIAuthError(APIError):
@@ -51,3 +52,10 @@ class APIAccessDeniedError(APIError):
 
     code = 403
     description = "Access Denied"
+
+
+class APIUnprocessableEntityError(APIError):
+    """Custom Unprocessable Entity Error"""
+
+    code = 422
+    description = "Unprocessable Entity"

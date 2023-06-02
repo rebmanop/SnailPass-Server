@@ -9,6 +9,8 @@ from api.access_restrictions import token_required
 from flask_restful import Resource, reqparse, marshal
 from api.resource_fields import USER_RESOURCE_FIELDS
 from api.core import MISSING_ARGUMENT_RESPONSE, create_successful_response
+from api.email_confirmation import send_email_confirmation_letter
+from typing import Tuple, Any
 
 
 class User(Resource):
@@ -39,14 +41,20 @@ class User(Resource):
             nullable=False,
         )
 
-        self.parser.add_argument(nameof(models.User.hint), type=str, nullable=False)
+        self.parser.add_argument(nameof(models.User.hint), type=str, nullable=True)
 
-        self.validator = Validator(all_not_encrypted=True)
+        self.validator = Validator(
+            all_not_encrypted=True,
+            empty_string_allowed=[nameof(models.User.hint)],
+            email_validation=True,
+        )
 
-    def post(self):
+    def post(self) -> Tuple[dict, int]:
         """Signup procedure"""
         args = self.parser.parse_args()
         self.validator.validate_args(args)
+
+        args[nameof(models.User.email)] = (args[nameof(models.User.email)]).lower()
 
         additionaly_hashed_master_password = hash_mp_additionally(
             password_hash=args[nameof(models.User.master_password_hash)],
@@ -67,20 +75,30 @@ class User(Resource):
 
         new_user = models.User(
             id=args[nameof(models.User.id)],
-            email=args[nameof(models.User.email)],
+            email=(args[nameof(models.User.email)]),
             master_password_hash=additionaly_hashed_master_password,
             hint=args[nameof(models.User.hint)],
+            email_confirmed=False,
         )
+
+        if new_user.hint == "":
+            new_user.hint = None
+
+        if current_app.debug == True:
+            new_user.email_confirmed = True
+        else:
+            send_email_confirmation_letter(recipient=new_user)
 
         db.session.add(new_user)
         db.session.commit()
 
         return create_successful_response(
-            f"User created successfully {new_user.id}", 201
+            f"User created successfully {new_user.id}. Confirmation link is sent to user's email",
+            201,
         )
 
     @token_required
-    def get(self, current_user):
+    def get(self, current_user: models.User) -> tuple[Any | dict, int]:
         """
         Returns current user
         """

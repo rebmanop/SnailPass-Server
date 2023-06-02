@@ -7,11 +7,15 @@ RUN apt-get -y install nginx \
     && apt-get -y install python3-dev \
     && apt-get -y install build-essential
 
+RUN apt-get -y install cron
+RUN apt-get -y install certbot
+RUN apt-get -y install python3-certbot-nginx
 
-WORKDIR /snailpass-rest-api
-COPY . /snailpass-rest-api
+WORKDIR /snailpass-server
+COPY ./requirements-prod.txt /snailpass-server
+RUN pip install -r requirements-prod.txt
 
-RUN pip install --no-cache-dir -r requirements-prod.txt
+COPY . /snailpass-server
 
 COPY nginx.conf /etc/nginx
 RUN chmod +x scripts/start_prod.sh

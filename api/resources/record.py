@@ -8,7 +8,7 @@ from api.validator import Validator
 from api.access_restrictions import token_required
 from flask_restful import Resource, marshal, reqparse
 from flask_restful import Resource, reqparse, request
-from api.resource_fields import RECORD_RESOURCE_FIELDS
+from api.resource_fields import RECORD_RESOURCE_FIELDS, ADDITIONAL_FIELD_RESOURCE_FIELDS
 from api.core import MISSING_ARGUMENT_RESPONSE, create_successful_response
 
 
@@ -73,7 +73,7 @@ class Record(Resource):
         )
 
     @token_required
-    def post(self, current_user):
+    def post(self, current_user: models.User):
         """Create new record"""
 
         args = self.parser.parse_args()
@@ -102,7 +102,7 @@ class Record(Resource):
         return create_successful_response(f"Record {record.id} created", 201)
 
     @token_required
-    def put(self, current_user):
+    def put(self, current_user: models.User):
         """Edit existing record"""
 
         args = self.parser.parse_args()
@@ -133,7 +133,7 @@ class Record(Resource):
         )
 
     @token_required
-    def delete(self, current_user):
+    def delete(self, current_user: models.User):
         "Delete record"
 
         record_id = request.args.get(nameof(models.Record.id))
@@ -153,24 +153,39 @@ class Record(Resource):
                 f"Record {record.id} doesn't belong to the current user {current_user.id}"
             )
 
-        db.session.delete(record)
-        db.session.commit()
-
-        return create_successful_response(
-            f"Record {record.id} deleted successfully", 200
-        )
+        if record.is_deleted == False:
+            record.is_deleted = True
+            db.session.commit()
+            return create_successful_response(
+                f"Record {record.id} successfully marked as deleted", 200
+            )
+        else:
+            db.session.delete(record)
+            db.session.commit()
+            return create_successful_response(
+                f"Record {record.id} successfully permanently deleted", 200
+            )
 
     @token_required
-    def get(self, current_user):
-
-        """Get user records"""
+    def get(self, current_user: models.User):
+        """
+        Get user records with corresponding additional fields
+        """
 
         if len(current_user.records) == 0:
             raise err.APIResourceNotFoundError(
                 f"Current user {current_user.id} has no records"
             )
         else:
-            return [
+            serialized_records = [
                 marshal(record, RECORD_RESOURCE_FIELDS)
                 for record in current_user.records
-            ], 200
+            ]
+            for record, serialized_record in zip(
+                current_user.records, serialized_records
+            ):
+                serialized_record[nameof(models.Record.additional_fields)] = [
+                    marshal(additional_field, ADDITIONAL_FIELD_RESOURCE_FIELDS)
+                    for additional_field in record.additional_fields
+                ]
+            return serialized_records, 200

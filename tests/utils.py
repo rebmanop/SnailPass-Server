@@ -28,6 +28,7 @@ def add_new_user_to_mock_db(new_user: dict) -> None:
         email=new_user[nameof(models.User.email)],
         master_password_hash=additionaly_hashed_mp,
         hint=new_user[nameof(models.User.hint)],
+        email_confirmed=True,
     )
     db.session.add(new_user_model)
     db.session.commit()
@@ -111,7 +112,7 @@ def get_mock_token(new_user: dict, token_ttl_minutes=api.TOKEN_TTL):
 
 words = []
 
-with open("mockdata/wordlist.txt") as file:
+with open("tests/mockdata/wordlist.txt") as file:
     while line := file.readline().rstrip():
         words.append(line)
 
