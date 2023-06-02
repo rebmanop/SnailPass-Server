@@ -54,7 +54,7 @@ docker-compose -f docker-compose-prod.yml up -d
 docker-compose -f docker-compose-prod.yml exec flask python manage.py recreate_db 
 ```
 **NOTE:** Execute last command only if you starting container for the first time or if you want to **CLEAR** production database.<br>
-Production config also requires `.env` file with sensitive info in the project directory. File template: 
+Production config also requires `.env`, `nginx.conf` and `uwsgi.ini` files with sensitive info in the project directory. <br><br>**`.env` file template:** 
 ```
 PROD_POSTGRES_USER=username
 PROD_POSTGRES_PASSWORD=userpassword
@@ -65,7 +65,6 @@ MAIL_DEFAULT_SENDER=maildefaultsender
 MAIL_USERNAME=mailusername
 MAIL_PASSWORD=mailpassword
 ```
-
  
 
 
