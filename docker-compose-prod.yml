@@ -45,12 +45,12 @@ services:
 
   celery:
     environment:
-          - SNAILPASS_SECRET_KEY=${SNAILPASS_SECRET_KEY}
-          - SNAILPASS_DATABASE_URI=${SNAILPASS_DATABASE_URI}
-          - MAIL_DEFAULT_SENDER=${MAIL_DEFAULT_SENDER}
-          - MAIL_USERNAME=${MAIL_USERNAME}
-          - MAIL_PASSWORD=${MAIL_PASSWORD}
-          - SNAILPASS_CONFIGURATION=prod
+      - SNAILPASS_SECRET_KEY=${SNAILPASS_SECRET_KEY}
+      - SNAILPASS_DATABASE_URI=${SNAILPASS_DATABASE_URI}
+      - MAIL_DEFAULT_SENDER=${MAIL_DEFAULT_SENDER}
+      - MAIL_USERNAME=${MAIL_USERNAME}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
+      - SNAILPASS_CONFIGURATION=prod
     container_name: celery
     command: celery -A celery_app.celery worker --loglevel=info
     build:
@@ -58,3 +58,13 @@ services:
       dockerfile: Dockerfile-celery
     depends_on:
       - redis
+
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4:7.3
+    ports:
+      - 5050:5050
+    environment:
+      - PGADMIN_LISTEN_PORT=5050
+      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
