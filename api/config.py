@@ -25,6 +25,8 @@ class TestingConfig(Config):
 class DevelopmentConfig(Config):
     SQLALCHEMY_DATABASE_URI = "sqlite:///../devdatabase.db"
     DEBUG = True
+    CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL")
+    RESULT_BACKEND = os.environ.get("RESULT_BACKEND")
 
 
 class ProductionConfig(Config):
@@ -39,7 +41,6 @@ class ProductionConfig(Config):
     MAIL_USERNAME = os.environ.get("MAIL_USERNAME")
     MAIL_PASSWORD = os.environ.get("MAIL_PASSWORD")
     MAIL_DEFAULT_SENDER = os.environ.get("MAIL_DEFAULT_SENDER")
-
     CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL")
 
 

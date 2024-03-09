@@ -6,7 +6,7 @@ import api.models as models
 from flask import current_app
 from api import EMAIL_CONFIRMATION_TTL
 from flask import Blueprint, current_app, render_template, url_for
-from api.mail import send_email
+from celery_app import send_email
 
 
 email_confirmation_blueprint = Blueprint("email_confirmation", __name__)
@@ -57,13 +57,15 @@ def verify_confirmation_token(token: str) -> models.User:
 
 
 def send_email_confirmation_letter(recipient: models.User) -> None:
-    confirm_token = generate_confirmation_token(recipient)
-    confirm_url = url_for(
-        "email_confirmation.confirm_email", token=confirm_token, _external=True
+    confirmation_token = generate_confirmation_token(recipient)
+    confirmation_url = url_for(
+        "email_confirmation.confirm_email", token=confirmation_token, _external=True
     )
-    html = render_template("email_confirmation_letter.html", confirm_url=confirm_url)
+    html = render_template(
+        "email_confirmation_letter.html", confirm_url=confirmation_url
+    )
     subject = "Please confirm your email"
 
-    send_email.delay(
-        recipient.email, subject, html, current_app.config["MAIL_DEFAULT_SENDER"]
-    )
+    send_email.s(
+        recipient_email=recipient.email, subject=subject, html=html
+    ).apply_async()

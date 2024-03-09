@@ -15,3 +15,25 @@ services:
       - .:/snailpass-server
     entrypoint:
       - scripts/start_dev.sh
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:latest
+    container_name: redis
+
+  celery:
+    environment:
+      - RESULT_BACKEND=${RESULT_BACKEND}
+      - CELERY_BROKER_URL=${CELERY_BROKER_URL}
+      - MAIL_USERNAME=${MAIL_USERNAME}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
+      - MAIL_DEFAULT_SENDER=${MAIL_DEFAULT_SENDER}
+
+    container_name: celery
+    command: celery -A celery_obj.celery_app worker --loglevel=info
+    build:
+      context: .
+      dockerfile: Dockerfile-celery
+    depends_on:
+      - redis

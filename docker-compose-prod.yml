@@ -43,14 +43,14 @@ services:
 
   celery:
     environment:
-      - SNAILPASS_SECRET_KEY=${SNAILPASS_SECRET_KEY}
-      - SNAILPASS_DATABASE_URI=${SNAILPASS_DATABASE_URI}
-      - MAIL_DEFAULT_SENDER=${MAIL_DEFAULT_SENDER}
+      - RESULT_BACKEND=${RESULT_BACKEND}
+      - CELERY_BROKER_URL=${CELERY_BROKER_URL}
       - MAIL_USERNAME=${MAIL_USERNAME}
       - MAIL_PASSWORD=${MAIL_PASSWORD}
-      - SNAILPASS_CONFIGURATION=prod
+      - MAIL_DEFAULT_SENDER=${MAIL_DEFAULT_SENDER}
+
     container_name: celery
-    command: celery -A celery_app.celery worker --loglevel=info
+    command: celery -A celery_app.celery_app worker --loglevel=info
     build:
       context: .
       dockerfile: Dockerfile-celery

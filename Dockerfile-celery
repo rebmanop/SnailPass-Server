@@ -1,7 +1,4 @@
 FROM python:3.10-slim
-
 WORKDIR /celery
-COPY ./requirements-celery.txt /celery
-RUN pip install -r requirements-celery.txt
-
+RUN pip install celery==5.2.7 redis==4.5.4
 COPY . /celery

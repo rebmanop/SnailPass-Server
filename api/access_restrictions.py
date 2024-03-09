@@ -27,10 +27,10 @@ def token_required(f):
             if not current_user:
                 raise TypeError
 
-        except (jwt.ExpiredSignatureError):
+        except jwt.ExpiredSignatureError:
             raise err.APIAuthError("Token already expired")
 
-        except (TypeError):
+        except TypeError:
             raise err.APIResourceNotFoundError("Current user does not exist")
 
         except:

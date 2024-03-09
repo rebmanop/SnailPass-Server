@@ -3,7 +3,6 @@ from flask import Flask
 from flask_restful import Api
 from api.config import config, Config
 from api.errors import APIError, APIDataFormatError
-from celery import Celery
 
 
 TOKEN_TTL = 10.0  # in minutes
@@ -11,14 +10,10 @@ EMAIL_CONFIRMATION_TTL = 60.0
 NUMBER_OF_HASH_ITERATIONS = 40000
 DATA_AND_IV_DELIMETER = ":"
 
-celery = Celery(__name__, broker="redis://redis:6379/0")
-
 
 def create_app(test_config: Config = None) -> Flask:
     app = Flask("SnailPass-Server-API")
     api = Api(app)
-
-    celery.conf.update(app.config)
 
     if test_config:
         app.config.from_object(test_config)
@@ -29,10 +24,6 @@ def create_app(test_config: Config = None) -> Flask:
     from api.models import db
 
     db.init_app(app)
-
-    from api.mail import mail
-
-    mail.init_app(app)
 
     from api.resources.user import User
     from api.resources.record import Record
